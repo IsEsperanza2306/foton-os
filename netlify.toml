@@ -24,47 +24,5 @@
     Content-Type = "image/png"
     Cache-Control = "public, max-age=86400"
 
-# Clean URL redirects (serves .html without extension in URL)
-[[redirects]]
-  from = "/login"
-  to = "/login.html"
-  status = 200
+# Redirects handled via public/_redirects (Netlify native format)
 
-[[redirects]]
-  from = "/bp-tracker"
-  to = "/bp-tracker.html"
-  status = 200
-
-[[redirects]]
-  from = "/field-app"
-  to = "/field-app.html"
-  status = 200
-
-[[redirects]]
-  from = "/direccion"
-  to = "/direccion.html"
-  status = 200
-
-[[redirects]]
-  from = "/mapa"
-  to = "/mapa.html"
-  status = 200
-
-# Block old dashboard — redirect to login
-[[redirects]]
-  from = "/regionpro-dashboard.html"
-  to = "/login"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/regionpro-dashboard"
-  to = "/login"
-  status = 301
-  force = true
-
-# Fallback: rutas desconocidas van al login
-[[redirects]]
-  from = "/*"
-  to = "/login.html"
-  status = 302
