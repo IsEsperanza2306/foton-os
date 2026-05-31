@@ -359,12 +359,7 @@ async function loginPassword() {
   const { data, error } = await db.auth.signInWithPassword({ email, password });
 
   if (error) {
-    showMsg(
-      error.message.includes('Invalid') || error.message.includes('credentials')
-        ? 'Correo o contraseña incorrectos.'
-        : 'Error al ingresar. Intenta de nuevo.',
-      'error'
-    );
+    showMsg(error.message || 'Error al ingresar.', 'error');
     btn.disabled = false;
     btn.textContent = orig;
     return;

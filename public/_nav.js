@@ -43,10 +43,8 @@
   const NAV_H = 60;
 
   function buildCSS() {
-    const extraPad = PAGE === 'visita' ? NAV_H : 0;
     return `
-      body { padding-bottom: ${NAV_H + extraPad}px !important; }
-      ${PAGE === 'visita' ? `.tab-bar { bottom: ${NAV_H}px !important; }` : ''}
+      body { padding-bottom: ${NAV_H}px !important; }
 
       #_foton-nav {
         position: fixed;
@@ -158,7 +156,6 @@
       if (session) {
         window.FOTON_USER = session.user;
         window.FOTON_DB = db;
-        // Expose user email globally for pages that need it
         window.FOTON_EMAIL = session.user.email;
       }
 
@@ -175,12 +172,17 @@
     if (IS_LOGIN) return;
 
     injectNav();
+
+    // Signal pages that auth is confirmed and FOTON_USER is set
+    window.dispatchEvent(new CustomEvent('FotonAuthReady', { detail: { user: window.FOTON_USER } }));
   }
 
-  // Failsafe: reveal page after 4s regardless (avoids permanent blank screen)
-  setTimeout(function () {
-    document.documentElement.style.visibility = '';
-  }, 4000);
+  // Failsafe: if auth check takes >5s, redirect to login (never reveal unauth content)
+  var _failsafe = setTimeout(function () {
+    if (!window.FOTON_USER && !IS_LOGIN) {
+      location.replace('./login.html');
+    }
+  }, 5000);
 
   init();
 })();

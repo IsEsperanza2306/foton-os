@@ -397,6 +397,33 @@
       font-size: 14px;
       padding: 40px;
     }
+
+    /* ── PRINT STYLES ───────────────────────────────────────── */
+    @media print {
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      body { background: #fff !important; font-size: 11px !important; }
+      #_foton-nav, #_foton-nav-style { display: none !important; }
+      .dash-header { display: none !important; }
+      #dashboard { padding: 0 !important; }
+      .section-title { font-size: 10px !important; margin: 12px 0 6px !important; }
+      .kpi-grid { grid-template-columns: repeat(4,1fr) !important; gap: 8px !important; break-inside: avoid; }
+      .kpi-card { padding: 10px 12px !important; border: 1px solid #ddd !important; box-shadow: none !important; }
+      .kpi-value { font-size: 22px !important; }
+      .dealer-grid { grid-template-columns: repeat(4,1fr) !important; gap: 8px !important; }
+      .dealer-card { padding: 10px !important; border: 1px solid #ddd !important; box-shadow: none !important; break-inside: avoid; }
+      .chart-section { break-before: page; }
+      /* Print header */
+      #print-header { display: block !important; }
+    }
+    #print-header {
+      display: none;
+      padding: 16px 24px 12px;
+      border-bottom: 2px solid #0C447C;
+      margin-bottom: 16px;
+    }
+    .print-brand { font-family: 'Inter Tight', sans-serif; font-size: 18px; font-weight: 800; color: #0C447C; letter-spacing: 2px; }
+    .print-title { font-size: 13px; font-weight: 600; color: #1A1A2E; margin-top: 2px; }
+    .print-meta { font-size: 10px; color: #6B6B80; margin-top: 2px; }
   </style>
 </head>
 <body>
@@ -430,10 +457,23 @@
         <div class="dash-header-sub">Solo lectura · 2026</div>
       </div>
     </div>
-    <div class="dash-user-badge" id="user-badge">Cargando...</div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="dash-user-badge" id="user-badge">Cargando...</div>
+      <button onclick="generarInforme()" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);color:#fff;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer;transition:all .15s;white-space:nowrap" onmouseover="this.style.background='rgba(255,255,255,.25)'" onmouseout="this.style.background='rgba(255,255,255,.15)'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Imprimir Informe
+      </button>
+    </div>
   </header>
 
   <div class="dash-body">
+    <!-- Print header (hidden on screen, visible on print) -->
+    <div id="print-header">
+      <div class="print-brand">FOTON OS</div>
+      <div class="print-title">Informe Ejecutivo — Red de Distribuidores GR Centro-Sur</div>
+      <div class="print-meta" id="print-meta"></div>
+    </div>
+
     <div class="section-title">KPIs Nacionales 2026</div>
     <div class="kpi-grid" id="kpi-grid">
       <div class="loading-text" style="grid-column:1/-1">Cargando datos...</div>
@@ -554,9 +594,9 @@ async function loadDashboard() {
   const anio = 2026;
 
   const [bpRes, facRes, visitasRes] = await Promise.all([
-    db.from('bp_anual').select('dealer_id, unidades_bp').eq('anio', anio),
-    db.from('facturado_ytd').select('dealer_id, mes, unidades_facturadas').eq('anio', anio),
-    db.from('visitas').select('dealer_id, fecha').order('fecha', { ascending: false })
+    db.from('bp_anual').select('distribuidor_id, unidades_bp').eq('anio', anio),
+    db.from('facturado_ytd').select('distribuidor_id, mes, unidades_facturadas').eq('anio', anio),
+    db.from('visitas').select('distribuidor_id, fecha').order('fecha', { ascending: false })
   ]);
 
   const bpRows  = bpRes.data  || [];
@@ -565,21 +605,21 @@ async function loadDashboard() {
 
   const bpByDealer = {};
   bpRows.forEach(r => {
-    bpByDealer[r.dealer_id] = (bpByDealer[r.dealer_id] || 0) + r.unidades_bp;
+    bpByDealer[r.distribuidor_id] = (bpByDealer[r.distribuidor_id] || 0) + r.unidades_bp;
   });
 
   const facByDealer = {};
   const facByMonth  = {};
   facRows.forEach(r => {
     if (r.mes <= mesActual) {
-      facByDealer[r.dealer_id] = (facByDealer[r.dealer_id] || 0) + r.unidades_facturadas;
+      facByDealer[r.distribuidor_id] = (facByDealer[r.distribuidor_id] || 0) + r.unidades_facturadas;
     }
     facByMonth[r.mes] = (facByMonth[r.mes] || 0) + r.unidades_facturadas;
   });
 
   const lastVisit = {};
   visRows.forEach(r => {
-    if (!lastVisit[r.dealer_id]) lastVisit[r.dealer_id] = r.fecha;
+    if (!lastVisit[r.distribuidor_id]) lastVisit[r.distribuidor_id] = r.fecha;
   });
 
   const bpTotal  = bpRows.length > 0 ? Object.values(bpByDealer).reduce((a,b)=>a+b, 0) : BP_TOTAL_2026;
@@ -760,6 +800,18 @@ function renderChart(facByMonth, bpTotal) {
   });
 }
 
+// GENERAR INFORME
+function generarInforme() {
+  const usuario = document.getElementById('user-badge').textContent || '';
+  const ahora = new Date().toLocaleDateString('es-MX', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+    hour: '2-digit', minute: '2-digit'
+  });
+  const meta = document.getElementById('print-meta');
+  if (meta) meta.textContent = `Generado el ${ahora} · Por: ${usuario}`;
+  window.print();
+}
+
 // HELPERS
 function formatDate(isoStr) {
   if (!isoStr) return '—';
@@ -771,12 +823,12 @@ function formatDate(isoStr) {
   }
 }
 
-// Auth handled by _nav.js. Here we load user info and dashboard.
-(async function initDashboard() {
-  const { data: { session } } = await db.auth.getSession();
-  if (!session) return; // _nav.js will redirect to login
+// Auth handled by _nav.js — wait for FotonAuthReady before loading data
+window.addEventListener('FotonAuthReady', async function (e) {
+  const user = e.detail && e.detail.user;
+  if (!user) return;
 
-  const userEmail = session.user.email;
+  const userEmail = user.email;
   document.getElementById('user-badge').textContent = userEmail;
 
   const { data: usuarios } = await db
@@ -790,7 +842,7 @@ function formatDate(isoStr) {
   }
 
   loadDashboard();
-})();
+});
 </script>
 
 <script>window.NAV_ACTIVE_TAB = 'direccion';</script>

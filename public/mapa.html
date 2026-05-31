@@ -137,8 +137,8 @@
     /* ── DETAIL PANEL ───────────────────────────────────────── */
     .panel {
       position: fixed; left: 0; right: 0; bottom: 60px;
-      height: 72vh; transform: translateY(100%);
-      transition: transform .28s ease; z-index: 110;
+      height: 75vh; transform: translateY(100%);
+      transition: transform .28s ease; z-index: 200;
       background: var(--white); border-top: 1.5px solid var(--g100);
       border-radius: 16px 16px 0 0;
       overflow-y: auto; pointer-events: none;
@@ -376,8 +376,8 @@ async function load() {
   try {
     const [r1, r2, r3, r4] = await Promise.all([
       db.from('distribuidores').select('*').order('nombre'),
-      db.from('bp_anual').select('distribuidor_id,bp_units'),
-      db.from('facturado_ytd').select('distribuidor_id,facturado_units'),
+      db.from('bp_anual').select('distribuidor_id,unidades_bp').eq('anio', 2026),
+      db.from('facturado_ytd').select('distribuidor_id,unidades_facturadas').eq('anio', 2026),
       db.from('visita_acuerdos').select('id,acuerdo,responsable,fecha_limite,visitas(distribuidor_id)').eq('completado', false)
     ]);
     if (r1.error) throw r1.error;
@@ -385,10 +385,10 @@ async function load() {
     dists = r1.data || [];
 
     bpMap = {};
-    (r2.data || []).forEach(r => { bpMap[r.distribuidor_id] = (bpMap[r.distribuidor_id] || 0) + Number(r.bp_units || 0); });
+    (r2.data || []).forEach(r => { bpMap[r.distribuidor_id] = (bpMap[r.distribuidor_id] || 0) + Number(r.unidades_bp || 0); });
 
     facMap = {};
-    (r3.data || []).forEach(r => { facMap[r.distribuidor_id] = (facMap[r.distribuidor_id] || 0) + Number(r.facturado_units || 0); });
+    (r3.data || []).forEach(r => { facMap[r.distribuidor_id] = (facMap[r.distribuidor_id] || 0) + Number(r.unidades_facturadas || 0); });
 
     acuerdosMap = {};
     (r4.data || []).forEach(a => {
@@ -520,11 +520,13 @@ function sel(id) {
   if (d.lat && d.lng) map.flyTo([parseFloat(d.lat), parseFloat(d.lng)], 11, { duration: .8 });
   document.getElementById('panel').classList.add('open');
   document.getElementById('overlay').style.display = 'block';
+  document.getElementById('mob-strip').style.visibility = 'hidden';
 }
 
 function cerrar() {
   document.getElementById('panel').classList.remove('open');
   document.getElementById('overlay').style.display = 'none';
+  document.getElementById('mob-strip').style.visibility = 'visible';
   selId = null;
   document.querySelectorAll('.dist-card').forEach(el => el.classList.remove('selected'));
   document.querySelectorAll('.msc').forEach(el => el.classList.remove('sel'));
@@ -547,7 +549,7 @@ function filtrar(cat, btn) {
   renderAll();
 }
 
-load();
+window.addEventListener('FotonAuthReady', load);
 </script>
 
 <script>window.NAV_ACTIVE_TAB = 'mapa';</script>

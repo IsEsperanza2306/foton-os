@@ -241,6 +241,7 @@ thead.av-hd th{background:var(--g0);color:var(--g5);border-bottom:1px solid var(
     </div>
   </div>
   <div class="hdr-r">
+    <button class="btn btn-outline" onclick="openGestion()" style="color:#fff;border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.1)">&#9881; Gestionar</button>
     <span class="badge-yr">ENE &ndash; DIC 2026</span>
     <span class="badge-dt" id="today-lbl"></span>
   </div>
@@ -318,6 +319,48 @@ thead.av-hd th{background:var(--g0);color:var(--g5);border-bottom:1px solid var(
   </div>
 </div>
 
+<!-- MODAL GESTIÓN -->
+<div class="modal-bg" id="modal-gestion">
+  <div class="modal" style="width:520px;max-height:85vh;overflow-y:auto">
+    <div class="modal-ttl">Gestionar Distribuidores</div>
+    <div class="modal-sub">Activa o desactiva distribuidores en el tracker. Los desactivados se ocultan pero conservan su data.</div>
+
+    <div style="margin-bottom:20px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--g5);margin-bottom:10px">Distribuidores activos</div>
+      <div id="gestion-list"></div>
+    </div>
+
+    <div style="border-top:1px solid var(--g1);padding-top:16px;margin-bottom:16px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--g5);margin-bottom:12px">Agregar distribuidor</div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;font-weight:600;color:var(--g5);display:block;margin-bottom:4px">Distribuidor</label>
+        <select id="g-new-dist" style="width:100%;padding:8px 12px;border:1px solid var(--g3);border-radius:7px;font-family:'Inter',sans-serif;font-size:13px;background:var(--g0);outline:none">
+          <option value="">Seleccionar...</option>
+        </select>
+      </div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;font-weight:600;color:var(--g5);display:block;margin-bottom:4px">Subtítulo (plaza)</label>
+        <input type="text" id="g-new-sub" placeholder="Ej. Foton Ciudad" style="width:100%;padding:8px 12px;border:1px solid var(--g3);border-radius:7px;font-family:'Inter',sans-serif;font-size:13px;background:var(--g0);outline:none">
+      </div>
+      <div style="margin-bottom:12px">
+        <label style="font-size:11px;font-weight:600;color:var(--g5);display:block;margin-bottom:8px">BP Anual por modelo (unidades totales 2026)</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px" id="g-bp-inputs">
+          <div><label style="font-size:10px;color:var(--g5)">S3</label><input type="number" id="gbp-S3" min="0" placeholder="0" style="width:100%;padding:6px 8px;border:1px solid var(--g3);border-radius:6px;font-family:'Inter',sans-serif;font-size:13px;text-align:center;background:var(--g0);outline:none"></div>
+          <div><label style="font-size:10px;color:var(--g5)">S5</label><input type="number" id="gbp-S5" min="0" placeholder="0" style="width:100%;padding:6px 8px;border:1px solid var(--g3);border-radius:6px;font-family:'Inter',sans-serif;font-size:13px;text-align:center;background:var(--g0);outline:none"></div>
+          <div><label style="font-size:10px;color:var(--g5)">S6</label><input type="number" id="gbp-S6" min="0" placeholder="0" style="width:100%;padding:6px 8px;border:1px solid var(--g3);border-radius:6px;font-family:'Inter',sans-serif;font-size:13px;text-align:center;background:var(--g0);outline:none"></div>
+          <div><label style="font-size:10px;color:var(--g5)">S8</label><input type="number" id="gbp-S8" min="0" placeholder="0" style="width:100%;padding:6px 8px;border:1px solid var(--g3);border-radius:6px;font-family:'Inter',sans-serif;font-size:13px;text-align:center;background:var(--g0);outline:none"></div>
+          <div><label style="font-size:10px;color:var(--g5)">S12</label><input type="number" id="gbp-S12" min="0" placeholder="0" style="width:100%;padding:6px 8px;border:1px solid var(--g3);border-radius:6px;font-family:'Inter',sans-serif;font-size:13px;text-align:center;background:var(--g0);outline:none"></div>
+        </div>
+      </div>
+      <button onclick="addDistFromGestion()" style="width:100%;padding:10px;background:var(--b7);color:#fff;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer">+ Agregar al tracker</button>
+    </div>
+
+    <div class="modal-acts">
+      <button class="btn-ghost" onclick="closeGestion()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
 <!-- PRINT PANEL -->
 <div id="print-panel">
   <div class="pp-hdr">
@@ -372,7 +415,7 @@ async function loadBPFromSupabase() {
 
     if (bpRows) {
       bpRows.forEach(row => {
-        const d = DISTS[row.distribuidor_id];
+        const d = typeof row.distribuidor_id === 'number' ? DISTS[row.distribuidor_id] : DISTS.find(x => x.id === row.distribuidor_id);
         if (!d) return;
         const model = d.models.find(m => m.n === row.modelo);
         if (model && row.unidades_bp !== undefined) {
@@ -387,7 +430,7 @@ async function loadBPFromSupabase() {
 
     if (facRows) {
       facRows.forEach(row => {
-        const d = DISTS[row.distribuidor_id];
+        const d = typeof row.distribuidor_id === 'number' ? DISTS[row.distribuidor_id] : DISTS.find(x => x.id === row.distribuidor_id);
         if (!d) return;
         if (!d.fact[row.modelo]) d.fact[row.modelo] = new Array(12).fill(null);
         const mesIdx = row.mes - 1;
@@ -408,7 +451,7 @@ async function loadBPFromSupabase() {
 async function saveFacToSupabase(dealerIdx, modelo, mesIdx, unidades) {
   if (!db) return;
   const { error } = await db.from('facturado_ytd').upsert({
-    distribuidor_id: dealerIdx,
+    distribuidor_id: DISTS[dealerIdx].id || String(dealerIdx),
     anio: 2026,
     mes: mesIdx + 1,
     modelo,
@@ -423,7 +466,7 @@ const MF=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Sep
 
 // ── DATOS COMPLETOS (fusionados donde aplica) ──────────────────────────────
 const DISTS=[
-  {name:"Xian Motors",sub:"Foton Guadalajara",models:[
+  {id:'xian',name:"Xian Motors",sub:"Foton Guadalajara",models:[
     {n:"S3", u:[1,1,1,1,1,1,1,1,1,1,1,2], m:[.65,.65,.65,.65,.65,.65,.65,.65,.65,.65,.65,1.29]},
     {n:"S5", u:[1,1,1,1,1,1,1,1,1,1,1,2], m:[.84,.84,.84,.84,.84,.84,.84,.84,.84,.84,.84,1.68]},
     {n:"S6", u:[1,1,1,1,1,1,1,1,1,1,1,2], m:[.90,.90,.90,.90,.90,.90,.90,.90,.90,.90,.90,1.81]},
@@ -432,7 +475,7 @@ const DISTS=[
   ],
   fact:{S3:[null,null,null,null,13,null,null,null,null,null,null,null],S5:[null,null,null,null,2,null,null,null,null,null,null,null],S6:[null,null,null,null,3,null,null,null,null,null,null,null],S8:[null,null,null,null,null,null,null,null,null,null,null,null],S12:[null,null,null,null,36,null,null,null,null,null,null,null]}
   },
-  {name:"Camiones Metropolitanos GR",sub:"Foton Insurgentes Sur",models:[
+  {id:'metro_gr',name:"Camiones Metropolitanos GR",sub:"Foton Insurgentes Sur",models:[
     {n:"S3", u:[1,2,2,1,2,2,2,2,1,2,2,2], m:[.65,1.29,1.29,.65,1.29,1.29,1.29,1.29,.65,1.29,1.29,1.29]},
     {n:"S5", u:[1,1,2,1,2,1,2,1,1,2,1,2], m:[.84,.84,1.68,.84,1.68,.84,1.68,.84,.84,1.68,.84,1.68]},
     {n:"S6", u:[0,1,1,1,1,1,1,1,1,1,1,1], m:[0,.90,.90,.90,.90,.90,.90,.90,.90,.90,.90,.90]},
@@ -441,7 +484,7 @@ const DISTS=[
   ],
   fact:{S3:[null,null,null,null,null,null,null,null,null,null,null,null],S5:[null,null,null,null,null,null,null,null,null,null,null,null],S6:[null,null,null,null,null,null,null,null,null,null,null,null],S8:[null,null,null,null,null,null,null,null,null,null,null,null],S12:[null,null,null,null,1,null,null,null,null,null,null,null]}
   },
-  {name:"Autos y Camiones Asia Central",sub:"Foton San Luis Potosi",models:[
+  {id:'tang',name:"Autos y Camiones Asia Central",sub:"Foton San Luis Potosi",models:[
     {n:"S3", u:[0,1,1,1,0,1,1,1,1,0,1,1], m:[0,.65,.65,.65,0,.65,.65,.65,.65,0,.65,.65]},
     {n:"S5", u:[0,1,0,1,1,0,1,1,0,1,1,0], m:[0,.84,0,.84,.84,0,.84,.84,0,.84,.84,0]},
     {n:"S6", u:[0,0,1,0,1,0,1,0,0,1,0,1], m:[0,0,.90,0,.90,0,.90,0,0,.90,0,.90]},
@@ -450,7 +493,7 @@ const DISTS=[
   ],
   fact:{S3:[null,null,null,null,3,null,null,null,null,null,null,null],S5:[null,null,null,null,3,null,null,null,null,null,null,null],S6:[null,null,null,null,1,null,null,null,null,null,null,null],S8:[null,null,null,null,2,null,null,null,null,null,null,null],S12:[null,null,null,null,1,null,null,null,null,null,null,null]}
   },
-  {name:"Camiones Orientales de Leon",sub:"Foton Leon",models:[
+  {id:'orient',name:"Camiones Orientales de Leon",sub:"Foton Leon",models:[
     {n:"S3", u:[1,1,2,1,1,2,1,2,1,2,1,2], m:[.65,.65,1.29,.65,.65,1.29,.65,1.29,.65,1.29,.65,1.29]},
     {n:"S5", u:[1,1,1,1,1,1,2,1,1,1,1,2], m:[.84,.84,.84,.84,.84,.84,1.68,.84,.84,.84,.84,1.68]},
     {n:"S6", u:[0,1,1,1,0,1,1,1,0,1,1,1], m:[0,.90,.90,.90,0,.90,.90,.90,0,.90,.90,.90]},
@@ -460,7 +503,7 @@ const DISTS=[
   fact:{S3:[null,null,null,null,3,null,null,null,null,null,null,null],S5:[null,null,null,null,2,null,null,null,null,null,null,null],S6:[null,null,null,null,1,null,null,null,null,null,null,null],S8:[null,null,null,null,null,null,null,null,null,null,null,null],S12:[null,null,null,null,null,null,null,null,null,null,null,null]}
   },
   // PREMIUM DEL CENTRO: Constituyentes + Queretaro fusionados (suma de BPs)
-  {name:"Camiones Premium del Centro",sub:"Constituyentes + Queretaro",models:[
+  {id:'prem',name:"Camiones Premium del Centro",sub:"Constituyentes + Queretaro",models:[
     {n:"S3", u:[0,0,2,4,3,4,3,4,3,4,3,5], m:[0,0,1.29,2.59,1.94,2.59,1.94,2.59,1.94,2.59,1.94,3.23]},
     {n:"S5", u:[0,0,2,2,3,2,2,3,2,3,2,3], m:[0,0,1.68,1.68,2.52,1.68,1.68,2.52,1.68,2.52,1.68,2.52]},
     {n:"S6", u:[0,0,0,4,3,3,3,4,3,3,4,3], m:[0,0,0,3.61,2.71,2.71,2.71,3.61,2.71,2.71,3.61,2.71]},
@@ -469,7 +512,7 @@ const DISTS=[
   ],
   fact:{S3:[null,null,null,null,2,null,null,null,null,null,null,null],S5:[null,null,null,null,2,null,null,null,null,null,null,null],S6:[null,null,null,null,3,null,null,null,null,null,null,null],S8:[null,null,null,null,null,null,null,null,null,null,null,null],S12:[null,null,null,null,2,null,null,null,null,null,null,null]}
   },
-  {name:"Grupo Carrocero Milenio",sub:"Foton Tula",models:[
+  {id:'gcm',name:"Grupo Carrocero Milenio",sub:"Foton Tula",models:[
     {n:"S3", u:[0,1,0,1,0,1,1,0,1,0,1,1], m:[0,.65,0,.65,0,.65,.65,0,.65,0,.65,.65]},
     {n:"S5", u:[0,0,1,0,1,0,1,0,1,0,1,0], m:[0,0,.84,0,.84,0,.84,0,.84,0,.84,0]},
     {n:"S6", u:[0,0,0,1,0,0,1,0,0,1,0,0], m:[0,0,0,.90,0,0,.90,0,0,.90,0,0]},
@@ -479,7 +522,7 @@ const DISTS=[
   fact:{S3:[null,null,null,null,1,null,null,null,null,null,null,null],S5:[null,null,null,null,2,null,null,null,null,null,null,null],S6:[null,null,null,null,2,null,null,null,null,null,null,null],S8:[null,null,null,null,null,null,null,null,null,null,null,null],S12:[null,null,null,null,null,null,null,null,null,null,null,null]}
   },
   // PENINSULA: Cancun + Merida fusionados
-  {name:"Vehiculos Comerciales Peninsula",sub:"Cancun + Merida",models:[
+  {id:'pen',name:"Vehiculos Comerciales Peninsula",sub:"Cancun + Merida",models:[
     {n:"S3", u:[0,1,0,2,0,1,2,1,0,1,1,0], m:[0,.65,0,1.29,0,.65,1.29,.65,0,.65,.65,0]},
     {n:"S5", u:[0,0,1,0,2,0,1,1,1,0,0,1], m:[0,0,.84,0,1.68,0,.84,.84,.84,0,0,.84]},
     {n:"S6", u:[0,0,0,1,0,0,2,0,0,0,1,0], m:[0,0,0,.90,0,0,1.79,0,0,0,.90,0]},
@@ -487,13 +530,28 @@ const DISTS=[
     {n:"S12",u:[0,1,2,0,1,2,0,2,1,0,2,1], m:[0,1.42,2.84,0,1.42,2.84,0,2.84,1.42,0,2.84,1.42]}
   ],
   fact:{S3:[null,null,null,null,null,null,null,null,null,null,null,null],S5:[null,null,null,null,null,null,null,null,null,null,null,null],S6:[null,null,null,null,null,null,null,null,null,null,null,null],S8:[null,null,null,null,null,null,null,null,null,null,null,null],S12:[null,null,null,null,null,null,null,null,null,null,null,null]}
-  }
+  },
+  {id:'jim_gg',name:"Jiménez Autocamiones González Gallo",sub:"Foton Guadalajara GG",models:[
+    {n:"S3", u:[0,1,0,1,0,1,1,0,1,1,0,1], m:[0,.65,0,.65,0,.65,.65,0,.65,.65,0,.65]},
+    {n:"S5", u:[0,0,1,0,1,0,1,0,1,0,1,1], m:[0,0,.84,0,.84,0,.84,0,.84,0,.84,.84]},
+    {n:"S6", u:[0,0,0,1,0,1,0,1,0,1,0,1], m:[0,0,0,.90,0,.90,0,.90,0,.90,0,.90]},
+    {n:"S8", u:[0,0,1,0,1,0,1,0,1,0,1,0], m:[0,0,1.19,0,1.19,0,1.19,0,1.19,0,1.19,0]},
+    {n:"S12",u:[1,2,2,2,2,2,2,2,2,2,2,3], m:[1.42,2.85,2.85,2.85,2.85,2.85,2.85,2.85,2.85,2.85,2.85,4.27]}
+  ],fact:{S3:[null,null,null,null,null,null,null,null,null,null,null,null],S5:[null,null,null,null,null,null,null,null,null,null,null,null],S6:[null,null,null,null,null,null,null,null,null,null,null,null],S8:[null,null,null,null,null,null,null,null,null,null,null,null],S12:[null,null,null,null,null,null,null,null,null,null,null,null]}},
+  {id:'jim_zap',name:"Jiménez Autocamiones Zapopan",sub:"Foton Zapopan",models:[
+    {n:"S3", u:[0,1,0,1,0,1,1,0,1,0,1,0], m:[0,.65,0,.65,0,.65,.65,0,.65,0,.65,0]},
+    {n:"S5", u:[0,0,1,0,1,0,1,0,0,1,0,1], m:[0,0,.84,0,.84,0,.84,0,0,.84,0,.84]},
+    {n:"S6", u:[0,0,0,1,0,0,1,0,0,1,0,0], m:[0,0,0,.90,0,0,.90,0,0,.90,0,0]},
+    {n:"S8", u:[0,0,0,0,1,0,0,1,0,0,1,0], m:[0,0,0,0,1.19,0,0,1.19,0,0,1.19,0]},
+    {n:"S12",u:[1,2,1,2,2,1,2,2,1,2,2,2], m:[1.42,2.85,1.42,2.85,2.85,1.42,2.85,2.85,1.42,2.85,2.85,2.85]}
+  ],fact:{S3:[null,null,null,null,null,null,null,null,null,null,null,null],S5:[null,null,null,null,null,null,null,null,null,null,null,null],S6:[null,null,null,null,null,null,null,null,null,null,null,null],S8:[null,null,null,null,null,null,null,null,null,null,null,null],S12:[null,null,null,null,null,null,null,null,null,null,null,null]}}
 ];
 
 // Asegurar fact inicializado
 DISTS.forEach(d=>d.models.forEach(m=>{if(!d.fact[m.n])d.fact[m.n]=new Array(12).fill(null);}));
 
 let di=0,cm=4,view="units",editMode=false,editBackup=null;
+let hiddenDists = JSON.parse(localStorage.getItem('foton_hidden_dists') || '[]');
 
 function init(){
   const dl=new Date().toLocaleDateString("es-MX",{day:"2-digit",month:"short",year:"numeric"}).toUpperCase();
@@ -510,8 +568,9 @@ function init(){
 
 function buildTabs(){
   document.getElementById("dist-nav").innerHTML=DISTS.map((d,i)=>{
+    if(hiddenDists.includes(d.id||String(i))) return '';
     const tot=d.models.reduce((a,m)=>a+sum(m.u),0);
-    return`<div class="dtab${i===0?" active":""}" onclick="selectDist(${i})">${d.name}<span class="tc">${tot}u</span></div>`;
+    return`<div class="dtab${i===di?" active":""}" onclick="selectDist(${i})">${d.name}<span class="tc">${tot}u</span></div>`;
   }).join("");
 }
 
@@ -731,7 +790,110 @@ function buildOneCard(d,mo,dateStr){
   </div>`;
 }
 
-init();
+window.addEventListener('FotonAuthReady', init);
+
+// ── GESTIÓN DE DISTRIBUIDORES ─────────────────────────────
+
+function openGestion() {
+  buildGestionList();
+  loadAvailableDistsForGestion();
+  document.getElementById('modal-gestion').classList.add('open');
+}
+function closeGestion() {
+  document.getElementById('modal-gestion').classList.remove('open');
+}
+document.getElementById('modal-gestion').addEventListener('click', function(e) { if(e.target===this) closeGestion(); });
+
+function buildGestionList() {
+  const list = document.getElementById('gestion-list');
+  list.innerHTML = DISTS.map((d, i) => {
+    const hidden = hiddenDists.includes(d.id || String(i));
+    const total = d.models.reduce((a, m) => a + m.u.reduce((x,y)=>x+y,0), 0);
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border:1px solid var(--g1);border-radius:8px;margin-bottom:6px;background:${hidden?'var(--g0)':'var(--wh)'}">
+      <div>
+        <div style="font-size:13px;font-weight:600;color:${hidden?'var(--g5)':'var(--g9)'};">${d.name}</div>
+        <div style="font-size:11px;color:var(--g5)">${d.sub} &middot; ${total}u BP</div>
+      </div>
+      <button onclick="toggleDistVisibility(${i})" style="padding:5px 12px;border-radius:6px;border:1px solid ${hidden?'var(--g3)':'var(--red)'};background:${hidden?'var(--b7)':'var(--rbg)'};color:${hidden?'#fff':'var(--red)'};font-family:'Inter',sans-serif;font-size:11px;font-weight:600;cursor:pointer">
+        ${hidden ? '+ Activar' : '&#215; Ocultar'}
+      </button>
+    </div>`;
+  }).join('');
+}
+
+function toggleDistVisibility(i) {
+  const key = DISTS[i].id || String(i);
+  const idx = hiddenDists.indexOf(key);
+  if (idx === -1) hiddenDists.push(key);
+  else hiddenDists.splice(idx, 1);
+  localStorage.setItem('foton_hidden_dists', JSON.stringify(hiddenDists));
+  buildGestionList();
+  buildTabs();
+  render();
+}
+
+async function loadAvailableDistsForGestion() {
+  if (!db) return;
+  const sel = document.getElementById('g-new-dist');
+  sel.innerHTML = '<option value="">Seleccionar...</option>';
+  try {
+    const { data } = await db.from('distribuidores').select('id,nombre,plaza').order('nombre');
+    if (!data) return;
+    const existing = DISTS.map(d => d.id).filter(Boolean);
+    data.filter(r => !existing.includes(r.id)).forEach(r => {
+      sel.innerHTML += `<option value="${r.id}" data-name="${r.nombre}" data-plaza="${r.plaza}">${r.nombre} &mdash; ${r.plaza}</option>`;
+    });
+  } catch(e) {}
+}
+
+async function addDistFromGestion() {
+  const sel = document.getElementById('g-new-dist');
+  const selOpt = sel.options[sel.selectedIndex];
+  const distId = sel.value;
+  if (!distId) { alert('Selecciona un distribuidor'); return; }
+  const distName = selOpt.dataset.name || distId;
+  const distPlaza = selOpt.dataset.plaza || '';
+  const sub = document.getElementById('g-new-sub').value || distPlaza;
+  const MODELS = ['S3','S5','S6','S8','S12'];
+  const bpTotals = {};
+  MODELS.forEach(m => { bpTotals[m] = parseInt(document.getElementById('gbp-'+m).value) || 0; });
+
+  function distrib(total) {
+    const base = Math.floor(total / 12);
+    const u = new Array(12).fill(base);
+    let rem = total - base * 12;
+    for (let i = 11; i >= 0 && rem > 0; i--, rem--) u[i]++;
+    return u;
+  }
+  const PRICE = {S3:.65, S5:.84, S6:.90, S8:1.19, S12:1.42};
+  const models = MODELS.map(n => ({
+    n,
+    u: distrib(bpTotals[n]),
+    m: distrib(bpTotals[n]).map(v => +(v * (PRICE[n]||1)).toFixed(2))
+  }));
+  const fact = {};
+  MODELS.forEach(m => { fact[m] = new Array(12).fill(null); });
+  const newDist = { id: distId, name: distName, sub, models, fact };
+  DISTS.push(newDist);
+
+  if (db && bpTotals) {
+    for (const [modelo, total] of Object.entries(bpTotals)) {
+      if (total > 0) {
+        await db.from('bp_anual').upsert({
+          distribuidor_id: distId,
+          anio: 2026,
+          modelo,
+          unidades_bp: total
+        }, { onConflict: 'distribuidor_id,anio,modelo' }).catch(()=>{});
+      }
+    }
+  }
+
+  buildGestionList();
+  buildTabs();
+  selectDist(DISTS.length - 1);
+  closeGestion();
+}
 </script>
 
 <script>window.NAV_ACTIVE_TAB = 'tracker';</script>

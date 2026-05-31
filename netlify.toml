@@ -1,6 +1,17 @@
 [build]
   publish = "public"
 
+# Prevent browser/CDN caching of HTML and JS so users always get fresh content
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
 # Clean URL redirects (serves .html without extension in URL)
 [[redirects]]
   from = "/login"
