@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Foton Field App · GR Centro-Sur</title>
+<title>Registro de Visita — Foton OS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -2052,7 +2052,17 @@ window.addEventListener("load",()=>{
   var adcCard = document.getElementById("agenda-dealer-card");
   if (adcCard) adcCard.style.display = "block";
   if (adcW) adcW.style.display = "flex";
+
+  // Pre-select dealer from URL param (?dealer=gcm etc.)
+  var urlDealer = new URLSearchParams(window.location.search).get('dealer');
+  if (urlDealer) {
+    var dSel = document.getElementById('dealer-select');
+    if (dSel) { dSel.value = urlDealer; onDealerChange(); }
+  }
 });
 </script>
+
+<script>window.NAV_ACTIVE_TAB = 'visita';</script>
+<script src="./_nav.js"></script>
 </body>
 </html>

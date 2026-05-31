@@ -3,6 +3,11 @@
 
 # Clean URL redirects (serves .html without extension in URL)
 [[redirects]]
+  from = "/login"
+  to = "/login.html"
+  status = 200
+
+[[redirects]]
   from = "/bp-tracker"
   to = "/bp-tracker.html"
   status = 200

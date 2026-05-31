@@ -38,15 +38,7 @@
     }
 
     /* LOGIN OVERLAY */
-    #login-overlay {
-      position: fixed;
-      inset: 0;
-      background: var(--login-bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 500;
-    }
+    #login-overlay { display: none !important; }
 
     .login-card {
       background: #fff;
@@ -141,7 +133,7 @@
     }
 
     /* DASHBOARD */
-    #dashboard { display: none; }
+    #dashboard { display: block; }
 
     .dash-header {
       background: var(--header-bg);
@@ -529,8 +521,7 @@ async function handleLogin() {
     }
 
     document.getElementById('user-badge').textContent = nombre || userEmail;
-    document.getElementById('login-overlay').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'block';
+    // auth handled centrally
     loadDashboard();
 
   } catch (err) {
@@ -553,10 +544,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // LOGOUT
 async function handleLogout() {
   await db.auth.signOut();
-  document.getElementById('dashboard').style.display = 'none';
-  document.getElementById('login-overlay').style.display = 'flex';
-  document.getElementById('login-password').value = '';
-  document.getElementById('login-error').textContent = '';
+  location.replace('./login.html');
 }
 
 // DASHBOARD LOAD
@@ -783,28 +771,29 @@ function formatDate(isoStr) {
   }
 }
 
-// SESSION CHECK ON LOAD
-(async function checkSession() {
+// Auth handled by _nav.js. Here we load user info and dashboard.
+(async function initDashboard() {
   const { data: { session } } = await db.auth.getSession();
-  if (!session) return;
+  if (!session) return; // _nav.js will redirect to login
 
   const userEmail = session.user.email;
+  document.getElementById('user-badge').textContent = userEmail;
+
   const { data: usuarios } = await db
     .from('usuarios')
     .select('rol, nombre')
     .eq('email', userEmail)
     .limit(1);
 
-  if (!usuarios || usuarios.length === 0 || usuarios[0].rol !== 'direccion') {
-    await db.auth.signOut();
-    return;
+  if (usuarios && usuarios.length > 0) {
+    document.getElementById('user-badge').textContent = usuarios[0].nombre || userEmail;
   }
 
-  document.getElementById('user-badge').textContent = usuarios[0].nombre || userEmail;
-  document.getElementById('login-overlay').style.display = 'none';
-  document.getElementById('dashboard').style.display = 'block';
   loadDashboard();
 })();
 </script>
+
+<script>window.NAV_ACTIVE_TAB = 'direccion';</script>
+<script src="./_nav.js"></script>
 </body>
 </html>
