@@ -232,7 +232,9 @@
 <div class="card">
   <div class="brand">
     <div style="display:flex;justify-content:center;margin-bottom:20px">
-      <img src="./foton-logo-nombre.png" alt="Foton" style="height:130px;width:130px;object-fit:cover;border-radius:20px;box-shadow:0 8px 32px rgba(4,44,83,0.35);">
+      <div style="background:#0C447C;border-radius:20px;padding:14px;box-shadow:0 8px 32px rgba(4,44,83,0.35);display:flex;align-items:center;justify-content:center;">
+        <img src="./foton-icon-trans.png" alt="Foton" style="height:100px;width:100px;object-fit:contain;">
+      </div>
     </div>
     <div class="brand-title">GR Centro-Sur</div>
     <div class="brand-sub">Plataforma de gestión de red</div>
@@ -285,7 +287,7 @@
 </div>
 
 <script>window.NAV_ACTIVE_TAB = 'login';</script>
-<script src="./_config.js?v=2"></script>
+<script src="./_config.js?v=3"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const db = supabase.createClient(
@@ -424,5 +426,6 @@ document.getElementById('inp-magic-email')?.addEventListener('keydown', e => {
   if (e.key === 'Enter') loginMagic();
 });
 </script>
+<script>if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js");</script>
 </body>
 </html>
