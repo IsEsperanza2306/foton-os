@@ -38,6 +38,19 @@
   to = "/mapa.html"
   status = 200
 
+# Block old dashboard — redirect to login
+[[redirects]]
+  from = "/regionpro-dashboard.html"
+  to = "/login"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/regionpro-dashboard"
+  to = "/login"
+  status = 301
+  force = true
+
 # SPA fallback (must be last)
 [[redirects]]
   from = "/*"
