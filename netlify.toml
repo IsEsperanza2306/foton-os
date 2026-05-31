@@ -51,8 +51,8 @@
   status = 301
   force = true
 
-# SPA fallback (must be last)
+# Fallback: rutas desconocidas van al login
 [[redirects]]
   from = "/*"
-  to = "/index.html"
-  status = 200
+  to = "/login.html"
+  status = 302
