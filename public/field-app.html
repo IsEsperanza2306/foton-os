@@ -409,6 +409,8 @@ canvas#firma-canvas{width:100%;height:140px;display:block;touch-action:none}
 .rb-row:last-child{border-bottom:none}
 .rb-val{font-weight:600;color:var(--g900)}
 </style>
+<script src="./_config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 
@@ -658,6 +660,15 @@ canvas#firma-canvas{width:100%;height:140px;display:block;touch-action:none}
   <!-- M3: INDICADORES -->
   <div class="section" id="m-3" style="padding:16px">
     <div class="sec-hero"><div class="sec-hero-num">4</div><div><div class="sec-hero-title">Indicadores</div><div class="sec-hero-sub">BP 2026 vs desempeño real</div></div></div>
+    <div class="card" id="ind-resumen-card" style="margin-bottom:12px">
+      <div class="card-title">Resumen BP vs Facturado (Supabase)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:4px 0">
+        <div style="text-align:center"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--g500);margin-bottom:4px">BP 2026</div><div id="ind-bp" style="font-size:22px;font-weight:700;color:var(--b700)">—</div></div>
+        <div style="text-align:center"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--g500);margin-bottom:4px">Facturado YTD</div><div id="ind-fac" style="font-size:22px;font-weight:700;color:var(--green)">—</div></div>
+        <div style="text-align:center"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--g500);margin-bottom:4px">% Avance</div><div id="ind-avance" style="font-size:22px;font-weight:700;color:var(--b700)">—</div></div>
+        <div style="text-align:center"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--g500);margin-bottom:4px">Por cerrar</div><div id="ind-porcerrar" style="font-size:22px;font-weight:700;color:var(--amber)">—</div></div>
+      </div>
+    </div>
     <div class="card">
       <div class="card-title">Tabla por modelo</div>
       <div class="tbl-wrap"><table class="ind-tbl"><thead><tr><th style="min-width:45px">Modelo</th><th style="min-width:52px">BP 2026</th><th style="min-width:58px">Whole YTD</th><th style="min-width:56px">% Avance</th><th style="min-width:58px">Retail YTD</th><th style="min-width:58px">Inventario</th><th style="min-width:42px">B.O.</th></tr></thead><tbody id="ind-body"></tbody></table></div>
@@ -856,6 +867,108 @@ canvas#firma-canvas{width:100%;height:140px;display:block;touch-action:none}
 <div class="toast" id="toast"></div>
 
 <script>
+
+// ── Supabase ─────────────────────────────────────────────
+const { createClient } = supabase;
+const db = (window.FOTON_CONFIG)
+  ? createClient(window.FOTON_CONFIG.SUPABASE_URL, window.FOTON_CONFIG.SUPABASE_ANON_KEY)
+  : null;
+
+// ── Load dealer BP + facturado indicators ────────────────
+async function loadDealerIndicators(dealerId) {
+  if (!db || !dealerId) return;
+  const anio = 2026;
+  const mesActual = new Date().getMonth() + 1;
+  try {
+    const { data: bpRows } = await db
+      .from('bp_anual')
+      .select('modelo,unidades_bp')
+      .eq('distribuidor_id', dealerId)
+      .eq('anio', anio);
+    const { data: facRows } = await db
+      .from('facturado_ytd')
+      .select('modelo,unidades_facturadas,mes')
+      .eq('distribuidor_id', dealerId)
+      .eq('anio', anio)
+      .lte('mes', mesActual);
+    const bpTotal  = bpRows  ? bpRows.reduce((s,r)  => s + (r.unidades_bp||0),  0) : 0;
+    const facTotal = facRows ? facRows.reduce((s,r)  => s + (r.unidades_facturadas||0), 0) : 0;
+    const avance   = bpTotal > 0 ? Math.round((facTotal/bpTotal)*100) : 0;
+    const porCerrar = Math.max(0, bpTotal - facTotal);
+    // Inject into minuta indicator cells (update if the IDs exist)
+    ['ind-bp','ind-fac','ind-avance','ind-porcerrar'].forEach((id, i) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = [bpTotal, facTotal, avance+'%', porCerrar][i];
+    });
+    // Also store globally for use in minuta
+    window._dealerIndicators = { bpTotal, facTotal, avance, porCerrar };
+  } catch(e) {
+    console.warn('[Foton OS] loadDealerIndicators error:', e.message);
+  }
+}
+
+// ── Save visita to Supabase ──────────────────────────────
+async function saveVisitaToSupabase(visitaData) {
+  if (!db) return null;
+  try {
+    const { data, error } = await db.from('visitas').insert({
+      distribuidor_id: visitaData.dealerId,
+      fecha: visitaData.fecha,
+      hora: visitaData.hora || null,
+      tipo_visita: visitaData.tipos || [],
+      regional: 'Israel Esperanza',
+      participantes: visitaData.participantes || [],
+      logros: visitaData.logros || '',
+      comentarios: visitaData.comentarios || '',
+      status: 'completada'
+    }).select().single();
+    if (error) { console.error('[Foton OS] saveVisita error:', error.message); return null; }
+    return data.id;
+  } catch(e) { console.error('[Foton OS] saveVisita exception:', e.message); return null; }
+}
+
+async function saveAgendaToSupabase(visitaId, items) {
+  if (!db || !visitaId || !items || !items.length) return;
+  try {
+    await db.from('visita_agenda').insert(
+      items.map(item => ({
+        visita_id: visitaId,
+        item_id: item.id || String(item.idx || ''),
+        seccion: item.seccion || 'ops',
+        done: !!item.done,
+        comentario: item.comentario || '',
+        datos: item.datos || {}
+      }))
+    );
+  } catch(e) { console.error('[Foton OS] saveAgenda error:', e.message); }
+}
+
+async function saveAcuerdosToSupabase(visitaId, acuerdos) {
+  if (!db || !visitaId || !acuerdos || !acuerdos.length) return;
+  try {
+    await db.from('visita_acuerdos').insert(
+      acuerdos.map((a, i) => ({
+        visita_id: visitaId,
+        numero: i + 1,
+        texto: a.texto || a.text || String(a),
+        responsable: a.responsable || '',
+        fecha_compromiso: a.fecha || a.fechaCompromiso || '',
+        cumplido: false
+      }))
+    );
+  } catch(e) { console.error('[Foton OS] saveAcuerdos error:', e.message); }
+}
+
+async function uploadFotoToSupabase(visitaId, itemId, file) {
+  if (!db || !file) return null;
+  try {
+    const path = `${visitaId}/${itemId}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+    const { error: upErr } = await db.storage.from('visita-fotos').upload(path, file, { upsert: true });
+    if (upErr) { console.error('[Foton OS] upload error:', upErr.message); return null; }
+    await db.from('visita_fotos').insert({ visita_id: visitaId, agenda_item_id: String(itemId), storage_path: path });
+    return path;
+  } catch(e) { console.error('[Foton OS] uploadFoto exception:', e.message); return null; }
+}
 
 // ── DEALERS DATA ──────────────────────────────────────────
 const DEALERS=[
@@ -1059,6 +1172,9 @@ function onDealerChange(){
 
   var adcWarning = document.getElementById("adc-warning");
   if (adcWarning) adcWarning.style.display = "none";
+
+  // ── Load Supabase indicators for this dealer ──────────────────────
+  loadDealerIndicators(id);
 }
 
 
@@ -1175,6 +1291,29 @@ function buildResumen(){
 
 // ── PDF ───────────────────────────────────────────────────
 async function generarPDF(){
+  // Save to Supabase
+  (async () => {
+    const _dealerId = (document.getElementById('dealer-select') || {}).value || null;
+    const _fecha = document.getElementById('f-fecha')?.value || new Date().toISOString().slice(0,10);
+    const _hora  = document.getElementById('f-hora')?.value || null;
+    const _tipos = [...document.querySelectorAll('.tipo-btn.active')].map(b => b.textContent);
+    const _logros = document.getElementById('f-logros')?.value || '';
+    const _coments = document.getElementById('f-coments')?.value || '';
+    const _parts  = [...document.querySelectorAll('.part-inp')].map(i => i.value).filter(v => v);
+    const visitaId = await saveVisitaToSupabase({
+      dealerId: _dealerId,
+      fecha: _fecha,
+      hora: _hora,
+      tipos: _tipos,
+      participantes: _parts,
+      logros: _logros,
+      comentarios: _coments
+    });
+    if (visitaId) {
+      const acuerdosItems = [...document.querySelectorAll('.ac-texto')].filter(i => i.value).map((i, n) => ({ texto: i.value, numero: n + 1 }));
+      await saveAcuerdosToSupabase(visitaId, acuerdosItems);
+    }
+  })();
   showToast("Generando PDF...");
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF({orientation:"portrait",unit:"mm",format:"letter"});
