@@ -1,6 +1,23 @@
 [build]
   publish = "public"
 
+# Clean URL redirects (serves .html without extension in URL)
+[[redirects]]
+  from = "/bp-tracker"
+  to = "/bp-tracker.html"
+  status = 200
+
+[[redirects]]
+  from = "/field-app"
+  to = "/field-app.html"
+  status = 200
+
+[[redirects]]
+  from = "/direccion"
+  to = "/direccion.html"
+  status = 200
+
+# SPA fallback (must be last)
 [[redirects]]
   from = "/*"
   to = "/index.html"
