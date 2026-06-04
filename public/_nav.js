@@ -157,6 +157,28 @@
         window.FOTON_USER = session.user;
         window.FOTON_DB = db;
         window.FOTON_EMAIL = session.user.email;
+
+        // Fetch user profile to get role
+        const { data: userProfile } = await db
+          .from('usuarios')
+          .select('rol, distribuidor_id')
+          .eq('id', session.user.id)
+          .single();
+
+        window.FOTON_ROL = userProfile?.rol || 'regional';
+        window.FOTON_DISTRIBUIDOR_ID = userProfile?.distribuidor_id || null;
+
+        // Dealer users go to dealer-portal, not mapa
+        if (userProfile?.rol === 'dealer' && !PAGE.includes('dealer-portal')) {
+          location.replace('./dealer-portal.html');
+          return;
+        }
+
+        // Non-dealer users trying to access dealer-portal get redirected
+        if (userProfile?.rol !== 'dealer' && PAGE.includes('dealer-portal')) {
+          location.replace('./mapa.html');
+          return;
+        }
       }
 
     } catch (e) {
@@ -171,7 +193,10 @@
 
     if (IS_LOGIN) return;
 
-    injectNav();
+    // Dealer portal has its own tab bar — don't inject plant nav
+    if (window.FOTON_ROL !== 'dealer') {
+      injectNav();
+    }
 
     // Signal pages that auth is confirmed and FOTON_USER is set
     window.dispatchEvent(new CustomEvent('FotonAuthReady', { detail: { user: window.FOTON_USER } }));

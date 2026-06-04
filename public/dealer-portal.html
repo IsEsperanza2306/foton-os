@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="theme-color" content="#0C447C">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Foton OS">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/assets/icon-192.png">
+  <title>Portal Distribuidor — Foton OS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* Design tokens */
+    :root {
+      --b900:#042C53; --b800:#0C447C; --b700:#185FA5; --b600:#2070BB;
+      --b500:#378ADD; --b400:#5EA3E6; --b200:#B5D4F4; --b100:#D6E9FA; --b50:#EEF5FD;
+      --g900:#1A1A2E; --g700:#3C3C50; --g500:#6B6B80; --g300:#C4C4D0;
+      --g100:#F0F0F5; --g50:#F7F7FB; --white:#FFFFFF;
+      --green:#1A8C5B; --green-bg:#E6F5EE;
+      --amber:#B07A00; --amber-bg:#FFF8E1;
+      --red:#C0392B; --red-bg:#FDECEA;
+      --font:"Inter",-apple-system,sans-serif;
+      --tight:"Inter Tight","Inter",sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font); background: var(--g50); color: var(--g900); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; padding-bottom: 70px; }
+
+    /* Header */
+    .header { background: var(--b800); height: 56px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(4,44,83,.22); }
+    .hd-left { display: flex; align-items: center; gap: 10px; }
+    .hd-logo img { height: 28px; }
+    .hd-div { width: 1px; height: 22px; background: rgba(255,255,255,.2); }
+    .hd-title { font-family: var(--tight); font-size: 14px; font-weight: 700; color: #fff; }
+    .hd-sub { font-size: 10px; color: rgba(255,255,255,.5); }
+    .hd-badge { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2); border-radius: 7px; padding: 4px 10px; font-size: 11px; font-weight: 700; color: rgba(255,255,255,.85); font-family: var(--tight); }
+
+    /* Tab bar */
+    .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: var(--white); border-top: 1.5px solid var(--g100); display: flex; z-index: 400; box-shadow: 0 -2px 12px rgba(0,0,0,.06); padding-bottom: env(safe-area-inset-bottom, 0px); }
+    .tab-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border: none; background: none; cursor: pointer; color: var(--g300); font-family: var(--font); font-size: 9px; font-weight: 600; letter-spacing: .2px; transition: color .15s; padding: 6px 2px 4px; position: relative; -webkit-tap-highlight-color: transparent; }
+    .tab-btn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: stroke .15s; }
+    .tab-btn.active { color: var(--b700); }
+    .tab-btn.active::after { content: ''; position: absolute; top: 0; left: 15%; right: 15%; height: 2.5px; background: var(--b700); border-radius: 0 0 3px 3px; }
+
+    /* Pages */
+    .page { display: none; padding: 16px; }
+    .page.active { display: block; }
+
+    /* Cards */
+    .card { background: var(--white); border-radius: 12px; border: 1px solid var(--g100); box-shadow: 0 1px 4px rgba(0,0,0,.04); padding: 16px; margin-bottom: 12px; }
+    .card-title { font-family: var(--tight); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .9px; color: var(--b700); margin-bottom: 14px; display: flex; align-items: center; gap: 7px; }
+    .card-title::before { content: ''; display: block; width: 3px; height: 14px; background: var(--b700); border-radius: 2px; flex-shrink: 0; }
+
+    /* KPI strip */
+    .kpi-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+    .kpi-card { background: var(--white); border-radius: 12px; border: 1px solid var(--g100); padding: 14px 12px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+    .kpi-val { font-family: var(--tight); font-size: 24px; font-weight: 800; color: var(--b800); line-height: 1; margin-bottom: 4px; }
+    .kpi-lbl { font-size: 10px; font-weight: 600; color: var(--g500); text-transform: uppercase; letter-spacing: .4px; }
+    .kpi-card.green .kpi-val { color: var(--green); }
+    .kpi-card.amber .kpi-val { color: var(--amber); }
+
+    /* Progress bar */
+    .prog-bar { height: 6px; background: var(--g100); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+    .prog-fill { height: 100%; background: var(--b700); border-radius: 3px; transition: width .4s; }
+    .prog-fill.green { background: var(--green); }
+    .prog-fill.amber { background: var(--amber); }
+    .prog-fill.red { background: var(--red); }
+
+    /* Inventory table */
+    .inv-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .inv-table th { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--g500); padding: 6px 8px; text-align: center; border-bottom: 1px solid var(--g100); }
+    .inv-table th:first-child { text-align: left; }
+    .inv-table td { padding: 10px 8px; text-align: center; border-bottom: 1px solid var(--g100); font-weight: 600; }
+    .inv-table td:first-child { text-align: left; font-weight: 700; color: var(--g900); }
+    .inv-table tr:last-child td { border-bottom: none; }
+    .inv-table .editable { cursor: pointer; border-radius: 6px; padding: 4px 8px; min-width: 36px; display: inline-block; }
+    .inv-table .editable:hover { background: var(--b50); color: var(--b700); }
+    .inv-disponible { font-weight: 800; color: var(--b700); }
+    .inv-disponible.zero { color: var(--red); }
+    .inv-disponible.low { color: var(--amber); }
+
+    /* Inline edit input */
+    .inv-inp { width: 52px; padding: 4px 6px; border: 1.5px solid var(--b400); border-radius: 6px; font-size: 13px; font-weight: 600; text-align: center; outline: none; font-family: var(--font); }
+
+    /* Acuerdos */
+    .ac-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--g100); }
+    .ac-row:last-child { border-bottom: none; }
+    .ac-num { width: 24px; height: 24px; border-radius: 50%; background: var(--b50); color: var(--b700); font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .ac-num.done { background: var(--green-bg); color: var(--green); }
+    .ac-body { flex: 1; }
+    .ac-texto { font-size: 13px; font-weight: 500; color: var(--g900); line-height: 1.4; margin-bottom: 4px; }
+    .ac-meta { font-size: 11px; color: var(--g500); }
+    .ac-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--g300); background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; transition: all .15s; }
+    .ac-check.done { border-color: var(--green); background: var(--green); color: #fff; }
+
+    /* Status badges */
+    .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; }
+    .badge-green { background: var(--green-bg); color: var(--green); }
+    .badge-amber { background: var(--amber-bg); color: var(--amber); }
+    .badge-blue { background: var(--b50); color: var(--b700); }
+    .badge-red { background: var(--red-bg); color: var(--red); }
+
+    /* Back order status colors */
+    .bo-confirmado { color: var(--b700); }
+    .bo-produccion { color: var(--amber); }
+    .bo-transito { color: var(--green); }
+    .bo-entregado { color: var(--g500); text-decoration: line-through; }
+
+    /* Empty state */
+    .empty { text-align: center; padding: 40px 20px; color: var(--g500); }
+    .empty-icon { font-size: 36px; margin-bottom: 10px; }
+    .empty-txt { font-size: 14px; font-weight: 500; }
+
+    /* Toast */
+    #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: var(--g900); color: #fff; padding: 10px 20px; border-radius: 10px; font-size: 13px; font-weight: 500; z-index: 1000; opacity: 0; transition: opacity .2s; pointer-events: none; white-space: nowrap; }
+    #toast.show { opacity: 1; }
+
+    /* Section header */
+    .sec-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .sec-hdr-title { font-family: var(--tight); font-size: 16px; font-weight: 800; color: var(--g900); }
+    .sec-hdr-sub { font-size: 12px; color: var(--g500); margin-top: 2px; }
+
+    /* Btn */
+    .btn-primary { padding: 11px 18px; background: var(--b700); color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 600; font-family: var(--font); cursor: pointer; transition: background .15s; }
+    .btn-primary:hover { background: var(--b800); }
+    .btn-ghost { padding: 9px 16px; background: var(--b50); color: var(--b700); border: 1.5px solid var(--b200); border-radius: 10px; font-size: 13px; font-weight: 600; font-family: var(--font); cursor: pointer; transition: all .15s; }
+
+    /* Sell modal */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(4,44,83,.45); z-index: 500; backdrop-filter: blur(2px); align-items: flex-end; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--white); border-radius: 20px 20px 0 0; padding: 24px 20px; width: 100%; max-width: 480px; }
+    .modal-title { font-family: var(--tight); font-size: 18px; font-weight: 800; color: var(--g900); margin-bottom: 16px; }
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 11px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
+    .field select, .field input { width: 100%; padding: 11px 14px; border: 1.5px solid var(--g100); border-radius: 10px; font-size: 14px; font-family: var(--font); color: var(--g900); background: var(--g50); outline: none; transition: border-color .2s; }
+    .field select:focus, .field input:focus { border-color: var(--b700); background: var(--white); }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="hd-left">
+    <div class="hd-logo"><img src="./assets/logo-icon.png" alt="Foton"></div>
+    <div class="hd-div"></div>
+    <div>
+      <div class="hd-title" id="hd-dealer-name">Mi Portal</div>
+      <div class="hd-sub" id="hd-dealer-plaza">Distribuidor</div>
+    </div>
+  </div>
+  <div class="hd-badge" id="hd-mes">—</div>
+</header>
+
+<!-- Tab bar -->
+<nav class="tab-bar">
+  <button class="tab-btn active" id="tab-inicio" onclick="goTab('inicio')">
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Inicio
+  </button>
+  <button class="tab-btn" id="tab-inventario" onclick="goTab('inventario')">
+    <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+    Inventario
+  </button>
+  <button class="tab-btn" id="tab-bp" onclick="goTab('bp')">
+    <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    Mi BP
+  </button>
+  <button class="tab-btn" id="tab-acuerdos" onclick="goTab('acuerdos')">
+    <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    Acuerdos
+  </button>
+</nav>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- ═══ PAGE: INICIO ═══ -->
+<div class="page active" id="page-inicio">
+
+  <div class="card" style="background:linear-gradient(135deg,var(--b800),var(--b600));border:none;margin-bottom:14px">
+    <div style="font-family:var(--tight);font-size:13px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Avance BP Anual</div>
+    <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:10px">
+      <span id="inicio-retail-total" style="font-family:var(--tight);font-size:36px;font-weight:800;color:#fff">—</span>
+      <span id="inicio-bp-total" style="font-size:14px;color:rgba(255,255,255,.6)">/ — u.</span>
+    </div>
+    <div style="height:8px;background:rgba(255,255,255,.15);border-radius:4px;overflow:hidden">
+      <div id="inicio-prog" style="height:100%;background:#fff;border-radius:4px;width:0%;transition:width .5s"></div>
+    </div>
+    <div id="inicio-pct" style="font-size:12px;color:rgba(255,255,255,.7);margin-top:6px">0% del objetivo anual</div>
+  </div>
+
+  <div class="kpi-strip">
+    <div class="kpi-card">
+      <div class="kpi-val" id="ki-disponible">—</div>
+      <div class="kpi-lbl">Disponible</div>
+    </div>
+    <div class="kpi-card amber">
+      <div class="kpi-val" id="ki-comprometido">—</div>
+      <div class="kpi-lbl">Comprometido</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-val" id="ki-retail-mes">—</div>
+      <div class="kpi-lbl">Retail mes</div>
+    </div>
+  </div>
+
+  <!-- Back order resumen -->
+  <div class="card" id="card-backorder-inicio">
+    <div class="card-title">Back Order</div>
+    <div id="backorder-list-inicio"><div class="empty"><div class="empty-icon">📦</div><div class="empty-txt">Sin back order registrado</div></div></div>
+  </div>
+
+  <!-- Acuerdos pendientes resumen -->
+  <div class="card">
+    <div class="card-title">Acuerdos pendientes</div>
+    <div id="acuerdos-inicio-list"><div class="empty"><div class="empty-icon">✅</div><div class="empty-txt">Sin acuerdos pendientes</div></div></div>
+    <button class="btn-ghost" style="width:100%;margin-top:12px" onclick="goTab('acuerdos')">Ver todos →</button>
+  </div>
+
+  <!-- Registrar venta rápida -->
+  <div class="card" style="border-color:var(--b200)">
+    <div class="card-title">Registrar venta</div>
+    <div style="font-size:13px;color:var(--g500);margin-bottom:14px">¿Cerraste una venta? Regístrala aquí para actualizar tu retail e inventario.</div>
+    <button class="btn-primary" style="width:100%" onclick="openVentaModal()">+ Registrar venta</button>
+  </div>
+
+</div>
+
+<!-- ═══ PAGE: INVENTARIO ═══ -->
+<div class="page" id="page-inventario">
+  <div class="sec-hdr">
+    <div>
+      <div class="sec-hdr-title">Mi Inventario</div>
+      <div class="sec-hdr-sub" id="inv-mes-lbl">Cargando...</div>
+    </div>
+    <button class="btn-ghost" onclick="saveInventario()">Guardar</button>
+  </div>
+
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="inv-table">
+      <thead>
+        <tr>
+          <th>Modelo</th>
+          <th>Facturado</th>
+          <th>Físico</th>
+          <th>Comprometido</th>
+          <th>Retail</th>
+          <th>Disponible</th>
+        </tr>
+      </thead>
+      <tbody id="inv-tbody">
+        <!-- Populated by JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card" style="background:var(--b50);border-color:var(--b200)">
+    <div style="font-size:12px;color:var(--b700);font-weight:500;line-height:1.6">
+      <strong>Disponible</strong> = Físico − Comprometido. Toca cualquier número para editarlo.
+      Presiona <strong>Guardar</strong> para registrar los cambios.
+    </div>
+  </div>
+
+  <!-- Back Order detail -->
+  <div class="card">
+    <div class="card-title">Back Order — Unidades en camino</div>
+    <div id="backorder-list-inv"><div class="empty"><div class="empty-txt">Sin back order activo</div></div></div>
+  </div>
+</div>
+
+<!-- ═══ PAGE: MI BP ═══ -->
+<div class="page" id="page-bp">
+  <div class="sec-hdr">
+    <div>
+      <div class="sec-hdr-title">Mi Business Plan</div>
+      <div class="sec-hdr-sub">Avance acumulado 2026</div>
+    </div>
+  </div>
+  <div id="bp-list">
+    <!-- Cards per model -->
+  </div>
+</div>
+
+<!-- ═══ PAGE: ACUERDOS ═══ -->
+<div class="page" id="page-acuerdos">
+  <div class="sec-hdr">
+    <div>
+      <div class="sec-hdr-title">Mis Acuerdos</div>
+      <div class="sec-hdr-sub" id="acuerdos-visita-fecha">Última visita: —</div>
+    </div>
+  </div>
+  <div id="acuerdos-list">
+    <div class="empty"><div class="empty-icon">📋</div><div class="empty-txt">Sin acuerdos registrados</div></div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: Registrar Venta ═══ -->
+<div class="modal-overlay" id="venta-modal" onclick="if(event.target===this)closeVentaModal()">
+  <div class="modal">
+    <div class="modal-title">Registrar venta</div>
+    <div class="field">
+      <label>Modelo</label>
+      <select id="venta-modelo">
+        <option value="">Selecciona modelo...</option>
+        <option value="S3">S3</option>
+        <option value="S5">S5</option>
+        <option value="S6">S6</option>
+        <option value="S8">S8</option>
+        <option value="S12">S12</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Unidades vendidas</label>
+      <input type="number" id="venta-unidades" min="1" max="50" value="1" placeholder="1">
+    </div>
+    <div class="field">
+      <label>Tipo de cliente</label>
+      <select id="venta-tipo">
+        <option value="retail">Retail</option>
+        <option value="flota">Flota</option>
+        <option value="gobierno">Gobierno</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:4px">
+      <button class="btn-ghost" style="flex:1" onclick="closeVentaModal()">Cancelar</button>
+      <button class="btn-primary" style="flex:2" onclick="registrarVenta()">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<script>window.NAV_ACTIVE_TAB = 'dealer-portal';</script>
+<script src="./_config.js?v=3"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ── STATE ───────────────────────────────────────────────────
+let db, dealerId, dealerData;
+const MODELOS = ['S3','S5','S6','S8','S12'];
+const NOW = new Date();
+const AÑO = NOW.getFullYear();
+const MES = NOW.getMonth() + 1;
+const MES_NOMBRES = ['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+// inventario[modelo] = { facturadas, fisicas, comprometidas, retail }
+let invData = {};
+let bpData = {};   // bpData[modelo] = { bp, retail_ytd }
+let acuerdos = [];
+let backOrder = [];
+
+// ── INIT ────────────────────────────────────────────────────
+window.addEventListener('FotonAuthReady', async () => {
+  db = window.FOTON_DB;
+  const user = window.FOTON_USER;
+  if (!user) return;
+
+  // Get user profile incl. distribuidor_id
+  const { data: perfil } = await db
+    .from('usuarios')
+    .select('*, distribuidores(*)')
+    .eq('id', user.id)
+    .single();
+
+  if (!perfil || perfil.rol !== 'dealer' || !perfil.distribuidor_id) {
+    // Not a dealer — redirect to mapa
+    location.replace('./mapa.html');
+    return;
+  }
+
+  dealerId = perfil.distribuidor_id;
+  dealerData = perfil.distribuidores;
+
+  // Header
+  document.getElementById('hd-dealer-name').textContent = dealerData.nombre || 'Mi Portal';
+  document.getElementById('hd-dealer-plaza').textContent = dealerData.plaza || '';
+  document.getElementById('hd-mes').textContent = MES_NOMBRES[MES] + ' ' + AÑO;
+
+  await Promise.all([loadInventario(), loadBP(), loadAcuerdos(), loadBackOrder()]);
+  renderInicio();
+});
+
+// ── DATA LOADERS ────────────────────────────────────────────
+async function loadInventario() {
+  const { data } = await db.from('inventario')
+    .select('*')
+    .eq('distribuidor_id', dealerId)
+    .eq('anio', AÑO)
+    .eq('mes', MES);
+
+  invData = {};
+  MODELOS.forEach(m => {
+    const row = (data || []).find(r => r.modelo === m);
+    invData[m] = {
+      facturadas: row?.unidades_facturadas || 0,
+      fisicas: row?.unidades_fisicas || 0,
+      comprometidas: row?.unidades_comprometidas || 0,
+      retail: row?.unidades_retail || 0,
+      id: row?.id || null
+    };
+  });
+  renderInventario();
+}
+
+async function loadBP() {
+  // BP targets
+  const { data: bpRows } = await db.from('bp_anual')
+    .select('modelo, unidades_bp')
+    .eq('distribuidor_id', dealerId)
+    .eq('anio', AÑO);
+
+  // YTD retail (sum all months)
+  const { data: ytdRows } = await db.from('facturado_ytd')
+    .select('modelo, unidades_facturadas, mes')
+    .eq('distribuidor_id', dealerId)
+    .eq('anio', AÑO);
+
+  bpData = {};
+  MODELOS.forEach(m => {
+    const bp = (bpRows || []).find(r => r.modelo === m)?.unidades_bp || 0;
+    const ytd = (ytdRows || []).filter(r => r.modelo === m).reduce((s, r) => s + (r.unidades_facturadas || 0), 0);
+    bpData[m] = { bp, ytd };
+  });
+  renderBP();
+}
+
+async function loadAcuerdos() {
+  // Get latest visita for this dealer
+  const { data: visitas } = await db.from('visitas')
+    .select('id, fecha')
+    .eq('distribuidor_id', dealerId)
+    .order('fecha', { ascending: false })
+    .limit(1);
+
+  if (!visitas || !visitas.length) {
+    acuerdos = [];
+    renderAcuerdos();
+    return;
+  }
+
+  const v = visitas[0];
+  document.getElementById('acuerdos-visita-fecha').textContent = 'Última visita: ' + v.fecha;
+
+  const { data: acs } = await db.from('visita_acuerdos')
+    .select('*')
+    .eq('visita_id', v.id)
+    .order('numero');
+
+  acuerdos = acs || [];
+  renderAcuerdos();
+}
+
+async function loadBackOrder() {
+  const { data } = await db.from('back_order')
+    .select('*')
+    .eq('distribuidor_id', dealerId)
+    .neq('status', 'entregado')
+    .order('created_at', { ascending: false });
+
+  backOrder = data || [];
+  renderBackOrder();
+}
+
+// ── RENDERERS ───────────────────────────────────────────────
+function renderInicio() {
+  // BP totals
+  const totalBP = Object.values(bpData).reduce((s, v) => s + v.bp, 0);
+  const totalYTD = Object.values(bpData).reduce((s, v) => s + v.ytd, 0);
+  const pct = totalBP ? Math.round(totalYTD / totalBP * 100) : 0;
+  document.getElementById('inicio-retail-total').textContent = totalYTD;
+  document.getElementById('inicio-bp-total').textContent = '/ ' + totalBP + ' u.';
+  document.getElementById('inicio-prog').style.width = Math.min(pct, 100) + '%';
+  document.getElementById('inicio-pct').textContent = pct + '% del objetivo anual';
+
+  // KPI strip
+  const disp = Object.values(invData).reduce((s, v) => s + Math.max(0, v.fisicas - v.comprometidas), 0);
+  const comp = Object.values(invData).reduce((s, v) => s + v.comprometidas, 0);
+  const retail = Object.values(invData).reduce((s, v) => s + v.retail, 0);
+  document.getElementById('ki-disponible').textContent = disp;
+  document.getElementById('ki-comprometido').textContent = comp;
+  document.getElementById('ki-retail-mes').textContent = retail;
+
+  // Back order inicio
+  const boEl = document.getElementById('backorder-list-inicio');
+  if (!backOrder.length) {
+    boEl.innerHTML = '<div class="empty"><div class="empty-icon">📦</div><div class="empty-txt">Sin back order activo</div></div>';
+  } else {
+    boEl.innerHTML = backOrder.map(bo => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--g100)">
+        <div>
+          <span style="font-weight:700;color:var(--g900)">${bo.modelo}</span>
+          <span style="font-size:12px;color:var(--g500);margin-left:8px">${bo.unidades} u.</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          ${bo.eta ? `<span style="font-size:11px;color:var(--g500)">ETA: ${bo.eta}</span>` : ''}
+          <span class="badge badge-${statusColor(bo.status)}">${bo.status}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Acuerdos pendientes inicio
+  const pending = acuerdos.filter(a => !a.cumplido).slice(0, 3);
+  const acEl = document.getElementById('acuerdos-inicio-list');
+  if (!pending.length) {
+    acEl.innerHTML = '<div class="empty"><div class="empty-icon">✅</div><div class="empty-txt">Sin acuerdos pendientes</div></div>';
+  } else {
+    acEl.innerHTML = pending.map(a => `
+      <div class="ac-row">
+        <div class="ac-num">${a.numero}</div>
+        <div class="ac-body">
+          <div class="ac-texto">${a.texto}</div>
+          ${a.responsable ? `<div class="ac-meta">Responsable: ${a.responsable}${a.fecha_compromiso ? ' · ' + a.fecha_compromiso : ''}</div>` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+function renderInventario() {
+  document.getElementById('inv-mes-lbl').textContent = MES_NOMBRES[MES] + ' ' + AÑO + ' — toca un número para editar';
+  const tbody = document.getElementById('inv-tbody');
+  tbody.innerHTML = MODELOS.map(m => {
+    const d = invData[m];
+    const disp = Math.max(0, d.fisicas - d.comprometidas);
+    const dispClass = disp === 0 ? 'zero' : disp <= 1 ? 'low' : '';
+    return `<tr>
+      <td>${m}</td>
+      <td><span class="editable" onclick="editCell(this,'${m}','facturadas')">${d.facturadas}</span></td>
+      <td><span class="editable" onclick="editCell(this,'${m}','fisicas')">${d.fisicas}</span></td>
+      <td><span class="editable" onclick="editCell(this,'${m}','comprometidas')">${d.comprometidas}</span></td>
+      <td><span class="editable" onclick="editCell(this,'${m}','retail')">${d.retail}</span></td>
+      <td><span class="inv-disponible ${dispClass}">${disp}</span></td>
+    </tr>`;
+  }).join('');
+
+  // Back order in inventory tab
+  const boEl = document.getElementById('backorder-list-inv');
+  if (!backOrder.length) {
+    boEl.innerHTML = '<div class="empty"><div class="empty-txt">Sin back order activo</div></div>';
+  } else {
+    boEl.innerHTML = backOrder.map(bo => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--g100)">
+        <div>
+          <span style="font-weight:700">${bo.modelo}</span>
+          <span style="font-size:12px;color:var(--g500);margin-left:6px">${bo.unidades} unidades</span>
+          ${bo.notas ? `<div style="font-size:11px;color:var(--g500);margin-top:2px">${bo.notas}</div>` : ''}
+        </div>
+        <div style="text-align:right">
+          <span class="badge badge-${statusColor(bo.status)}">${bo.status}</span>
+          ${bo.eta ? `<div style="font-size:11px;color:var(--g500);margin-top:3px">ETA ${bo.eta}</div>` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+function renderBP() {
+  const list = document.getElementById('bp-list');
+  list.innerHTML = MODELOS.map(m => {
+    const { bp, ytd } = bpData[m];
+    if (!bp && !ytd) return '';
+    const pct = bp ? Math.round(ytd / bp * 100) : 0;
+    const fillClass = pct >= 80 ? 'green' : pct >= 50 ? '' : 'amber';
+    return `
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-family:var(--tight);font-size:17px;font-weight:800;color:var(--g900)">${m}</span>
+          <span style="font-size:13px;color:var(--g500)">${ytd} / ${bp} u.</span>
+        </div>
+        <div class="prog-bar"><div class="prog-fill ${fillClass}" style="width:${Math.min(pct,100)}%"></div></div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px">
+          <span style="font-size:11px;color:var(--g500)">YTD acumulado</span>
+          <span style="font-size:12px;font-weight:700;color:${pct>=80?'var(--green)':pct>=50?'var(--b700)':'var(--amber)'}">${pct}%</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderAcuerdos() {
+  const list = document.getElementById('acuerdos-list');
+  if (!acuerdos.length) {
+    list.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><div class="empty-txt">Sin acuerdos registrados</div></div>';
+    return;
+  }
+  list.innerHTML = acuerdos.map(a => `
+    <div class="card" style="${a.cumplido ? 'opacity:.6' : ''}">
+      <div class="ac-row" style="padding:0">
+        <div class="ac-num ${a.cumplido ? 'done' : ''}">${a.cumplido ? '✓' : a.numero}</div>
+        <div class="ac-body">
+          <div class="ac-texto">${a.texto}</div>
+          ${a.responsable ? `<div class="ac-meta">${a.responsable}${a.fecha_compromiso ? ' · ' + a.fecha_compromiso : ''}</div>` : ''}
+        </div>
+        <button class="ac-check ${a.cumplido ? 'done' : ''}" onclick="toggleAcuerdo('${a.id}', ${a.cumplido})" title="${a.cumplido ? 'Marcar pendiente' : 'Marcar completado'}">
+          ${a.cumplido ? '✓' : ''}
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderBackOrder() {
+  renderInicio();
+  renderInventario();
+}
+
+// ── INVENTORY EDIT ───────────────────────────────────────────
+function editCell(span, modelo, campo) {
+  if (span.querySelector('input')) return;
+  const current = invData[modelo][campo === 'facturadas' ? 'facturadas' : campo === 'fisicas' ? 'fisicas' : campo === 'comprometidas' ? 'comprometidas' : 'retail'];
+  const input = document.createElement('input');
+  input.type = 'number';
+  input.className = 'inv-inp';
+  input.value = current;
+  input.min = 0;
+  input.addEventListener('blur', () => {
+    const val = Math.max(0, parseInt(input.value) || 0);
+    const key = campo === 'facturadas' ? 'facturadas' : campo === 'fisicas' ? 'fisicas' : campo === 'comprometidas' ? 'comprometidas' : 'retail';
+    invData[modelo][key] = val;
+    renderInventario();
+  });
+  input.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === 'Escape') input.blur(); });
+  span.replaceWith(input);
+  input.focus();
+  input.select();
+}
+
+async function saveInventario() {
+  showToast('Guardando...');
+  const upserts = MODELOS.map(m => ({
+    distribuidor_id: dealerId,
+    modelo: m,
+    anio: AÑO,
+    mes: MES,
+    unidades_facturadas: invData[m].facturadas,
+    unidades_fisicas: invData[m].fisicas,
+    unidades_comprometidas: invData[m].comprometidas,
+    unidades_retail: invData[m].retail,
+    updated_at: new Date().toISOString()
+  }));
+
+  const { error } = await db.from('inventario')
+    .upsert(upserts, { onConflict: 'distribuidor_id,modelo,anio,mes' });
+
+  if (error) { showToast('Error al guardar'); console.error(error); return; }
+  showToast('Inventario guardado ✓');
+  renderInicio();
+}
+
+// ── ACUERDOS ─────────────────────────────────────────────────
+async function toggleAcuerdo(id, currentState) {
+  const { error } = await db.from('visita_acuerdos')
+    .update({ cumplido: !currentState })
+    .eq('id', id);
+  if (error) { showToast('Error al actualizar'); return; }
+  const ac = acuerdos.find(a => a.id === id);
+  if (ac) ac.cumplido = !currentState;
+  renderAcuerdos();
+  renderInicio();
+  showToast(!currentState ? 'Acuerdo completado ✓' : 'Marcado como pendiente');
+}
+
+// ── VENTA MODAL ──────────────────────────────────────────────
+function openVentaModal() {
+  document.getElementById('venta-modal').classList.add('open');
+}
+function closeVentaModal() {
+  document.getElementById('venta-modal').classList.remove('open');
+}
+
+async function registrarVenta() {
+  const modelo = document.getElementById('venta-modelo').value;
+  const unidades = parseInt(document.getElementById('venta-unidades').value) || 0;
+  if (!modelo || unidades < 1) { showToast('Selecciona modelo y unidades'); return; }
+
+  // Update inventario: retail + reduce fisicas
+  if (!invData[modelo]) invData[modelo] = { facturadas:0, fisicas:0, comprometidas:0, retail:0 };
+  invData[modelo].retail += unidades;
+  invData[modelo].fisicas = Math.max(0, invData[modelo].fisicas - unidades);
+
+  // Also update facturado_ytd for BP tracking
+  const { data: existing } = await db.from('facturado_ytd')
+    .select('id, unidades_facturadas')
+    .eq('distribuidor_id', dealerId)
+    .eq('anio', AÑO)
+    .eq('mes', MES)
+    .eq('modelo', modelo)
+    .single();
+
+  const newQty = (existing?.unidades_facturadas || 0) + unidades;
+  await db.from('facturado_ytd').upsert({
+    distribuidor_id: dealerId,
+    anio: AÑO, mes: MES, modelo,
+    unidades_facturadas: newQty,
+    updated_at: new Date().toISOString()
+  }, { onConflict: 'distribuidor_id,anio,mes,modelo' });
+
+  await saveInventario();
+  await loadBP();
+  closeVentaModal();
+  renderBP();
+  renderInicio();
+  showToast(`${unidades} ${modelo} registrado${unidades>1?'s':''} ✓`);
+}
+
+// ── NAVIGATION ───────────────────────────────────────────────
+function goTab(tab) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + tab)?.classList.add('active');
+  document.getElementById('tab-' + tab)?.classList.add('active');
+}
+
+// ── HELPERS ──────────────────────────────────────────────────
+function statusColor(s) {
+  return { confirmado:'blue', produccion:'amber', transito:'green', entregado:'blue' }[s] || 'blue';
+}
+
+let _toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+</script>
+<script src="./_nav.js?v=4"></script>
+<script>if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js");</script>
+</body>
+</html>
