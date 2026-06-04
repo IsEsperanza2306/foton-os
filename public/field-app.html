@@ -14,6 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 <style>
 /* ── TOKENS ──────────────────────────────────────────────── */
 :root {
@@ -597,6 +598,15 @@ canvas#firma-canvas{width:100%;height:140px;display:block;touch-action:none}
   <!-- M0: INFO GENERAL -->
   <div class="section active" id="m-0" style="padding:16px">
     <div class="sec-hero"><div class="sec-hero-num">1</div><div><div class="sec-hero-title">Información general</div><div class="sec-hero-sub">Datos del distribuidor y tipo de visita</div></div></div>
+    <!-- Form type selector -->
+    <div class="card" id="card-form-type">
+      <div class="card-title">Tipo de informe</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="tipo-btn active" id="btn-ft-dist" onclick="setFormType('distribuidor')">Visita a Distribuidor</button>
+        <button class="tipo-btn" id="btn-ft-cd" onclick="setFormType('cliente_directo')">Visita a Cliente Directo</button>
+      </div>
+    </div>
+    <div id="section-dist-general">
     <div class="card">
       <div class="card-title">Distribuidor</div>
       <div class="field"><label>Distribuidor</label><select id="f-dist" onchange="onFDistChange()"><option value="">Seleccionar...</option><option>Grupo Carrocero Milenio</option><option>Autos Y Camiones Asia Central</option><option>Burk Automotriz</option><option>Autos Emcg</option><option>Camiones Orientales De Leon</option><option>Camiones Premium Del Centro</option><option>Vehiculos Comerciales Peninsula</option><option>Xian Motors</option><option>Camiones Metropolitanos Del Valle</option><option>Camiones Metropolitanos GR</option><option>Velcen Motors</option><option>Ssandier</option><option>Gad Vehiculos Comerciales</option><option>Eco Trucks</option><option>Policars</option><option>Profesional En Servicio Y Diagnostico</option></select></div>
@@ -619,6 +629,86 @@ canvas#firma-canvas{width:100%;height:140px;display:block;touch-action:none}
         <button class="tipo-btn" onclick="this.classList.toggle('active')">Otro</button>
       </div>
     </div>
+    </div><!-- /section-dist-general -->
+
+    <div id="section-cd-general" style="display:none">
+      <div class="card">
+        <div class="card-title">Generales del cliente</div>
+        <div class="field"><label>Gte. Regional</label><select id="cd-reg"><option selected>Israel Esperanza</option><option>Andres Arrangoiz</option></select></div>
+        <div class="field"><label>Fecha</label><input type="date" id="cd-fecha"></div>
+        <div class="field"><label>Razón social</label><input type="text" id="cd-razon" placeholder="Nombre de la empresa o cliente"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="field"><label>Tamaño de flota</label><input type="text" id="cd-flota-size" placeholder="Ej. 50 unidades"></div>
+          <div class="field"><label>Giro</label><input type="text" id="cd-giro" placeholder="Ej. Construcción, Logística"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="field"><label>Cobertura</label><input type="text" id="cd-cobertura" placeholder="Zona de operación"></div>
+          <div class="field"><label>Tipo de cliente</label><select id="cd-tipo-cliente"><option value="">Seleccionar...</option><option>Conquista</option><option>Re-Conquista</option><option>Seguimiento</option></select></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Tipo de visita</div>
+        <div class="cd-tipo-visita-group" style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="tipo-btn" onclick="this.classList.toggle('active')">Presentación Comercial</button>
+          <button class="tipo-btn" onclick="this.classList.toggle('active')">Capacitación Producto</button>
+          <button class="tipo-btn" onclick="this.classList.toggle('active')">Capacitación Operativa</button>
+          <button class="tipo-btn" onclick="this.classList.toggle('active')">Otro</button>
+        </div>
+        <div class="field" style="margin-top:12px"><label>Objetivo de la visita</label><textarea id="cd-objetivo" rows="3" class="field-inp" placeholder="Describir objetivo principal de la visita..."></textarea></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Contactos principales</div>
+        <div id="cd-contactos-list">
+          <div class="cd-contacto-row" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+            <input type="text" class="cd-contacto-nombre" placeholder="Nombre" style="padding:9px 12px;border:1.5px solid var(--g100);border-radius:8px;font-size:13px">
+            <input type="text" class="cd-contacto-puesto" placeholder="Puesto" style="padding:9px 12px;border:1.5px solid var(--g100);border-radius:8px;font-size:13px">
+          </div>
+        </div>
+        <button onclick="addCdContacto()" style="font-size:12px;color:var(--b700);background:none;border:1.5px dashed var(--b200);border-radius:8px;padding:8px 14px;cursor:pointer;width:100%;margin-top:4px">+ Agregar contacto</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Información de su flota</div>
+        <div id="cd-flota-list">
+          <div class="cd-flota-row" style="display:grid;grid-template-columns:1fr 1fr 80px;gap:8px;margin-bottom:8px">
+            <input type="text" class="cd-fl-marca" placeholder="Marca" style="padding:9px 12px;border:1.5px solid var(--g100);border-radius:8px;font-size:13px">
+            <input type="text" class="cd-fl-modelo" placeholder="Modelo" style="padding:9px 12px;border:1.5px solid var(--g100);border-radius:8px;font-size:13px">
+            <input type="number" class="cd-fl-cant" placeholder="Cant." style="padding:9px 12px;border:1.5px solid var(--g100);border-radius:8px;font-size:13px">
+          </div>
+        </div>
+        <button onclick="addCdFlota()" style="font-size:12px;color:var(--b700);background:none;border:1.5px dashed var(--b200);border-radius:8px;padding:8px 14px;cursor:pointer;width:100%;margin-top:4px">+ Agregar equipo</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Historial de ventas FOTON</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+          <div class="field"><label>2024</label><input type="number" id="cd-hist-2024" placeholder="0" min="0"></div>
+          <div class="field"><label>2025</label><input type="number" id="cd-hist-2025" placeholder="0" min="0"></div>
+          <div class="field"><label>Proy. 2026</label><input type="number" id="cd-hist-2026" placeholder="0" min="0"></div>
+        </div>
+        <div class="field" style="margin-top:8px"><label>Eventos asistidos</label>
+          <div class="cd-eventos-group" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+            <button class="tipo-btn" onclick="this.classList.toggle('active')">China</button>
+            <button class="tipo-btn" onclick="this.classList.toggle('active')">F1</button>
+            <button class="tipo-btn" onclick="this.classList.toggle('active')">Super Copa</button>
+            <button class="tipo-btn" onclick="this.classList.toggle('active')">Torneo Golf</button>
+            <button class="tipo-btn" onclick="this.classList.toggle('active')">Expo Transporte</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Requerimientos del cliente</div>
+        <div class="field"><label>Modelo de interés</label><input type="text" id="cd-modelo" placeholder="Ej. S12, FT5 180"></div>
+        <div class="field"><label>Tipo de carrocería</label><input type="text" id="cd-carroceria" placeholder="Ej. Estacas, Volteo, Caja seca"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="field"><label>Proyección de compra</label><input type="text" id="cd-proyeccion" placeholder="Ej. Q3 2026, 2 unidades"></div>
+          <div class="field"><label>Financiamiento</label><input type="text" id="cd-financiamiento" placeholder="Ej. Banorte, Contado"></div>
+        </div>
+      </div>
+    </div><!-- /section-cd-general -->
   </div>
 
   <!-- M1: AGENDA -->
@@ -720,6 +810,12 @@ canvas#firma-canvas{width:100%;height:140px;display:block;touch-action:none}
     <div class="card"><div class="card-title">Resumen</div><div id="resumen-content"></div></div>
     <button onclick="generarPDF()" style="width:100%;background:var(--b700);color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;font-family:var(--tight);margin-bottom:8px">
       ↓ Descargar minuta PDF
+    </button>
+    <button onclick="descargarExcelDistribuidor()" id="btn-excel-dist" style="width:100%;background:#1A7C4F;color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;font-family:var(--tight);margin-bottom:8px">
+      ↓ Descargar Excel (Informe Oficial)
+    </button>
+    <button onclick="descargarExcelCD()" id="btn-excel-cd" style="width:100%;display:none;background:#7C3D1A;color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;font-family:var(--tight);margin-bottom:8px">
+      ↓ Descargar Excel Cliente Directo
     </button>
   </div>
 
@@ -2074,6 +2170,224 @@ window.addEventListener("FotonAuthReady", function() {
     if (dSel) { dSel.value = urlDealer; onDealerChange(); }
   }
 });
+
+// ══════════════════════════════════════════════════════════
+// FORM TYPE SELECTOR
+// ══════════════════════════════════════════════════════════
+let currentFormType = 'distribuidor';
+function setFormType(type) {
+  currentFormType = type;
+  document.getElementById('btn-ft-dist')?.classList.toggle('active', type === 'distribuidor');
+  document.getElementById('btn-ft-cd')?.classList.toggle('active', type === 'cliente_directo');
+  document.getElementById('section-dist-general')?.style.setProperty('display', type === 'distribuidor' ? 'block' : 'none');
+  document.getElementById('section-cd-general')?.style.setProperty('display', type === 'cliente_directo' ? 'block' : 'none');
+  document.getElementById('btn-excel-dist')?.style.setProperty('display', type === 'distribuidor' ? 'block' : 'none');
+  document.getElementById('btn-excel-cd')?.style.setProperty('display', type === 'cliente_directo' ? 'block' : 'none');
+}
+
+// ── CD DYNAMIC ROWS ───────────────────────────────────────
+function addCdContacto() {
+  const list = document.getElementById('cd-contactos-list');
+  const row = document.createElement('div');
+  row.className = 'cd-contacto-row';
+  row.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px';
+  row.innerHTML = '<input type="text" class="cd-contacto-nombre" placeholder="Nombre" style="padding:9px 12px;border:1.5px solid var(--g100);border-radius:8px;font-size:13px"><input type="text" class="cd-contacto-puesto" placeholder="Puesto" style="padding:9px 12px;border:1.5px solid var(--g100);border-radius:8px;font-size:13px">';
+  list.appendChild(row);
+}
+
+function addCdFlota() {
+  const list = document.getElementById('cd-flota-list');
+  const row = document.createElement('div');
+  row.className = 'cd-flota-row';
+  row.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 80px;gap:8px;margin-bottom:8px';
+  row.innerHTML = '<input type="text" class="cd-fl-marca" placeholder="Marca" style="padding:9px 12px;border:1.5px solid var(--g100);border-radius:8px;font-size:13px"><input type="text" class="cd-fl-modelo" placeholder="Modelo" style="padding:9px 12px;border:1.5px solid var(--g100);border-radius:8px;font-size:13px"><input type="number" class="cd-fl-cant" placeholder="Cant." style="padding:9px 12px;border:1.5px solid var(--g100);border-radius:8px;font-size:13px">';
+  list.appendChild(row);
+}
+
+// ══════════════════════════════════════════════════════════
+// EXCEL — DISTRIBUIDOR
+// ══════════════════════════════════════════════════════════
+async function descargarExcelDistribuidor() {
+  const btn = document.getElementById('btn-excel-dist');
+  if (btn) { btn.disabled = true; btn.textContent = 'Preparando...'; }
+  try {
+    const resp = await fetch('./assets/templates/visita-distribuidor.xlsb');
+    if (!resp.ok) throw new Error('Template not found');
+    const buf = await resp.arrayBuffer();
+    const wb = XLSX.read(new Uint8Array(buf), { type: 'array', cellStyles: true });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+
+    function sc(ref, val, type) {
+      if (val === null || val === undefined || val === '') return;
+      const t = type || (typeof val === 'boolean' ? 'b' : (typeof val === 'number' ? 'n' : 's'));
+      ws[ref] = Object.assign(ws[ref] || {}, { t, v: val });
+    }
+
+    // Info general
+    sc('E3', 'P&V');
+    sc('E4', document.getElementById('f-reg')?.value || '');
+    sc('P3', document.getElementById('f-dist')?.value || '');
+    sc('P4', document.getElementById('f-plaza')?.value || '');
+    sc('P5', document.getElementById('f-grupo')?.value || '');
+    const fecha = document.getElementById('f-fecha')?.value || '';
+    sc('E5', fecha);
+    sc('E6', fecha);
+
+    // Tipo visita checkboxes
+    const tipos = [...document.querySelectorAll('#tipo-wrap .tipo-btn.active')].map(b => b.textContent.trim());
+    sc('Y4', tipos.some(t => t.includes('Acompañamiento')), 'b');
+    sc('AD4', tipos.some(t => t === 'Operativa'), 'b');
+    sc('Y6', tipos.some(t => t === 'Capacitación'), 'b');
+    sc('AD5', tipos.some(t => t === 'Otro' || t === 'Inauguración'), 'b');
+
+    // Temas agenda
+    const temas = [...document.querySelectorAll('.cb-item.checked .cb-label')].map(l => l.textContent.trim());
+    const TEMA_MAP = {
+      'Back Order': 'L11', 'Inventario Facturado': 'R11',
+      'Bonos': 'L12', 'Inventario Físico': 'R12',
+      'Estado de cuenta': 'L13', 'Notas de crédito': 'R13',
+      'Estrategia Marketing': 'L14', 'Pedidos nuevos': 'R14',
+      'Facturación': 'L15', 'Plan Comercial': 'R15',
+      'Fuerza de ventas': 'L16', 'Plan Piso': 'R16',
+      'Posventa': 'X11', 'Prog. de citas': 'X12',
+      'Prospección/Leads': 'X14', 'Retail': 'X16'
+    };
+    Object.entries(TEMA_MAP).forEach(([label, cell]) => sc(cell, temas.includes(label), 'b'));
+
+    // Participantes (rows 11-15)
+    const parts = [...document.querySelectorAll('.part-inp')].map(i => i.value.trim()).filter(Boolean);
+    ['B11','B12','B13','B14','B15'].forEach((cell, i) => { if (parts[i]) sc(cell, parts[i]); });
+
+    // Acuerdos (rows 42-52)
+    document.querySelectorAll('.acuerdo-row').forEach((row, i) => {
+      if (i >= 11) return;
+      const rn = 42 + i;
+      sc(`B${rn}`, row.querySelector('.ac-texto')?.value || '');
+      sc(`V${rn}`, row.querySelector('.ac-resp')?.value || '');
+      sc(`AC${rn}`, row.querySelector('.ac-fecha')?.value || '');
+    });
+
+    // Logros y comentarios
+    const logros = document.getElementById('f-logros')?.value || '';
+    if (logros) sc('A55', logros);
+    const coments = document.getElementById('f-coments')?.value || '';
+    if (coments) sc('A75', coments);
+
+    const distName = (document.getElementById('f-dist')?.value || 'distribuidor').replace(/[^a-zA-Z0-9]/g, '-');
+    XLSX.writeFile(wb, `Visita-${distName}-${fecha || 'sin-fecha'}.xlsx`);
+    showToast('Excel descargado');
+  } catch (e) {
+    console.error(e);
+    showToast('Error al generar Excel');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '↓ Descargar Excel (Informe Oficial)'; }
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// EXCEL — CLIENTE DIRECTO
+// ══════════════════════════════════════════════════════════
+async function descargarExcelCD() {
+  const btn = document.getElementById('btn-excel-cd');
+  if (btn) { btn.disabled = true; btn.textContent = 'Preparando...'; }
+  try {
+    const resp = await fetch('./assets/templates/visita-cliente-directo.xlsb');
+    if (!resp.ok) throw new Error('Template not found');
+    const buf = await resp.arrayBuffer();
+    const wb = XLSX.read(new Uint8Array(buf), { type: 'array', cellStyles: true });
+    const ws2 = wb.Sheets['Hoja1'] || wb.Sheets[wb.SheetNames[0]];
+
+    function sc(ref, val, type) {
+      if (val === null || val === undefined || val === '') return;
+      const t = type || (typeof val === 'boolean' ? 'b' : (typeof val === 'number' ? 'n' : 's'));
+      ws2[ref] = Object.assign(ws2[ref] || {}, { t, v: val });
+    }
+
+    sc('D2', 'P&V');
+    sc('P2', document.getElementById('cd-reg')?.value || '');
+    const fecha = document.getElementById('cd-fecha')?.value || '';
+    sc('Z2', fecha);
+
+    // CD tipo visita buttons (only from cd-tipo-visita-group)
+    const cdTipos = [...document.querySelectorAll('.cd-tipo-visita-group .tipo-btn.active')].map(b => b.textContent.trim());
+    sc('A4', cdTipos.some(t => t.includes('Presentación')), 'b');
+    sc('H4', cdTipos.some(t => t.includes('Capacitación Operativa')), 'b');
+    sc('A5', cdTipos.some(t => t.includes('Capacitación Producto')), 'b');
+    sc('H5', cdTipos.some(t => t === 'Otro'), 'b');
+
+    sc('S3', document.getElementById('cd-objetivo')?.value || '');
+    sc('B9', document.getElementById('cd-razon')?.value || '');
+    sc('B10', document.getElementById('cd-flota-size')?.value || '');
+    sc('H10', document.getElementById('cd-giro')?.value || '');
+    sc('B11', document.getElementById('cd-cobertura')?.value || '');
+    sc('H11', document.getElementById('cd-tipo-cliente')?.value || '');
+
+    // Contactos (up to 3)
+    const contactos = [...document.querySelectorAll('.cd-contacto-row')];
+    contactos.slice(0, 3).forEach((row, i) => {
+      const rn = 14 + i;
+      sc(`B${rn}`, row.querySelector('.cd-contacto-nombre')?.value || '');
+      sc(`N${rn}`, row.querySelector('.cd-contacto-puesto')?.value || '');
+    });
+
+    // Flota (up to 5)
+    const flotaRows = [...document.querySelectorAll('.cd-flota-row')];
+    flotaRows.slice(0, 5).forEach((row, i) => {
+      const rn = 20 + i;
+      sc(`B${rn}`, row.querySelector('.cd-fl-marca')?.value || '');
+      sc(`H${rn}`, row.querySelector('.cd-fl-modelo')?.value || '');
+      const cant = row.querySelector('.cd-fl-cant')?.value;
+      if (cant) sc(`R${rn}`, parseFloat(cant), 'n');
+    });
+
+    // Historial
+    const h24 = document.getElementById('cd-hist-2024')?.value;
+    const h25 = document.getElementById('cd-hist-2025')?.value;
+    const h26 = document.getElementById('cd-hist-2026')?.value;
+    if (h24) sc('E28', parseFloat(h24), 'n');
+    if (h25) sc('E29', parseFloat(h25), 'n');
+    if (h26) sc('E30', parseFloat(h26), 'n');
+
+    // Eventos asistidos (only from cd-eventos-group)
+    const eventoTextos = [...document.querySelectorAll('.cd-eventos-group .tipo-btn.active')].map(b => b.textContent.trim());
+    sc('K27', eventoTextos.includes('China'), 'b');
+    sc('K28', eventoTextos.includes('F1'), 'b');
+    sc('K29', eventoTextos.includes('Super Copa'), 'b');
+    sc('O27', eventoTextos.includes('Torneo Golf'), 'b');
+    sc('O28', eventoTextos.includes('Expo Transporte'), 'b');
+
+    // Requerimientos
+    sc('B33', document.getElementById('cd-modelo')?.value || '');
+    sc('B34', document.getElementById('cd-carroceria')?.value || '');
+    sc('B35', document.getElementById('cd-proyeccion')?.value || '');
+
+    // Acuerdos (rows 40-44)
+    document.querySelectorAll('.acuerdo-row').forEach((row, i) => {
+      if (i >= 5) return;
+      const rn = 40 + i;
+      sc(`B${rn}`, row.querySelector('.ac-texto')?.value || '');
+      sc(`V${rn}`, row.querySelector('.ac-resp')?.value || '');
+      sc(`AC${rn}`, row.querySelector('.ac-fecha')?.value || '');
+    });
+
+    // Logros
+    const logros = document.getElementById('f-logros')?.value || '';
+    if (logros) sc('A47', logros);
+
+    // Comentarios
+    const coments = document.getElementById('f-coments')?.value || '';
+    if (coments) sc('A54', coments);
+
+    const razon = (document.getElementById('cd-razon')?.value || 'cliente').replace(/[^a-zA-Z0-9]/g, '-');
+    XLSX.writeFile(wb, `VisitaCD-${razon}-${fecha || 'sin-fecha'}.xlsx`);
+    showToast('Excel descargado');
+  } catch (e) {
+    console.error(e);
+    showToast('Error al generar Excel');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '↓ Descargar Excel Cliente Directo'; }
+  }
+}
 </script>
 
 <script>window.NAV_ACTIVE_TAB = 'visita';</script>

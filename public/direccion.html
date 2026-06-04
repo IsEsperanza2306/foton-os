@@ -17,6 +17,7 @@
   <script src="_config.js?v=3"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -938,6 +939,7 @@ async function openMinutas(dealerId, dealerName) {
           ${v.comentarios ? `<div class="mn-section-label">Comentarios</div><div class="mn-text">${v.comentarios}</div>` : ''}
           <div class="mn-section-label">Acuerdos y compromisos</div>
           ${acuerdosHtml}
+          <button onclick="descargarExcelVisita('${v.id}', '${dealerId}')" style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:#1A7C4F;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;margin-top:10px">&#x1F4CA; Descargar Excel</button>
         </div>
       </div>`;
   }).join('');
@@ -957,6 +959,82 @@ function closeMinutas(e) {
   if (e && e.target !== document.getElementById('minutas-overlay')) return;
   document.getElementById('minutas-overlay').classList.remove('open');
   document.body.style.overflow = '';
+}
+
+// ── TOAST (direccion) ─────────────────────────────────────
+function showToastDir(msg) {
+  let t = document.getElementById('dir-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'dir-toast';
+    t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1A1A2E;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9999;white-space:nowrap';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  setTimeout(() => { t.style.opacity = '0'; }, 2500);
+}
+
+// ══════════════════════════════════════════════════════════
+// EXCEL — DESCARGAR VISITA (from minutas drawer)
+// ══════════════════════════════════════════════════════════
+async function descargarExcelVisita(visitaId, distribuidorId) {
+  showToastDir('Preparando Excel...');
+  try {
+    const [{ data: visita }, { data: acuerdos }, { data: dist }] = await Promise.all([
+      db.from('visitas').select('*').eq('id', visitaId).single(),
+      db.from('visita_acuerdos').select('*').eq('visita_id', visitaId).order('numero'),
+      db.from('distribuidores').select('*').eq('id', distribuidorId).single()
+    ]);
+
+    const resp = await fetch('./assets/templates/visita-distribuidor.xlsb');
+    if (!resp.ok) throw new Error('Template not found');
+    const buf = await resp.arrayBuffer();
+    const wb = XLSX.read(new Uint8Array(buf), { type: 'array', cellStyles: true });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+
+    function sc(ref, val, type) {
+      if (val === null || val === undefined || val === '') return;
+      const t = type || (typeof val === 'boolean' ? 'b' : (typeof val === 'number' ? 'n' : 's'));
+      ws[ref] = Object.assign(ws[ref] || {}, { t, v: val });
+    }
+
+    sc('E3', 'P&V');
+    sc('E4', visita?.regional || '');
+    sc('P3', dist?.nombre || '');
+    sc('P4', dist?.plaza || '');
+    sc('P5', dist?.grupo || '');
+    sc('E5', visita?.fecha || '');
+    sc('E6', visita?.fecha || '');
+
+    const tipos = visita?.tipo_visita || [];
+    sc('Y4', tipos.some(t => t.includes('Acompañamiento')), 'b');
+    sc('AD4', tipos.some(t => t === 'Operativa'), 'b');
+    sc('Y6', tipos.some(t => t === 'Capacitación'), 'b');
+    sc('AD5', tipos.some(t => t === 'Otro'), 'b');
+
+    (visita?.participantes || []).forEach((p, i) => {
+      if (i < 5) sc(['B11','B12','B13','B14','B15'][i], p);
+    });
+
+    (acuerdos || []).forEach((ac, i) => {
+      if (i >= 11) return;
+      const rn = 42 + i;
+      if (ac.texto) sc(`B${rn}`, ac.texto);
+      if (ac.responsable) sc(`V${rn}`, ac.responsable);
+      if (ac.fecha_compromiso) sc(`AC${rn}`, ac.fecha_compromiso);
+    });
+
+    if (visita?.logros) sc('A55', visita.logros);
+    if (visita?.comentarios) sc('A75', visita.comentarios);
+
+    const name = (dist?.nombre || 'dealer').replace(/[^a-zA-Z0-9]/g, '-');
+    XLSX.writeFile(wb, `Visita-${name}-${visita?.fecha || ''}.xlsx`);
+    showToastDir('Excel descargado');
+  } catch (e) {
+    console.error(e);
+    showToastDir('Error al generar Excel');
+  }
 }
 
 // RENDER CHART
