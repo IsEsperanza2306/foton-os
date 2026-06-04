@@ -4,6 +4,7 @@
 /field-app       /field-app.html    200
 /direccion       /direccion.html    200
 /informativo     /informativo.html  200
+/panel                     /panel.html                200
 /dealer-portal             /dealer-portal.html        200
 /regionpro-dashboard.html  /login  301
 /regionpro-dashboard       /login  301

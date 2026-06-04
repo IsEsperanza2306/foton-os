@@ -33,6 +33,12 @@
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>'
     },
     {
+      id: 'panel',
+      label: 'Panel',
+      href: './panel.html',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>'
+    },
+    {
       id: 'direccion',
       label: 'Dirección',
       href: './direccion.html',
@@ -158,15 +164,18 @@
         window.FOTON_DB = db;
         window.FOTON_EMAIL = session.user.email;
 
-        // Fetch user profile to get role
-        const { data: userProfile } = await db
+        // Fetch user profile to get role, segment, and dealer assignment
+        const { data: profileRows } = await db
           .from('usuarios')
-          .select('rol, distribuidor_id')
+          .select('rol, distribuidor_id, segmento_id')
           .eq('id', session.user.id)
-          .single();
+          .limit(1);
+
+        const userProfile = profileRows?.[0] || null;
 
         window.FOTON_ROL = userProfile?.rol || 'regional';
         window.FOTON_DISTRIBUIDOR_ID = userProfile?.distribuidor_id || null;
+        window.FOTON_SEGMENTO = userProfile?.segmento_id || null;
 
         // Dealer users go to dealer-portal, not mapa
         if (userProfile?.rol === 'dealer' && !PAGE.includes('dealer-portal')) {
@@ -177,6 +186,13 @@
         // Non-dealer users trying to access dealer-portal get redirected
         if (userProfile?.rol !== 'dealer' && PAGE.includes('dealer-portal')) {
           location.replace('./mapa.html');
+          return;
+        }
+
+        // Regional and director users go to panel (not mapa) after login
+        const PANEL_ROLES = ['regional', 'director', 'direccion', 'admin'];
+        if (PANEL_ROLES.includes(userProfile?.rol) && PAGE === 'login') {
+          location.replace('./panel.html');
           return;
         }
       }

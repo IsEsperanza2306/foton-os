@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="theme-color" content="#0C447C">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/assets/icon-192.png">
+  <title>Panel — Foton OS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --b900:#042C53; --b800:#0C447C; --b700:#185FA5; --b600:#2070BB;
+      --b500:#378ADD; --b200:#B5D4F4; --b100:#D6E9FA; --b50:#EEF5FD;
+      --g900:#1A1A2E; --g700:#3C3C50; --g500:#6B6B80; --g300:#C4C4D0;
+      --g100:#F0F0F5; --g50:#F7F7FB; --white:#FFFFFF;
+      --green:#1A8C5B; --green-bg:#E6F5EE;
+      --amber:#B07A00; --amber-bg:#FFF8E1;
+      --red:#C0392B; --red-bg:#FDECEA;
+      --pv-color:#7C3D1A;
+      --mdt-color:#185FA5;
+      --hdt-color:#042C53;
+      --ev-color:#1A7C4F;
+      --font:"Inter",-apple-system,sans-serif;
+      --tight:"Inter Tight","Inter",sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: var(--g50);
+      color: var(--g900);
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 70px;
+    }
+
+    /* Header */
+    .header {
+      background: var(--b800);
+      height: 56px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 150;
+      box-shadow: 0 2px 12px rgba(4,44,83,.22);
+      transition: background .3s;
+    }
+    .hd-left { display: flex; align-items: center; gap: 10px; }
+    .hd-logo { height: 28px; width: auto; }
+    .hd-div { width: 1px; height: 22px; background: rgba(255,255,255,.2); }
+    .hd-title {
+      font-family: var(--tight);
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+    }
+    .hd-sub {
+      font-size: 10px;
+      color: rgba(255,255,255,.5);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+    }
+    .hd-badge {
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 7px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255,255,255,.85);
+      font-family: var(--tight);
+    }
+
+    /* Segment tabs */
+    .seg-tabs {
+      position: sticky;
+      top: 56px;
+      z-index: 140;
+      background: var(--white);
+      border-bottom: 1px solid var(--g100);
+      display: flex;
+      box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    }
+    .seg-tab {
+      flex: 1;
+      padding: 12px 8px;
+      border: none;
+      background: none;
+      font-family: var(--tight);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--g500);
+      cursor: pointer;
+      border-bottom: 2.5px solid transparent;
+      margin-bottom: -1px;
+      transition: all .15s;
+      letter-spacing: .3px;
+    }
+    .seg-tab.active { color: var(--b700); border-bottom-color: currentColor; }
+    .seg-tab:hover:not(.active) { background: var(--g50); }
+
+    /* Main */
+    .main { padding: 16px; max-width: 720px; margin: 0 auto; }
+
+    /* KPI strip */
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .kpi-card {
+      background: var(--white);
+      border-radius: 12px;
+      border: 1px solid var(--g100);
+      padding: 12px 8px;
+      text-align: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,.04);
+    }
+    .kpi-val {
+      font-family: var(--tight);
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--b800);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .kpi-lbl {
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--g500);
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+
+    /* Section title */
+    .section-title {
+      font-family: var(--tight);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      color: var(--g500);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Dealer card */
+    .dealer-card {
+      background: var(--white);
+      border-radius: 12px;
+      border: 1px solid var(--g100);
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.04);
+    }
+    .dc-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      gap: 10px;
+    }
+    .dc-name {
+      font-family: var(--tight);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--g900);
+      line-height: 1.3;
+    }
+    .dc-meta { font-size: 11px; color: var(--g500); margin-top: 2px; }
+    .dc-prog { }
+    .dc-prog-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--g500);
+      margin-bottom: 5px;
+    }
+    .prog-bar {
+      height: 6px;
+      background: var(--g100);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .prog-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width .5s;
+    }
+    .dc-last { font-size: 11px; color: var(--g500); margin-top: 8px; }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .badge-green { background: var(--green-bg); color: var(--green); }
+    .badge-amber { background: var(--amber-bg); color: var(--amber); }
+    .badge-blue { background: var(--b50); color: var(--b700); }
+    .badge-red { background: var(--red-bg); color: var(--red); }
+
+    /* Model pills */
+    .pills-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+    .model-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1.5px solid;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      padding: 10px 18px;
+      background: var(--b700);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+    }
+    .btn-sm {
+      padding: 5px 12px;
+      background: var(--b50);
+      color: var(--b700);
+      border: 1.5px solid var(--b200);
+      border-radius: 7px;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: var(--font);
+      cursor: pointer;
+    }
+    .field-inp {
+      padding: 10px 12px;
+      border: 1.5px solid var(--g100);
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: var(--font);
+      outline: none;
+      background: var(--g50);
+    }
+    .field-inp:focus { border-color: var(--b700); background: var(--white); }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(4,44,83,.45);
+      z-index: 500;
+      backdrop-filter: blur(2px);
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--white);
+      border-radius: 20px 20px 0 0;
+      padding: 24px 20px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .modal-title {
+      font-family: var(--tight);
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--g900);
+    }
+    .modal-close {
+      background: var(--g100);
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Loading / empty */
+    .loading { text-align: center; padding: 30px; color: var(--g500); font-size: 13px; }
+    .empty { text-align: center; padding: 30px; color: var(--g500); font-size: 13px; }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--g900);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity .2s;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    #toast.show { opacity: 1; }
+
+    @media (max-width: 480px) {
+      .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+      .kpi-val { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header" id="main-header">
+  <div class="hd-left">
+    <img src="./assets/logo-icon.png" class="hd-logo" alt="Foton">
+    <div class="hd-div"></div>
+    <div>
+      <div class="hd-title" id="hd-title">Panel</div>
+      <div class="hd-sub" id="hd-sub">Foton México</div>
+    </div>
+  </div>
+  <div id="hd-badge" class="hd-badge">—</div>
+</header>
+
+<!-- Segment tabs (only for direccion) -->
+<nav class="seg-tabs" id="seg-tabs" style="display:none">
+  <button class="seg-tab" id="st-pv"  onclick="switchSeg('pv')">P&amp;V</button>
+  <button class="seg-tab" id="st-mdt" onclick="switchSeg('mdt')">MDT/LDT</button>
+  <button class="seg-tab" id="st-hdt" onclick="switchSeg('hdt')">HDT</button>
+  <button class="seg-tab" id="st-ev"  onclick="switchSeg('ev')">EV</button>
+</nav>
+
+<!-- Content -->
+<main class="main" id="main-content">
+
+  <!-- KPI strip -->
+  <div class="kpi-strip">
+    <div class="kpi-card">
+      <div class="kpi-val" id="k-bp">—</div>
+      <div class="kpi-lbl">BP Anual</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val" id="k-ytd">—</div>
+      <div class="kpi-lbl">YTD Retail</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val" id="k-pct">—%</div>
+      <div class="kpi-lbl">Avance</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val" id="k-dealers">—</div>
+      <div class="kpi-lbl">Distribuidores</div>
+    </div>
+  </div>
+
+  <!-- Dealer list -->
+  <div class="section-title" id="sec-dealers-title">Distribuidores</div>
+  <div id="dealers-list">
+    <div class="loading">Cargando distribuidores...</div>
+  </div>
+
+  <!-- Models section -->
+  <div class="section-title" style="margin-top:20px">
+    <span id="sec-models-title">Modelos del segmento</span>
+    <button class="btn-sm" id="btn-gestionar" onclick="openModelosModal()" style="display:none">Gestionar</button>
+  </div>
+  <div id="modelos-pills" class="pills-wrap">
+    <div class="loading">Cargando modelos...</div>
+  </div>
+
+</main>
+
+<!-- Modal: Gestionar modelos -->
+<div class="modal-overlay" id="modal-modelos" onclick="if(event.target===this)closeModelosModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-seg-title">Modelos</div>
+      <button class="modal-close" onclick="closeModelosModal()">✕</button>
+    </div>
+    <div id="modal-modelos-list" style="margin-bottom:16px"></div>
+    <div style="display:flex;gap:8px">
+      <input type="text" id="new-modelo-inp" class="field-inp" placeholder="Nuevo modelo (ej: S15-E6)" style="flex:1">
+      <button class="btn-primary" onclick="addModelo()">Agregar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>window.NAV_ACTIVE_TAB = 'panel';</script>
+<script src="./_config.js?v=3"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SEGMENTOS = {
+  pv:  { id:'pv',  nombre:'P&V',     nombreCompleto:'Pick-ups & Vans',    color:'#7C3D1A' },
+  mdt: { id:'mdt', nombre:'MDT/LDT', nombreCompleto:'Ligeros y Medianos',  color:'#185FA5' },
+  hdt: { id:'hdt', nombre:'HDT',     nombreCompleto:'Pesados',             color:'#042C53' },
+  ev:  { id:'ev',  nombre:'EV',      nombreCompleto:'Eléctricos',          color:'#1A7C4F' }
+};
+
+const MES_NOMBRES = ['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const NOW = new Date();
+const AÑO = NOW.getFullYear();
+const MES = NOW.getMonth() + 1;
+
+let db, rol, segActivo, userDealerIds = null;
+
+window.addEventListener('FotonAuthReady', async () => {
+  db = window.FOTON_DB;
+  rol = window.FOTON_ROL || 'regional';
+  const segFromProfile = window.FOTON_SEGMENTO || null;
+
+  // Update header badge
+  document.getElementById('hd-badge').textContent = MES_NOMBRES[MES] + ' ' + AÑO;
+
+  if (rol === 'direccion') {
+    // Dirección general: show all segment tabs, default to 'mdt'
+    document.getElementById('seg-tabs').style.display = 'flex';
+    document.getElementById('hd-title').textContent = 'Dirección General';
+    document.getElementById('hd-sub').textContent = 'Foton México — Todos los segmentos';
+    document.getElementById('btn-gestionar').style.display = 'inline-flex';
+    segActivo = 'mdt';
+  } else {
+    // Director or regional: lock to their segment
+    segActivo = segFromProfile || 'mdt';
+    document.getElementById('hd-title').textContent = SEGMENTOS[segActivo]?.nombreCompleto || segActivo.toUpperCase();
+    document.getElementById('hd-sub').textContent = 'Panel de segmento';
+
+    if (rol === 'director') {
+      document.getElementById('btn-gestionar').style.display = 'inline-flex';
+    }
+
+    if (rol === 'regional') {
+      await loadUserDealers();
+    }
+  }
+
+  await switchSeg(segActivo);
+});
+
+async function loadUserDealers() {
+  const { data } = await db.from('asignaciones')
+    .select('distribuidor_id')
+    .eq('usuario_id', window.FOTON_USER.id)
+    .eq('segmento_id', segActivo);
+  userDealerIds = (data || []).map(r => r.distribuidor_id);
+}
+
+async function switchSeg(seg) {
+  segActivo = seg;
+  const cfg = SEGMENTOS[seg];
+
+  // Update active tab styling
+  ['pv','mdt','hdt','ev'].forEach(s => {
+    const btn = document.getElementById('st-' + s);
+    if (!btn) return;
+    btn.classList.toggle('active', s === seg);
+    if (s === seg) {
+      btn.style.color = cfg.color;
+      btn.style.borderBottomColor = cfg.color;
+    } else {
+      btn.style.color = '';
+      btn.style.borderBottomColor = '';
+    }
+  });
+
+  // Update section titles
+  document.getElementById('sec-dealers-title').textContent = 'Distribuidores — ' + cfg.nombreCompleto;
+  document.getElementById('sec-models-title').textContent = 'Modelos ' + cfg.nombre;
+  document.getElementById('modal-seg-title').textContent = 'Modelos ' + cfg.nombre;
+
+  // Update header accent color for non-direccion roles
+  if (rol !== 'direccion') {
+    document.getElementById('main-header').style.background = cfg.color;
+  }
+
+  await Promise.all([loadDealers(), loadModelos()]);
+}
+
+async function loadDealers() {
+  document.getElementById('dealers-list').innerHTML = '<div class="loading">Cargando...</div>';
+
+  // Build query for distribuidores
+  let query = db.from('distribuidores').select('*').eq('status', 'activo').order('nombre');
+  if (userDealerIds !== null && userDealerIds.length > 0) {
+    query = query.in('id', userDealerIds);
+  } else if (userDealerIds !== null && userDealerIds.length === 0) {
+    document.getElementById('dealers-list').innerHTML = '<div class="empty">Sin distribuidores asignados</div>';
+    updateKPIs(0, 0, 0, 0);
+    return;
+  }
+
+  const { data: dealers } = await query;
+  if (!dealers || !dealers.length) {
+    document.getElementById('dealers-list').innerHTML = '<div class="empty">Sin distribuidores</div>';
+    updateKPIs(0, 0, 0, 0);
+    return;
+  }
+
+  // Get active models for this segment
+  const modelosRes = await db.from('modelos_segmento')
+    .select('codigo').eq('segmento_id', segActivo).eq('activo', true);
+  const modelos = (modelosRes.data || []).map(m => m.codigo);
+
+  const dealerIds = dealers.map(d => d.id);
+  const modelFilter = modelos.length ? modelos : ['__none__'];
+
+  // BP anual totals
+  const { data: bpRows } = await db.from('bp_anual')
+    .select('distribuidor_id, modelo, unidades_bp')
+    .in('distribuidor_id', dealerIds)
+    .eq('anio', AÑO)
+    .in('modelo', modelFilter);
+
+  // YTD retail
+  const { data: ytdRows } = await db.from('facturado_ytd')
+    .select('distribuidor_id, modelo, unidades_facturadas')
+    .in('distribuidor_id', dealerIds)
+    .eq('anio', AÑO)
+    .in('modelo', modelFilter);
+
+  // Last visit per dealer
+  const { data: visitasRows } = await db.from('visitas')
+    .select('distribuidor_id, fecha, id')
+    .in('distribuidor_id', dealerIds)
+    .order('fecha', { ascending: false });
+
+  // Build lookup maps
+  const bpMap = {};
+  (bpRows || []).forEach(r => {
+    bpMap[r.distribuidor_id] = (bpMap[r.distribuidor_id] || 0) + (r.unidades_bp || 0);
+  });
+  const ytdMap = {};
+  (ytdRows || []).forEach(r => {
+    ytdMap[r.distribuidor_id] = (ytdMap[r.distribuidor_id] || 0) + (r.unidades_facturadas || 0);
+  });
+  const lastVisitMap = {};
+  (visitasRows || []).forEach(v => {
+    if (!lastVisitMap[v.distribuidor_id]) lastVisitMap[v.distribuidor_id] = v.fecha;
+  });
+
+  // Compute KPI totals
+  const totalBP = Object.values(bpMap).reduce((s, v) => s + v, 0);
+  const totalYTD = Object.values(ytdMap).reduce((s, v) => s + v, 0);
+  const pct = totalBP ? Math.round(totalYTD / totalBP * 100) : 0;
+  updateKPIs(totalBP, totalYTD, pct, dealers.length);
+
+  const cfg = SEGMENTOS[segActivo];
+
+  // Render dealer cards
+  const html = dealers.map(d => {
+    const bp = bpMap[d.id] || 0;
+    const ytd = ytdMap[d.id] || 0;
+    const p = bp ? Math.min(100, Math.round(ytd / bp * 100)) : 0;
+    const fillColor = p >= 80 ? '#1A8C5B' : p >= 50 ? cfg.color : p > 0 ? '#B07A00' : '#E0E0EC';
+    const lastVisit = lastVisitMap[d.id];
+    const statusMap = {
+      activo: 'badge-green',
+      riesgo: 'badge-red',
+      nuevo: 'badge-blue',
+      seguimiento: 'badge-amber'
+    };
+    const statusLabel = d.status || 'activo';
+    const badgeClass = statusMap[statusLabel] || 'badge-blue';
+    const metaParts = [d.ciudad || d.plaza || '', d.estado || ''].filter(Boolean);
+    const metaStr = metaParts.join(' · ');
+
+    return `
+      <div class="dealer-card">
+        <div class="dc-top">
+          <div class="dc-info">
+            <div class="dc-name">${d.nombre || d.grupo || d.id}</div>
+            ${metaStr ? `<div class="dc-meta">${metaStr}</div>` : ''}
+          </div>
+          <span class="badge ${badgeClass}">${statusLabel}</span>
+        </div>
+        <div class="dc-prog">
+          <div class="dc-prog-labels">
+            <span>${ytd} / ${bp || '—'} u.</span>
+            <span style="font-weight:700;color:${fillColor}">${bp ? p + '%' : 'Sin BP'}</span>
+          </div>
+          <div class="prog-bar">
+            <div class="prog-fill" style="width:${p}%;background:${fillColor}"></div>
+          </div>
+        </div>
+        ${lastVisit
+          ? `<div class="dc-last">Última visita: ${lastVisit}</div>`
+          : `<div class="dc-last" style="color:var(--red)">Sin visitas registradas</div>`
+        }
+      </div>
+    `;
+  }).join('');
+
+  document.getElementById('dealers-list').innerHTML = html;
+}
+
+function updateKPIs(totalBP, totalYTD, pct, dealerCount) {
+  const cfg = SEGMENTOS[segActivo];
+  document.getElementById('k-bp').textContent = totalBP || '—';
+  document.getElementById('k-ytd').textContent = totalYTD || '0';
+  document.getElementById('k-pct').textContent = totalBP ? pct + '%' : '—';
+  document.getElementById('k-pct').style.color = pct >= 80 ? '#1A8C5B' : pct >= 50 ? cfg.color : '#C0392B';
+  document.getElementById('k-dealers').textContent = dealerCount;
+}
+
+async function loadModelos() {
+  const { data } = await db.from('modelos_segmento')
+    .select('*')
+    .eq('segmento_id', segActivo)
+    .eq('activo', true)
+    .order('orden');
+
+  const cfg = SEGMENTOS[segActivo];
+  const pills = (data || []).map(m =>
+    `<span class="model-pill" style="background:${cfg.color}15;color:${cfg.color};border-color:${cfg.color}40">${m.codigo}</span>`
+  ).join('');
+  document.getElementById('modelos-pills').innerHTML = pills ||
+    '<span style="color:var(--g500);font-size:13px">Sin modelos registrados</span>';
+
+  renderModelosModal(data || []);
+}
+
+function renderModelosModal(modelos) {
+  const html = modelos.map(m => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--g100)">
+      <span style="font-size:13px;font-weight:600">${m.codigo}</span>
+      <button onclick="toggleModelo('${m.id}', ${m.activo})"
+        style="font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid;cursor:pointer;background:${m.activo ? '#FDECEA' : 'var(--green-bg)'};color:${m.activo ? '#C0392B' : 'var(--green)'};border-color:${m.activo ? '#F5C6C2' : '#A3D9B9'}">
+        ${m.activo ? 'Desactivar' : 'Activar'}
+      </button>
+    </div>
+  `).join('');
+  document.getElementById('modal-modelos-list').innerHTML = html ||
+    '<div style="color:var(--g500);font-size:13px;padding:8px 0">Sin modelos</div>';
+}
+
+async function addModelo() {
+  const inp = document.getElementById('new-modelo-inp');
+  const codigo = inp.value.trim();
+  if (!codigo) return;
+
+  const { data: existing } = await db.from('modelos_segmento')
+    .select('id, activo')
+    .eq('segmento_id', segActivo)
+    .eq('codigo', codigo)
+    .limit(1);
+
+  const found = existing && existing[0];
+  if (found) {
+    if (!found.activo) {
+      await db.from('modelos_segmento').update({ activo: true }).eq('id', found.id);
+      showToast('Modelo reactivado');
+    } else {
+      showToast('Modelo ya existe');
+      return;
+    }
+  } else {
+    const { error } = await db.from('modelos_segmento').insert({ segmento_id: segActivo, codigo, activo: true });
+    if (error) { showToast('Error al agregar'); return; }
+    showToast('Modelo agregado ✓');
+  }
+
+  inp.value = '';
+  await loadModelos();
+}
+
+async function toggleModelo(id, currentActive) {
+  await db.from('modelos_segmento').update({ activo: !currentActive }).eq('id', id);
+  await loadModelos();
+}
+
+function openModelosModal() {
+  document.getElementById('modal-modelos').classList.add('open');
+}
+
+function closeModelosModal() {
+  document.getElementById('modal-modelos').classList.remove('open');
+  loadModelos();
+}
+
+let _toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+</script>
+<script src="./_nav.js?v=5"></script>
+<script>if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js");</script>
+</body>
+</html>
