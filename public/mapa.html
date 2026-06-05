@@ -10,7 +10,7 @@
   <meta name="apple-mobile-web-app-title" content="Foton OS">
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/assets/icon-192.png">
-  <title>Mapa de Red — Foton OS</title>
+  <title>Mapa de Sucursales — Foton OS</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -85,11 +85,11 @@
     .msc-pct { font-family: 'Inter Tight', sans-serif; font-size: 18px; font-weight: 700; line-height: 1; }
 
     /* ── STATUS BADGE ───────────────────────────────────────── */
-    .badge { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; padding: 2px 7px; border-radius: 4px; }
-    .b-riesgo    { background: var(--red-bg);   color: var(--red);   }
-    .b-seguimiento { background: var(--amber-bg); color: var(--amber); }
-    .b-activo    { background: var(--green-bg); color: var(--green); }
-    .b-nuevo     { background: var(--new-bg);   color: var(--new);   }
+    .badge { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; padding: 2px 7px; border-radius: 4px; color: #fff; }
+    .b-pv  { background: #7C3D1A; }
+    .b-mdt { background: #185FA5; }
+    .b-hdt { background: #042C53; }
+    .b-ev  { background: #1A7C4F; }
 
     /* ── SIDEBAR ────────────────────────────────────────────── */
     .sidebar {
@@ -118,11 +118,11 @@
       border: 1.5px solid var(--g100); background: transparent;
       color: var(--g500); transition: all .15s;
     }
-    .fb.fa { border-color: var(--b200); color: var(--b700); background: var(--b50); }
-    .fb.fr { border-color: var(--red);   color: var(--red);   background: var(--red-bg); }
-    .fb.fs { border-color: var(--amber); color: var(--amber); background: var(--amber-bg); }
-    .fb.fac { border-color: var(--green); color: var(--green); background: var(--green-bg); }
-    .fb.fn { border-color: var(--new);   color: var(--new);   background: var(--new-bg); }
+    .fb.fa  { border-color: var(--b200); color: var(--b700); background: var(--b50); }
+    .fb.fpv { border-color: #7C3D1A; color: #7C3D1A; background: #F5EDE8; }
+    .fb.fmdt{ border-color: #185FA5; color: #185FA5; background: #E6EFF8; }
+    .fb.fhdt{ border-color: #042C53; color: #042C53; background: #E0E6ED; }
+    .fb.fev { border-color: #1A7C4F; color: #1A7C4F; background: #E6F2EC; }
     .dist-card {
       padding: 12px 14px; border-bottom: 1px solid var(--g100);
       cursor: pointer; transition: background .15s;
@@ -266,7 +266,7 @@
     <img src="./assets/logo-icon.png" alt="Foton" style="height:52px;width:52px;object-fit:contain;flex-shrink:0;">
     <div class="hdr-title">Foton OS</div>
     <div class="hdr-div"></div>
-    <div class="hdr-sub">Red de Distribuidores</div>
+    <div class="hdr-sub">Red de Sucursales</div>
   </div>
   <span class="hdr-user" id="hdr-user"></span>
   <button class="hdr-list-btn" onclick="toggleSidebar()">
@@ -282,14 +282,14 @@
 
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-hdr">
-    <span class="sidebar-title">Distribuidores <span id="cnt" style="color:var(--b700);margin-left:4px">—</span></span>
+    <span class="sidebar-title">Sucursales <span id="cnt" style="color:var(--b700);margin-left:4px">—</span></span>
   </div>
   <div class="filter-row">
     <button class="fb fa" onclick="filtrar('todos',this)">Todos</button>
-    <button class="fb" onclick="filtrar('riesgo',this)">Riesgo</button>
-    <button class="fb" onclick="filtrar('seguimiento',this)">Seguim.</button>
-    <button class="fb" onclick="filtrar('activo',this)">Activo</button>
-    <button class="fb" onclick="filtrar('nuevo',this)">Nuevo</button>
+    <button class="fb" onclick="filtrar('P&V',this)">P&amp;V</button>
+    <button class="fb" onclick="filtrar('MDT/LDT',this)">MDT/LDT</button>
+    <button class="fb" onclick="filtrar('HDT',this)">HDT</button>
+    <button class="fb" onclick="filtrar('EV',this)">EV</button>
   </div>
   <div id="dist-list"></div>
 </aside>
@@ -311,26 +311,14 @@
       </a>
     </div>
   </div>
-  <div class="ps">
-    <div class="ps-title">Desempeño BP 2026</div>
-    <div id="bp-dims"></div>
-    <div class="bp-summary">
-      <span class="bp-sum-lbl">Avance total</span>
-      <span class="bp-sum-val" id="bp-avance">—</span>
-    </div>
-  </div>
-  <div class="ps">
-    <div class="ps-title">Contacto Principal</div>
-    <div id="conts"></div>
-  </div>
-  <div class="ps">
-    <div class="ps-title">Acuerdos Pendientes</div>
-    <div id="acuerdos"></div>
+  <div class="ps" id="panel-info">
+    <div class="ps-title">Información de Sucursal</div>
+    <div id="suc-info"></div>
   </div>
   <div class="pcta">
     <a href="#" class="btn-visita" id="btn-visita">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-      Iniciar Registro de Visita
+      Ver en Google Maps
     </a>
   </div>
 </aside>
@@ -341,22 +329,20 @@
 <script src="./_config.js?v=3"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const db = supabase.createClient(window.FOTON_CONFIG.SUPABASE_URL, window.FOTON_CONFIG.SUPABASE_ANON_KEY);
-
 function esc(s) { if (s == null) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-const STATUS = {
-  riesgo:     { label:'Riesgo',      cls:'b-riesgo',     color:'#C0392B' },
-  seguimiento:{ label:'Seguimiento', cls:'b-seguimiento', color:'#B07A00' },
-  activo:     { label:'Activo',      cls:'b-activo',     color:'#1A8C5B' },
-  nuevo:      { label:'Nuevo',       cls:'b-nuevo',      color:'#2563EB' }
+// Segmentos: mapeados desde distribuidores.segmento
+const SEG = {
+  'P&V':     { cls: 'b-pv',  color: '#7C3D1A', fcls: 'fpv' },
+  'MDT/LDT': { cls: 'b-mdt', color: '#185FA5', fcls: 'fmdt' },
+  'HDT':     { cls: 'b-hdt', color: '#042C53', fcls: 'fhdt' },
+  'EV':      { cls: 'b-ev',  color: '#1A7C4F', fcls: 'fev' }
 };
-function stColor(s) { return STATUS[s]?.color || '#6B6B80'; }
-function stCls(s)   { return STATUS[s]?.cls   || 'b-seguimiento'; }
-function stLbl(s)   { return STATUS[s]?.label || s || '—'; }
-function avColor(p) { return p >= 70 ? '#1A8C5B' : p >= 40 ? '#B07A00' : '#C0392B'; }
 
-let dists = [], bpMap = {}, facMap = {}, acuerdosMap = {}, markers = {}, selId = null, filtro = 'todos';
+function segColor(seg) { return SEG[seg]?.color || '#6B6B80'; }
+function segCls(seg)   { return SEG[seg]?.cls   || 'b-mdt'; }
+
+let sucursales = [], markers = {}, selId = null, filtro = 'todos';
 
 // CartoDB Voyager — clean light tiles matching white/blue theme
 const map = L.map('map', { tap: false, zoomControl: false }).setView([21.5, -101.5], 5);
@@ -367,9 +353,12 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r
   subdomains: 'abcd', maxZoom: 20
 }).addTo(map);
 
-function mkIcon(d) {
-  const c = stColor(d.status);
-  const init = (d.grupo || d.nombre || '').replace(/[^A-Za-záéíóúÁÉÍÓÚñÑ\s]/g,'').split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase() || '?';
+function mkIcon(s) {
+  const seg = s.distribuidores?.segmento || '';
+  const c = segColor(seg);
+  const init = (s.distribuidores?.grupo || s.distribuidores?.nombre || s.id || '')
+    .replace(/[^A-Za-záéíóúÁÉÍÓÚñÑ\s]/g,'')
+    .split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase() || '?';
   return L.divIcon({
     className: '',
     html: `<div style="background:${c};width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Inter Tight',sans-serif;font-weight:800;font-size:12px;color:#fff;border:3px solid #fff;box-shadow:0 2px 12px rgba(0,0,0,.2);cursor:pointer">${esc(init)}</div>`,
@@ -379,85 +368,75 @@ function mkIcon(d) {
 
 async function load() {
   try {
-    const [r1, r2, r3, r4] = await Promise.all([
-      db.from('distribuidores').select('*').order('nombre'),
-      db.from('bp_anual').select('distribuidor_id,unidades_bp').eq('anio', 2026),
-      db.from('facturado_ytd').select('distribuidor_id,unidades_facturadas').eq('anio', 2026),
-      db.from('visita_acuerdos').select('id,acuerdo,responsable,fecha_limite,visitas(distribuidor_id)').eq('completado', false)
-    ]);
-    if (r1.error) throw r1.error;
+    const { data, error } = await window.FOTON_DB
+      .from('sucursales')
+      .select('*, distribuidores(nombre, grupo, segmento)')
+      .eq('activo', true)
+      .order('estado');
 
-    dists = r1.data || [];
-
-    bpMap = {};
-    (r2.data || []).forEach(r => { bpMap[r.distribuidor_id] = (bpMap[r.distribuidor_id] || 0) + Number(r.unidades_bp || 0); });
-
-    facMap = {};
-    (r3.data || []).forEach(r => { facMap[r.distribuidor_id] = (facMap[r.distribuidor_id] || 0) + Number(r.unidades_facturadas || 0); });
-
-    acuerdosMap = {};
-    (r4.data || []).forEach(a => {
-      const did = a.visitas?.distribuidor_id;
-      if (!did) return;
-      (acuerdosMap[did] = acuerdosMap[did] || []).push(a);
-    });
+    if (error) throw error;
+    sucursales = data || [];
 
     // Show user email in header
-    const user = window.FOTON_USER || (await db.auth.getUser()).data?.user;
+    const user = window.FOTON_USER || (await window.FOTON_DB.auth.getUser()).data?.user;
     if (user) document.getElementById('hdr-user').textContent = user.email;
 
     renderAll();
     setTimeout(() => map.invalidateSize(), 200);
   } catch (e) {
     document.body.insertAdjacentHTML('beforeend',
-      `<div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:1.5px solid #F5C6C2;padding:20px 28px;border-radius:12px;font-family:'Inter',sans-serif;font-size:13px;color:#C0392B;z-index:9999;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.15)">Error al cargar datos<br><small style="font-size:10px;color:#6B6B80">${esc(String(e.message||e))}</small></div>`
+      `<div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border:1.5px solid #F5C6C2;padding:20px 28px;border-radius:12px;font-family:'Inter',sans-serif;font-size:13px;color:#C0392B;z-index:9999;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.15)">Error al cargar sucursales<br><small style="font-size:10px;color:#6B6B80">${esc(String(e.message||e))}</small></div>`
     );
   }
 }
 
 function renderAll() {
-  const vis = filtro === 'todos' ? dists : dists.filter(d => d.status === filtro);
+  const vis = filtro === 'todos'
+    ? sucursales
+    : sucursales.filter(s => (s.distribuidores?.segmento || '') === filtro);
+
   document.getElementById('cnt').textContent = vis.length;
 
-  document.getElementById('dist-list').innerHTML = vis.map(d => {
-    const bp = bpMap[d.id] || 0, fac = facMap[d.id] || 0;
-    const pct = bp > 0 ? Math.round(Math.min(fac / bp * 100, 100)) : 0;
-    const c = avColor(pct);
-    return `<div class="dist-card${selId === d.id ? ' selected' : ''}" onclick="sel('${d.id}')" id="dc${d.id}">
-      <div class="dc-top"><div class="dc-name">${esc(d.nombre)}</div><span class="badge ${stCls(d.status)}">${stLbl(d.status)}</span></div>
-      <div class="dc-loc">${esc(d.plaza)}</div>
-      <div class="sbar"><div class="sbar-track"><div class="sbar-fill" style="width:${pct}%;background:${c}"></div></div><span class="sbar-num" style="color:${c}">${pct}%</span></div>
+  document.getElementById('dist-list').innerHTML = vis.map(s => {
+    const seg = s.distribuidores?.segmento || '';
+    const grupo = s.distribuidores?.grupo || s.distribuidores?.nombre || '—';
+    const ciudad = [s.ciudad, s.estado].filter(Boolean).join(', ');
+    return `<div class="dist-card${selId === s.id ? ' selected' : ''}" onclick="sel('${esc(s.id)}')" id="dc${esc(s.id)}">
+      <div class="dc-top"><div class="dc-name">${esc(grupo)}</div>${seg ? `<span class="badge ${segCls(seg)}">${esc(seg)}</span>` : ''}</div>
+      <div class="dc-loc">${esc(ciudad)}</div>
+      ${s.maps_url ? `<div style="margin-top:4px"><a href="${esc(s.maps_url)}" target="_blank" rel="noopener noreferrer" style="font-size:10px;color:var(--b700);text-decoration:none;font-weight:600" onclick="event.stopPropagation()">Ver en Maps →</a></div>` : ''}
     </div>`;
-  }).join('');
+  }).join('') || '<div class="empty" style="margin:16px">Sin sucursales para este filtro</div>';
 
-  document.getElementById('mob-strip').innerHTML = vis.map(d => {
-    const bp = bpMap[d.id] || 0, fac = facMap[d.id] || 0;
-    const pct = bp > 0 ? Math.round(Math.min(fac / bp * 100, 100)) : 0;
-    const c = avColor(pct);
-    return `<div class="msc${selId === d.id ? ' sel' : ''}" onclick="sel('${d.id}')" id="ms${d.id}">
-      <div class="msc-name">${esc(d.nombre)}</div>
-      <div class="msc-loc">${esc(d.plaza)}</div>
-      <div class="msc-foot"><span class="badge ${stCls(d.status)}">${stLbl(d.status)}</span><span class="msc-pct" style="color:${c}">${pct}%</span></div>
+  document.getElementById('mob-strip').innerHTML = vis.map(s => {
+    const seg = s.distribuidores?.segmento || '';
+    const grupo = s.distribuidores?.grupo || s.distribuidores?.nombre || '—';
+    const ciudad = [s.ciudad, s.estado].filter(Boolean).join(', ');
+    return `<div class="msc${selId === s.id ? ' sel' : ''}" onclick="sel('${esc(s.id)}')" id="ms${esc(s.id)}">
+      <div class="msc-name">${esc(grupo)}</div>
+      <div class="msc-loc">${esc(ciudad)}</div>
+      <div class="msc-foot">${seg ? `<span class="badge ${segCls(seg)}">${esc(seg)}</span>` : '<span></span>'}</div>
     </div>`;
   }).join('');
 
   Object.values(markers).forEach(m => m.remove());
   markers = {};
-  vis.forEach(d => {
-    if (!d.lat || !d.lng) return;
-    const bp = bpMap[d.id] || 0, fac = facMap[d.id] || 0;
-    const pct = bp > 0 ? Math.round(Math.min(fac / bp * 100, 100)) : 0;
-    const mk = L.marker([parseFloat(d.lat), parseFloat(d.lng)], { icon: mkIcon(d) }).addTo(map);
-    mk.bindPopup(`<div class="lp-name">${esc(d.nombre)}</div><div style="color:${stColor(d.status)};font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">${stLbl(d.status)}</div><div style="color:#6B6B80;font-size:10px">${esc(d.plaza)}</div><div style="color:${avColor(pct)};font-family:'Inter Tight',sans-serif;font-size:14px;font-weight:700;margin-top:4px">${pct}% avance BP</div>`);
-    mk.on('click', () => sel(d.id));
-    markers[d.id] = mk;
+  vis.forEach(s => {
+    if (!s.lat || !s.lng) return;
+    const seg = s.distribuidores?.segmento || '';
+    const grupo = s.distribuidores?.grupo || s.distribuidores?.nombre || '—';
+    const ciudad = [s.ciudad, s.estado].filter(Boolean).join(', ');
+    const mk = L.marker([parseFloat(s.lat), parseFloat(s.lng)], { icon: mkIcon(s) }).addTo(map);
+    mk.bindPopup(`<div class="lp-name">${esc(grupo)}</div><div style="color:${segColor(seg)};font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">${esc(seg)}</div><div style="color:#6B6B80;font-size:10px">${esc(ciudad)}</div>`);
+    mk.on('click', () => sel(s.id));
+    markers[s.id] = mk;
   });
 }
 
 function sel(id) {
   selId = id;
-  const d = dists.find(x => x.id === id);
-  if (!d) return;
+  const s = sucursales.find(x => x.id === id);
+  if (!s) return;
 
   document.querySelectorAll('.dist-card').forEach(el => el.classList.remove('selected'));
   document.querySelectorAll('.msc').forEach(el => el.classList.remove('sel'));
@@ -465,64 +444,57 @@ function sel(id) {
   const ms = document.getElementById(`ms${id}`);
   if (ms) { ms.classList.add('sel'); ms.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' }); }
 
-  if (d.lat && d.lng) {
-    document.getElementById('nav-gmaps').href = `https://www.google.com/maps?q=${d.lat},${d.lng}`;
-    document.getElementById('nav-waze').href = `https://waze.com/ul?ll=${d.lat},${d.lng}&navigate=yes`;
+  const seg = s.distribuidores?.segmento || '';
+  const grupo = s.distribuidores?.grupo || s.distribuidores?.nombre || '—';
+  const ciudad = [s.ciudad, s.estado].filter(Boolean).join(', ');
+
+  // Botones de navegación
+  const mapsUrl = s.maps_url || (s.lat && s.lng ? `https://www.google.com/maps?q=${s.lat},${s.lng}` : null);
+  const wazeUrl = s.lat && s.lng ? `https://waze.com/ul?ll=${s.lat},${s.lng}&navigate=yes` : null;
+
+  if (mapsUrl) {
+    document.getElementById('nav-gmaps').href = mapsUrl;
     document.getElementById('nav-gmaps').style.display = 'inline-flex';
-    document.getElementById('nav-waze').style.display = 'inline-flex';
   } else {
     document.getElementById('nav-gmaps').style.display = 'none';
+  }
+  if (wazeUrl) {
+    document.getElementById('nav-waze').href = wazeUrl;
+    document.getElementById('nav-waze').style.display = 'inline-flex';
+  } else {
     document.getElementById('nav-waze').style.display = 'none';
   }
 
-  document.getElementById('pn').textContent = d.nombre;
-  document.getElementById('pl').textContent = `${d.plaza || ''} · Grupo ${d.grupo || ''}`;
-  document.getElementById('btn-visita').href = `./field-app.html?dealer=${id}`;
+  document.getElementById('pn').textContent = grupo;
+  document.getElementById('pl').textContent = ciudad;
 
-  const bp = bpMap[id] || 0, fac = facMap[id] || 0;
-  const pct = bp > 0 ? Math.round(Math.min(fac / bp * 100, 100)) : 0;
-  const pc = avColor(pct);
-  document.getElementById('bp-dims').innerHTML = `
-    <div class="bp-row"><span class="bp-lbl">BP 2026</span><div class="bp-track"><div class="bp-fill" style="width:100%;background:#EEF5FD"></div></div><span class="bp-val" style="color:var(--g500)">${bp} u</span></div>
-    <div class="bp-row"><span class="bp-lbl">Facturado YTD</span><div class="bp-track"><div class="bp-fill" style="width:${pct}%;background:${pc}"></div></div><span class="bp-val" style="color:${pc}">${fac} u</span></div>
-    <div class="bp-row"><span class="bp-lbl">Por cerrar</span><div class="bp-track"><div class="bp-fill" style="width:${Math.min(Math.max(bp-fac,0)/bp*100,100)}%;background:#FFF8E1"></div></div><span class="bp-val" style="color:#B07A00">${Math.max(bp-fac,0)} u</span></div>`;
-  document.getElementById('bp-avance').textContent = pct + '%';
-  document.getElementById('bp-avance').style.color = pc;
-
-  const nombre = d.contacto, tel = d.telefono, wa = d.whatsapp || d.telefono;
-  if (nombre) {
-    const waNum = (wa || '').replace(/\D/g,'').replace(/^52/,'');
-    document.getElementById('conts').innerHTML = `
-      <div class="ci">
-        <div class="ci-body">
-          <div class="ci-rol">Contacto Principal</div>
-          <div class="ci-name">${esc(nombre)}</div>
-          ${tel ? `<div class="ci-tel">${esc(tel)}</div>` : ''}
-        </div>
-        <div class="ci-actions">
-          ${waNum ? `<a class="cbtn wa" href="https://wa.me/52${esc(waNum)}" target="_blank" rel="noopener noreferrer"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.555 4.127 1.528 5.867L0 24l6.333-1.507A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.652-.518-5.168-1.42l-.371-.22-3.761.895.952-3.656-.242-.376A9.937 9.937 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg></a>` : ''}
-        </div>
-      </div>`;
+  // Botón CTA principal
+  const btnVisita = document.getElementById('btn-visita');
+  if (mapsUrl) {
+    btnVisita.href = mapsUrl;
+    btnVisita.target = '_blank';
+    btnVisita.rel = 'noopener noreferrer';
+    btnVisita.style.display = 'flex';
   } else {
-    document.getElementById('conts').innerHTML = '<div class="empty">Sin contacto registrado — actualiza en la tabla distribuidores</div>';
+    btnVisita.style.display = 'none';
   }
 
-  const ac = acuerdosMap[id] || [];
-  const hoy = new Date().toISOString().slice(0, 10);
-  document.getElementById('acuerdos').innerHTML = ac.length
-    ? ac.map(a => {
-        const venc = a.fecha_limite && a.fecha_limite < hoy;
-        return `<div class="comp-item">
-          <div class="comp-dot" style="background:${venc ? '#C0392B' : '#B07A00'}"></div>
-          <div>
-            <div class="comp-desc">${esc(a.acuerdo)}</div>
-            <div class="comp-meta${venc ? ' comp-venc' : ''}">${a.responsable ? esc(a.responsable) + ' · ' : ''}${a.fecha_limite ? (venc ? '⚠ ' : '') + esc(a.fecha_limite) : 'Sin fecha'}</div>
-          </div>
-        </div>`;
-      }).join('')
-    : '<div class="empty">Sin acuerdos pendientes ✓</div>';
+  // Info de sucursal en el panel
+  document.getElementById('suc-info').innerHTML = `
+    <div class="ci">
+      <div class="ci-body" style="width:100%">
+        <div class="ci-rol">Grupo Distribuidor</div>
+        <div class="ci-name">${esc(grupo)}</div>
+        ${seg ? `<div style="margin-top:6px"><span class="badge ${segCls(seg)}">${esc(seg)}</span></div>` : ''}
+        <div style="margin-top:8px;font-size:11px;color:var(--g500)">
+          <strong style="color:var(--g700)">Ciudad:</strong> ${esc(s.ciudad || '—')}<br>
+          <strong style="color:var(--g700)">Estado:</strong> ${esc(s.estado || '—')}
+        </div>
+        ${s.lat && s.lng ? `<div style="margin-top:6px;font-size:10px;color:var(--g500)">Coordenadas: ${s.lat}, ${s.lng}</div>` : ''}
+      </div>
+    </div>`;
 
-  if (d.lat && d.lng) map.flyTo([parseFloat(d.lat), parseFloat(d.lng)], 11, { duration: .8 });
+  if (s.lat && s.lng) map.flyTo([parseFloat(s.lat), parseFloat(s.lng)], 12, { duration: .8 });
   document.getElementById('panel').classList.add('open');
   document.getElementById('overlay').style.display = 'block';
   document.getElementById('mob-strip').style.visibility = 'hidden';
@@ -546,7 +518,7 @@ function toggleSidebar() {
   document.getElementById('overlay').style.display = isOpen ? 'none' : 'block';
 }
 
-const FCLS = { todos: 'fa', riesgo: 'fr', seguimiento: 'fs', activo: 'fac', nuevo: 'fn' };
+const FCLS = { 'todos': 'fa', 'P&V': 'fpv', 'MDT/LDT': 'fmdt', 'HDT': 'fhdt', 'EV': 'fev' };
 function filtrar(cat, btn) {
   filtro = cat;
   document.querySelectorAll('.fb').forEach(b => { b.className = 'fb'; });

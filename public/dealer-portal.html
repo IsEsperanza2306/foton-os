@@ -150,7 +150,10 @@
       <div class="hd-sub" id="hd-dealer-plaza">Distribuidor</div>
     </div>
   </div>
-  <div class="hd-badge" id="hd-mes">—</div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <div class="hd-badge" id="hd-mes">—</div>
+    <button onclick="handleLogout()" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:7px;padding:5px 10px;color:rgba(255,255,255,.8);font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font)" title="Cerrar sesion">Salir</button>
+  </div>
 </header>
 
 <!-- Tab bar -->
@@ -163,13 +166,13 @@
     <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
     Inventario
   </button>
-  <button class="tab-btn" id="tab-bp" onclick="goTab('bp')">
-    <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-    Mi BP
-  </button>
   <button class="tab-btn" id="tab-acuerdos" onclick="goTab('acuerdos')">
     <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
     Acuerdos
+  </button>
+  <button class="tab-btn" id="tab-backorder" onclick="goTab('backorder')">
+    <svg viewBox="0 0 24 24"><path d="M5 8h14M5 8a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2M5 8V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2"/><line x1="10" y1="13" x2="14" y2="13"/></svg>
+    Back Order
   </button>
 </nav>
 
@@ -263,23 +266,18 @@
     </div>
   </div>
 
-  <!-- Back Order detail -->
-  <div class="card">
-    <div class="card-title">Back Order — Unidades en camino</div>
-    <div id="backorder-list-inv"><div class="empty"><div class="empty-txt">Sin back order activo</div></div></div>
-  </div>
 </div>
 
-<!-- ═══ PAGE: MI BP ═══ -->
-<div class="page" id="page-bp">
+<!-- ═══ PAGE: BACK ORDER ═══ -->
+<div class="page" id="page-backorder">
   <div class="sec-hdr">
     <div>
-      <div class="sec-hdr-title">Mi Business Plan</div>
-      <div class="sec-hdr-sub">Avance acumulado 2026</div>
+      <div class="sec-hdr-title">Back Order</div>
+      <div class="sec-hdr-sub">Unidades en pipeline desde Foton</div>
     </div>
   </div>
-  <div id="bp-list">
-    <!-- Cards per model -->
+  <div id="backorder-full-list">
+    <div class="empty"><div class="empty-icon">📦</div><div class="empty-txt">Sin back order registrado</div></div>
   </div>
 </div>
 
@@ -338,15 +336,16 @@
 let db, dealerId, dealerData;
 const MODELOS = ['S3','S5','S6','S8','S12'];
 const NOW = new Date();
-const AÑO = NOW.getFullYear();
+const ANIO = NOW.getFullYear();
 const MES = NOW.getMonth() + 1;
 const MES_NOMBRES = ['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 
 // inventario[modelo] = { facturadas, fisicas, comprometidas, retail }
 let invData = {};
-let bpData = {};   // bpData[modelo] = { bp, retail_ytd }
 let acuerdos = [];
 let backOrder = [];
+// retail acumulado del mes actual para KPI
+let retailMes = 0;
 
 // ── INIT ────────────────────────────────────────────────────
 window.addEventListener('FotonAuthReady', async () => {
@@ -354,28 +353,38 @@ window.addEventListener('FotonAuthReady', async () => {
   const user = window.FOTON_USER;
   if (!user) return;
 
-  // Get user profile incl. distribuidor_id
-  const { data: perfil } = await db
-    .from('usuarios')
-    .select('*, distribuidores(*)')
-    .eq('id', user.id)
-    .single();
+  // Usar window.FOTON_DISTRIBUIDOR_ID si está disponible, si no cargar desde perfil
+  if (window.FOTON_DISTRIBUIDOR_ID) {
+    dealerId = window.FOTON_DISTRIBUIDOR_ID;
+    // Cargar datos del distribuidor para el header
+    const { data: dist } = await db.from('distribuidores')
+      .select('nombre, plaza')
+      .eq('id', dealerId)
+      .limit(1);
+    dealerData = dist && dist.length ? dist[0] : {};
+  } else {
+    // Fallback: obtener perfil completo
+    const { data: perfiles } = await db
+      .from('usuarios')
+      .select('rol, distribuidor_id, distribuidores(nombre, plaza)')
+      .eq('id', user.id)
+      .limit(1);
 
-  if (!perfil || perfil.rol !== 'dealer' || !perfil.distribuidor_id) {
-    // Not a dealer — redirect to mapa
-    location.replace('./mapa.html');
-    return;
+    const perfil = perfiles && perfiles.length ? perfiles[0] : null;
+    if (!perfil || perfil.rol !== 'dealer' || !perfil.distribuidor_id) {
+      location.replace('./mapa.html');
+      return;
+    }
+    dealerId = perfil.distribuidor_id;
+    dealerData = perfil.distribuidores || {};
   }
-
-  dealerId = perfil.distribuidor_id;
-  dealerData = perfil.distribuidores;
 
   // Header
   document.getElementById('hd-dealer-name').textContent = dealerData.nombre || 'Mi Portal';
-  document.getElementById('hd-dealer-plaza').textContent = dealerData.plaza || '';
-  document.getElementById('hd-mes').textContent = MES_NOMBRES[MES] + ' ' + AÑO;
+  document.getElementById('hd-dealer-plaza').textContent = dealerData.plaza || 'Distribuidor';
+  document.getElementById('hd-mes').textContent = MES_NOMBRES[MES] + ' ' + ANIO;
 
-  await Promise.all([loadInventario(), loadBP(), loadAcuerdos(), loadBackOrder()]);
+  await Promise.all([loadInventario(), loadAcuerdos(), loadBackOrder()]);
   renderInicio();
 });
 
@@ -384,47 +393,25 @@ async function loadInventario() {
   const { data } = await db.from('inventario')
     .select('*')
     .eq('distribuidor_id', dealerId)
-    .eq('anio', AÑO)
+    .eq('anio', ANIO)
     .eq('mes', MES);
 
   invData = {};
   MODELOS.forEach(m => {
     const row = (data || []).find(r => r.modelo === m);
     invData[m] = {
-      facturadas: row?.unidades_facturadas || 0,
-      fisicas: row?.unidades_fisicas || 0,
-      comprometidas: row?.unidades_comprometidas || 0,
-      retail: row?.unidades_retail || 0,
-      id: row?.id || null
+      facturadas: row ? (row.unidades_facturadas || 0) : 0,
+      fisicas: row ? (row.unidades_fisicas || 0) : 0,
+      comprometidas: row ? (row.unidades_comprometidas || 0) : 0,
+      retail: row ? (row.unidades_retail || 0) : 0,
+      id: row ? row.id : null
     };
   });
   renderInventario();
 }
 
-async function loadBP() {
-  // BP targets
-  const { data: bpRows } = await db.from('bp_anual')
-    .select('modelo, unidades_bp')
-    .eq('distribuidor_id', dealerId)
-    .eq('anio', AÑO);
-
-  // YTD retail (sum all months)
-  const { data: ytdRows } = await db.from('facturado_ytd')
-    .select('modelo, unidades_facturadas, mes')
-    .eq('distribuidor_id', dealerId)
-    .eq('anio', AÑO);
-
-  bpData = {};
-  MODELOS.forEach(m => {
-    const bp = (bpRows || []).find(r => r.modelo === m)?.unidades_bp || 0;
-    const ytd = (ytdRows || []).filter(r => r.modelo === m).reduce((s, r) => s + (r.unidades_facturadas || 0), 0);
-    bpData[m] = { bp, ytd };
-  });
-  renderBP();
-}
-
 async function loadAcuerdos() {
-  // Get latest visita for this dealer
+  // Obtener la visita mas reciente de este distribuidor
   const { data: visitas } = await db.from('visitas')
     .select('id, fecha')
     .eq('distribuidor_id', dealerId)
@@ -438,23 +425,27 @@ async function loadAcuerdos() {
   }
 
   const v = visitas[0];
-  document.getElementById('acuerdos-visita-fecha').textContent = 'Última visita: ' + v.fecha;
+  // Formatear fecha legible
+  const fechaStr = v.fecha ? new Date(v.fecha + 'T12:00:00').toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' }) : v.fecha;
+  document.getElementById('acuerdos-visita-fecha').textContent = 'Ultima visita: ' + fechaStr;
 
+  // visita_acuerdos no tiene columna "numero" ni "texto" — usar descripcion, ordenar por id
   const { data: acs } = await db.from('visita_acuerdos')
-    .select('*')
+    .select('id, visita_id, descripcion, responsable, fecha_compromiso, cumplido')
     .eq('visita_id', v.id)
-    .order('numero');
+    .order('id', { ascending: true });
 
-  acuerdos = acs || [];
+  // Agregar indice secuencial para mostrar numero
+  acuerdos = (acs || []).map((a, i) => ({ ...a, _idx: i + 1 }));
   renderAcuerdos();
 }
 
 async function loadBackOrder() {
+  // back_order no tiene created_at en schema — ordenar por eta
   const { data } = await db.from('back_order')
-    .select('*')
+    .select('id, distribuidor_id, modelo, unidades, status, eta, notas')
     .eq('distribuidor_id', dealerId)
-    .neq('status', 'entregado')
-    .order('created_at', { ascending: false });
+    .order('eta', { ascending: true });
 
   backOrder = data || [];
   renderBackOrder();
@@ -462,16 +453,7 @@ async function loadBackOrder() {
 
 // ── RENDERERS ───────────────────────────────────────────────
 function renderInicio() {
-  // BP totals
-  const totalBP = Object.values(bpData).reduce((s, v) => s + v.bp, 0);
-  const totalYTD = Object.values(bpData).reduce((s, v) => s + v.ytd, 0);
-  const pct = totalBP ? Math.round(totalYTD / totalBP * 100) : 0;
-  document.getElementById('inicio-retail-total').textContent = totalYTD;
-  document.getElementById('inicio-bp-total').textContent = '/ ' + totalBP + ' u.';
-  document.getElementById('inicio-prog').style.width = Math.min(pct, 100) + '%';
-  document.getElementById('inicio-pct').textContent = pct + '% del objetivo anual';
-
-  // KPI strip
+  // KPI strip — basado en inventario del mes
   const disp = Object.values(invData).reduce((s, v) => s + Math.max(0, v.fisicas - v.comprometidas), 0);
   const comp = Object.values(invData).reduce((s, v) => s + v.comprometidas, 0);
   const retail = Object.values(invData).reduce((s, v) => s + v.retail, 0);
@@ -479,12 +461,21 @@ function renderInicio() {
   document.getElementById('ki-comprometido').textContent = comp;
   document.getElementById('ki-retail-mes').textContent = retail;
 
-  // Back order inicio
+  // Progreso BP — usar retail acumulado vs inventario total facturado como referencia simple
+  const totalFact = Object.values(invData).reduce((s, v) => s + v.facturadas, 0);
+  const pct = totalFact ? Math.round(retail / totalFact * 100) : 0;
+  document.getElementById('inicio-retail-total').textContent = retail;
+  document.getElementById('inicio-bp-total').textContent = '/ ' + totalFact + ' u. fact.';
+  document.getElementById('inicio-prog').style.width = Math.min(pct, 100) + '%';
+  document.getElementById('inicio-pct').textContent = pct + '% retail sobre facturado ' + MES_NOMBRES[MES];
+
+  // Back order resumen en inicio (solo activos, no entregados)
+  const boActivos = backOrder.filter(bo => bo.status !== 'entregado');
   const boEl = document.getElementById('backorder-list-inicio');
-  if (!backOrder.length) {
+  if (!boActivos.length) {
     boEl.innerHTML = '<div class="empty"><div class="empty-icon">📦</div><div class="empty-txt">Sin back order activo</div></div>';
   } else {
-    boEl.innerHTML = backOrder.map(bo => `
+    boEl.innerHTML = boActivos.slice(0, 4).map(bo => `
       <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--g100)">
         <div>
           <span style="font-weight:700;color:var(--g900)">${bo.modelo}</span>
@@ -498,7 +489,7 @@ function renderInicio() {
     `).join('');
   }
 
-  // Acuerdos pendientes inicio
+  // Acuerdos pendientes resumen (max 3)
   const pending = acuerdos.filter(a => !a.cumplido).slice(0, 3);
   const acEl = document.getElementById('acuerdos-inicio-list');
   if (!pending.length) {
@@ -506,10 +497,10 @@ function renderInicio() {
   } else {
     acEl.innerHTML = pending.map(a => `
       <div class="ac-row">
-        <div class="ac-num">${a.numero}</div>
+        <div class="ac-num">${a._idx}</div>
         <div class="ac-body">
-          <div class="ac-texto">${a.texto}</div>
-          ${a.responsable ? `<div class="ac-meta">Responsable: ${a.responsable}${a.fecha_compromiso ? ' · ' + a.fecha_compromiso : ''}</div>` : ''}
+          <div class="ac-texto">${a.descripcion || ''}</div>
+          ${a.responsable ? `<div class="ac-meta">Responsable: ${a.responsable}${a.fecha_compromiso ? ' &middot; ' + a.fecha_compromiso : ''}</div>` : ''}
         </div>
       </div>
     `).join('');
@@ -517,7 +508,7 @@ function renderInicio() {
 }
 
 function renderInventario() {
-  document.getElementById('inv-mes-lbl').textContent = MES_NOMBRES[MES] + ' ' + AÑO + ' — toca un número para editar';
+  document.getElementById('inv-mes-lbl').textContent = MES_NOMBRES[MES] + ' ' + ANIO + ' — toca un numero para editar';
   const tbody = document.getElementById('inv-tbody');
   tbody.innerHTML = MODELOS.map(m => {
     const d = invData[m];
@@ -532,49 +523,6 @@ function renderInventario() {
       <td><span class="inv-disponible ${dispClass}">${disp}</span></td>
     </tr>`;
   }).join('');
-
-  // Back order in inventory tab
-  const boEl = document.getElementById('backorder-list-inv');
-  if (!backOrder.length) {
-    boEl.innerHTML = '<div class="empty"><div class="empty-txt">Sin back order activo</div></div>';
-  } else {
-    boEl.innerHTML = backOrder.map(bo => `
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--g100)">
-        <div>
-          <span style="font-weight:700">${bo.modelo}</span>
-          <span style="font-size:12px;color:var(--g500);margin-left:6px">${bo.unidades} unidades</span>
-          ${bo.notas ? `<div style="font-size:11px;color:var(--g500);margin-top:2px">${bo.notas}</div>` : ''}
-        </div>
-        <div style="text-align:right">
-          <span class="badge badge-${statusColor(bo.status)}">${bo.status}</span>
-          ${bo.eta ? `<div style="font-size:11px;color:var(--g500);margin-top:3px">ETA ${bo.eta}</div>` : ''}
-        </div>
-      </div>
-    `).join('');
-  }
-}
-
-function renderBP() {
-  const list = document.getElementById('bp-list');
-  list.innerHTML = MODELOS.map(m => {
-    const { bp, ytd } = bpData[m];
-    if (!bp && !ytd) return '';
-    const pct = bp ? Math.round(ytd / bp * 100) : 0;
-    const fillClass = pct >= 80 ? 'green' : pct >= 50 ? '' : 'amber';
-    return `
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <span style="font-family:var(--tight);font-size:17px;font-weight:800;color:var(--g900)">${m}</span>
-          <span style="font-size:13px;color:var(--g500)">${ytd} / ${bp} u.</span>
-        </div>
-        <div class="prog-bar"><div class="prog-fill ${fillClass}" style="width:${Math.min(pct,100)}%"></div></div>
-        <div style="display:flex;justify-content:space-between;margin-top:6px">
-          <span style="font-size:11px;color:var(--g500)">YTD acumulado</span>
-          <span style="font-size:12px;font-weight:700;color:${pct>=80?'var(--green)':pct>=50?'var(--b700)':'var(--amber)'}">${pct}%</span>
-        </div>
-      </div>
-    `;
-  }).join('');
 }
 
 function renderAcuerdos() {
@@ -586,12 +534,12 @@ function renderAcuerdos() {
   list.innerHTML = acuerdos.map(a => `
     <div class="card" style="${a.cumplido ? 'opacity:.6' : ''}">
       <div class="ac-row" style="padding:0">
-        <div class="ac-num ${a.cumplido ? 'done' : ''}">${a.cumplido ? '✓' : a.numero}</div>
+        <div class="ac-num ${a.cumplido ? 'done' : ''}">${a.cumplido ? '✓' : a._idx}</div>
         <div class="ac-body">
-          <div class="ac-texto">${a.texto}</div>
-          ${a.responsable ? `<div class="ac-meta">${a.responsable}${a.fecha_compromiso ? ' · ' + a.fecha_compromiso : ''}</div>` : ''}
+          <div class="ac-texto">${a.descripcion || ''}</div>
+          ${a.responsable ? `<div class="ac-meta">${a.responsable}${a.fecha_compromiso ? ' &middot; ' + a.fecha_compromiso : ''}</div>` : ''}
         </div>
-        <button class="ac-check ${a.cumplido ? 'done' : ''}" onclick="toggleAcuerdo('${a.id}', ${a.cumplido})" title="${a.cumplido ? 'Marcar pendiente' : 'Marcar completado'}">
+        <button class="ac-check ${a.cumplido ? 'done' : ''}" onclick="toggleAcuerdo('${a.id}', ${!!a.cumplido})" title="${a.cumplido ? 'Marcar pendiente' : 'Marcar completado'}">
           ${a.cumplido ? '✓' : ''}
         </button>
       </div>
@@ -600,14 +548,37 @@ function renderAcuerdos() {
 }
 
 function renderBackOrder() {
+  // Pagina Back Order completa
+  const list = document.getElementById('backorder-full-list');
+  if (list) {
+    if (!backOrder.length) {
+      list.innerHTML = '<div class="empty"><div class="empty-icon">📦</div><div class="empty-txt">Sin back order registrado</div></div>';
+    } else {
+      list.innerHTML = backOrder.map(bo => `
+        <div class="card" style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div>
+              <div style="font-family:var(--tight);font-size:17px;font-weight:800;color:var(--g900)">${bo.modelo}</div>
+              <div style="font-size:13px;color:var(--g500);margin-top:2px">${bo.unidades} unidades</div>
+              ${bo.notas ? `<div style="font-size:12px;color:var(--g500);margin-top:4px">${bo.notas}</div>` : ''}
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <span class="badge badge-${statusColor(bo.status)}">${bo.status}</span>
+              ${bo.eta ? `<div style="font-size:11px;color:var(--g500);margin-top:6px">ETA: ${bo.eta}</div>` : ''}
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+  }
+  // Actualizar inicio con los datos de back order
   renderInicio();
-  renderInventario();
 }
 
 // ── INVENTORY EDIT ───────────────────────────────────────────
 function editCell(span, modelo, campo) {
   if (span.querySelector('input')) return;
-  const current = invData[modelo][campo === 'facturadas' ? 'facturadas' : campo === 'fisicas' ? 'fisicas' : campo === 'comprometidas' ? 'comprometidas' : 'retail'];
+  const current = invData[modelo][campo] || 0;
   const input = document.createElement('input');
   input.type = 'number';
   input.className = 'inv-inp';
@@ -615,8 +586,7 @@ function editCell(span, modelo, campo) {
   input.min = 0;
   input.addEventListener('blur', () => {
     const val = Math.max(0, parseInt(input.value) || 0);
-    const key = campo === 'facturadas' ? 'facturadas' : campo === 'fisicas' ? 'fisicas' : campo === 'comprometidas' ? 'comprometidas' : 'retail';
-    invData[modelo][key] = val;
+    invData[modelo][campo] = val;
     renderInventario();
   });
   input.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === 'Escape') input.blur(); });
@@ -630,7 +600,7 @@ async function saveInventario() {
   const upserts = MODELOS.map(m => ({
     distribuidor_id: dealerId,
     modelo: m,
-    anio: AÑO,
+    anio: ANIO,
     mes: MES,
     unidades_facturadas: invData[m].facturadas,
     unidades_fisicas: invData[m].fisicas,
@@ -673,47 +643,35 @@ async function registrarVenta() {
   const unidades = parseInt(document.getElementById('venta-unidades').value) || 0;
   if (!modelo || unidades < 1) { showToast('Selecciona modelo y unidades'); return; }
 
-  // Update inventario: retail + reduce fisicas
-  if (!invData[modelo]) invData[modelo] = { facturadas:0, fisicas:0, comprometidas:0, retail:0 };
-  invData[modelo].retail += unidades;
-  invData[modelo].fisicas = Math.max(0, invData[modelo].fisicas - unidades);
+  // Actualizar estado local: sumar retail, restar de fisicas
+  if (!invData[modelo]) {
+    invData[modelo] = { facturadas: 0, fisicas: 0, comprometidas: 0, retail: 0, id: null };
+  }
+  invData[modelo] = {
+    ...invData[modelo],
+    retail: invData[modelo].retail + unidades,
+    fisicas: Math.max(0, invData[modelo].fisicas - unidades)
+  };
 
-  // Also update facturado_ytd for BP tracking
-  const { data: existing } = await db.from('facturado_ytd')
-    .select('id, unidades_facturadas')
-    .eq('distribuidor_id', dealerId)
-    .eq('anio', AÑO)
-    .eq('mes', MES)
-    .eq('modelo', modelo)
-    .single();
-
-  const newQty = (existing?.unidades_facturadas || 0) + unidades;
-  await db.from('facturado_ytd').upsert({
-    distribuidor_id: dealerId,
-    anio: AÑO, mes: MES, modelo,
-    unidades_facturadas: newQty,
-    updated_at: new Date().toISOString()
-  }, { onConflict: 'distribuidor_id,anio,mes,modelo' });
-
+  // Guardar inventario actualizado en Supabase (upsert por conflict key)
   await saveInventario();
-  await loadBP();
   closeVentaModal();
-  renderBP();
+  renderInventario();
   renderInicio();
-  showToast(`${unidades} ${modelo} registrado${unidades>1?'s':''} ✓`);
+  showToast(`${unidades} ${modelo} registrado${unidades > 1 ? 's' : ''} ✓`);
 }
 
 // ── NAVIGATION ───────────────────────────────────────────────
 function goTab(tab) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('page-' + tab)?.classList.add('active');
-  document.getElementById('tab-' + tab)?.classList.add('active');
+  document.getElementById('page-' + tab) && document.getElementById('page-' + tab).classList.add('active');
+  document.getElementById('tab-' + tab) && document.getElementById('tab-' + tab).classList.add('active');
 }
 
 // ── HELPERS ──────────────────────────────────────────────────
 function statusColor(s) {
-  return { confirmado:'blue', produccion:'amber', transito:'green', entregado:'blue' }[s] || 'blue';
+  return { confirmado: 'blue', produccion: 'amber', transito: 'green', entregado: 'blue' }[s] || 'blue';
 }
 
 let _toastTimer;
@@ -724,8 +682,12 @@ function showToast(msg) {
   clearTimeout(_toastTimer);
   _toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
 }
+
+async function handleLogout() {
+  if (db) await db.auth.signOut();
+  location.replace('./index.html');
+}
 </script>
-<script src="./_nav.js?v=4"></script>
 <script>if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js");</script>
 </body>
 </html>

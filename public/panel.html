@@ -426,45 +426,60 @@
 <script src="./_config.js?v=3"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+// ---------------------------------------------------------------------------
+// Segment metadata (matches segmentos table values)
+// ---------------------------------------------------------------------------
 const SEGMENTOS = {
-  pv:  { id:'pv',  nombre:'P&V',     nombreCompleto:'Pick-ups & Vans',    color:'#7C3D1A' },
-  mdt: { id:'mdt', nombre:'MDT/LDT', nombreCompleto:'Ligeros y Medianos',  color:'#185FA5' },
-  hdt: { id:'hdt', nombre:'HDT',     nombreCompleto:'Pesados',             color:'#042C53' },
-  ev:  { id:'ev',  nombre:'EV',      nombreCompleto:'Eléctricos',          color:'#1A7C4F' }
+  pv:  { id:'pv',  nombre:'P&V',     nombreCompleto:'Pick-ups & Vans',   color:'#7C3D1A' },
+  mdt: { id:'mdt', nombre:'MDT/LDT', nombreCompleto:'Ligeros y Medianos', color:'#185FA5' },
+  hdt: { id:'hdt', nombre:'HDT',     nombreCompleto:'Pesados',            color:'#042C53' },
+  ev:  { id:'ev',  nombre:'EV',      nombreCompleto:'Eléctricos',         color:'#1A7C4F' }
 };
 
 const MES_NOMBRES = ['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 const NOW = new Date();
-const AÑO = NOW.getFullYear();
-const MES = NOW.getMonth() + 1;
+const ANIO = NOW.getFullYear();
+const MES  = NOW.getMonth() + 1;
 
-let db, rol, segActivo, userDealerIds = null;
+// Global state
+let db, rol, segActivo;
+// Array of dealer IDs assigned to the current user (only set for 'regional')
+let userDealerIds = null;
 
+// ---------------------------------------------------------------------------
+// Boot: wait for auth signal from _nav.js
+// ---------------------------------------------------------------------------
 window.addEventListener('FotonAuthReady', async () => {
-  db = window.FOTON_DB;
+  db  = window.FOTON_DB;
   rol = window.FOTON_ROL || 'regional';
   const segFromProfile = window.FOTON_SEGMENTO || null;
 
-  // Update header badge
-  document.getElementById('hd-badge').textContent = MES_NOMBRES[MES] + ' ' + AÑO;
+  // Header badge: current month + year
+  document.getElementById('hd-badge').textContent = MES_NOMBRES[MES] + ' ' + ANIO;
+
+  // Roles that can edit models: admin, director, direccion
+  const canEdit = ['admin', 'director', 'direccion'].includes(rol);
+  if (canEdit) {
+    document.getElementById('btn-gestionar').style.display = 'inline-flex';
+  }
 
   if (rol === 'direccion') {
-    // Dirección general: show all segment tabs, default to 'mdt'
+    // Dirección general: show all segment tabs, start on 'pv'
     document.getElementById('seg-tabs').style.display = 'flex';
     document.getElementById('hd-title').textContent = 'Dirección General';
-    document.getElementById('hd-sub').textContent = 'Foton México — Todos los segmentos';
-    document.getElementById('btn-gestionar').style.display = 'inline-flex';
-    segActivo = 'mdt';
+    document.getElementById('hd-sub').textContent = 'Todos los segmentos';
+    segActivo = 'pv';
   } else {
-    // Director or regional: lock to their segment
+    // director / regional / admin: locked to their segment
     segActivo = segFromProfile || 'mdt';
-    document.getElementById('hd-title').textContent = SEGMENTOS[segActivo]?.nombreCompleto || segActivo.toUpperCase();
-    document.getElementById('hd-sub').textContent = 'Panel de segmento';
+    document.getElementById('hd-title').textContent =
+      SEGMENTOS[segActivo]?.nombreCompleto || segActivo.toUpperCase();
+    document.getElementById('hd-sub').textContent = 'Foton México';
 
-    if (rol === 'director') {
-      document.getElementById('btn-gestionar').style.display = 'inline-flex';
-    }
+    // Paint header with segment color
+    document.getElementById('main-header').style.background = SEGMENTOS[segActivo].color;
 
+    // For 'regional', pre-load their assigned dealers
     if (rol === 'regional') {
       await loadUserDealers();
     }
@@ -473,19 +488,36 @@ window.addEventListener('FotonAuthReady', async () => {
   await switchSeg(segActivo);
 });
 
+// ---------------------------------------------------------------------------
+// Load dealer IDs assigned to this user for their segment
+// Only called for rol === 'regional'
+// ---------------------------------------------------------------------------
 async function loadUserDealers() {
-  const { data } = await db.from('asignaciones')
+  const userId = window.FOTON_USER && window.FOTON_USER.id;
+  if (!userId) { userDealerIds = []; return; }
+
+  const { data, error } = await db
+    .from('asignaciones')
     .select('distribuidor_id')
-    .eq('usuario_id', window.FOTON_USER.id)
+    .eq('usuario_id', userId)
     .eq('segmento_id', segActivo);
+
+  if (error) {
+    console.error('Error cargando asignaciones:', error.message);
+    userDealerIds = [];
+    return;
+  }
   userDealerIds = (data || []).map(r => r.distribuidor_id);
 }
 
+// ---------------------------------------------------------------------------
+// Switch active segment (only direccion can call this interactively)
+// ---------------------------------------------------------------------------
 async function switchSeg(seg) {
   segActivo = seg;
   const cfg = SEGMENTOS[seg];
 
-  // Update active tab styling
+  // Update tab styles (tabs only visible for direccion)
   ['pv','mdt','hdt','ev'].forEach(s => {
     const btn = document.getElementById('st-' + s);
     if (!btn) return;
@@ -499,115 +531,148 @@ async function switchSeg(seg) {
     }
   });
 
-  // Update section titles
+  // Update section labels
   document.getElementById('sec-dealers-title').textContent = 'Distribuidores — ' + cfg.nombreCompleto;
-  document.getElementById('sec-models-title').textContent = 'Modelos ' + cfg.nombre;
-  document.getElementById('modal-seg-title').textContent = 'Modelos ' + cfg.nombre;
-
-  // Update header accent color for non-direccion roles
-  if (rol !== 'direccion') {
-    document.getElementById('main-header').style.background = cfg.color;
-  }
+  document.getElementById('sec-models-title').textContent  = 'Modelos ' + cfg.nombre;
+  document.getElementById('modal-seg-title').textContent   = 'Modelos ' + cfg.nombre;
 
   await Promise.all([loadDealers(), loadModelos()]);
 }
 
+// ---------------------------------------------------------------------------
+// Load dealer cards for the active segment
+//
+// Filtering strategy:
+//   regional  → only dealers in userDealerIds (their assignments)
+//   director  → all dealers in the segment (distribuidores.segmento = segActivo)
+//   direccion → all dealers in the segment
+//   admin     → all dealers in the segment
+// ---------------------------------------------------------------------------
 async function loadDealers() {
   document.getElementById('dealers-list').innerHTML = '<div class="loading">Cargando...</div>';
 
-  // Build query for distribuidores
-  let query = db.from('distribuidores').select('*').eq('status', 'activo').order('nombre');
-  if (userDealerIds !== null && userDealerIds.length > 0) {
+  // Early exit: regional with no assignments
+  if (rol === 'regional' && userDealerIds !== null && userDealerIds.length === 0) {
+    document.getElementById('dealers-list').innerHTML =
+      '<div class="empty">Sin distribuidores asignados</div>';
+    updateKPIs(0, 0, 0, 0);
+    return;
+  }
+
+  // Build dealers query
+  let query = db
+    .from('distribuidores')
+    .select('id, nombre, grupo, ciudad, estado, plaza, status, segmento')
+    .eq('segmento', segActivo)   // always filter by active segment
+    .order('nombre');
+
+  // For regional, further restrict to their assigned dealer IDs
+  if (rol === 'regional' && userDealerIds && userDealerIds.length > 0) {
     query = query.in('id', userDealerIds);
-  } else if (userDealerIds !== null && userDealerIds.length === 0) {
-    document.getElementById('dealers-list').innerHTML = '<div class="empty">Sin distribuidores asignados</div>';
+  }
+
+  const { data: dealers, error: dealersError } = await query;
+
+  if (dealersError) {
+    console.error('Error cargando distribuidores:', dealersError.message);
+    document.getElementById('dealers-list').innerHTML =
+      '<div class="empty">Error al cargar distribuidores</div>';
     updateKPIs(0, 0, 0, 0);
     return;
   }
 
-  const { data: dealers } = await query;
   if (!dealers || !dealers.length) {
-    document.getElementById('dealers-list').innerHTML = '<div class="empty">Sin distribuidores</div>';
+    document.getElementById('dealers-list').innerHTML =
+      '<div class="empty">Sin distribuidores en este segmento</div>';
     updateKPIs(0, 0, 0, 0);
     return;
   }
-
-  // Get active models for this segment
-  const modelosRes = await db.from('modelos_segmento')
-    .select('codigo').eq('segmento_id', segActivo).eq('activo', true);
-  const modelos = (modelosRes.data || []).map(m => m.codigo);
 
   const dealerIds = dealers.map(d => d.id);
-  const modelFilter = modelos.length ? modelos : ['__none__'];
 
-  // BP anual totals
-  const { data: bpRows } = await db.from('bp_anual')
-    .select('distribuidor_id, modelo, unidades_bp')
+  // ----- BP: suma objetivo anual (todos los meses del año) -----
+  // Table: bp(distribuidor_id, anio, mes, objetivo, facturado_ytd)
+  const { data: bpRows, error: bpError } = await db
+    .from('bp')
+    .select('distribuidor_id, objetivo, facturado_ytd')
     .in('distribuidor_id', dealerIds)
-    .eq('anio', AÑO)
-    .in('modelo', modelFilter);
+    .eq('anio', ANIO);
 
-  // YTD retail
-  const { data: ytdRows } = await db.from('facturado_ytd')
-    .select('distribuidor_id, modelo, unidades_facturadas')
-    .in('distribuidor_id', dealerIds)
-    .eq('anio', AÑO)
-    .in('modelo', modelFilter);
+  if (bpError) console.error('Error cargando BP:', bpError.message);
 
-  // Last visit per dealer
-  const { data: visitasRows } = await db.from('visitas')
-    .select('distribuidor_id, fecha, id')
+  // Build per-dealer maps
+  // objetivo  → sum of all months in the year (= BP anual)
+  // facturado → take the highest facturado_ytd value per dealer
+  //             (facturado_ytd is cumulative so the last available month
+  //              has the full YTD figure; we take max to be safe with any
+  //              ordering issues)
+  const bpMap  = {};  // distribuidor_id → total objetivo anual
+  const ytdMap = {};  // distribuidor_id → facturado YTD
+
+  (bpRows || []).forEach(r => {
+    const did = r.distribuidor_id;
+    bpMap[did]  = (bpMap[did]  || 0) + (r.objetivo || 0);
+    // facturado_ytd is cumulative; keep the largest value
+    if ((r.facturado_ytd || 0) > (ytdMap[did] || 0)) {
+      ytdMap[did] = r.facturado_ytd || 0;
+    }
+  });
+
+  // ----- Last visit per dealer -----
+  // Table: visitas(id, distribuidor_id, fecha, tipo_visita, created_at)
+  const { data: visitasRows, error: visitasError } = await db
+    .from('visitas')
+    .select('distribuidor_id, fecha')
     .in('distribuidor_id', dealerIds)
     .order('fecha', { ascending: false });
 
-  // Build lookup maps
-  const bpMap = {};
-  (bpRows || []).forEach(r => {
-    bpMap[r.distribuidor_id] = (bpMap[r.distribuidor_id] || 0) + (r.unidades_bp || 0);
-  });
-  const ytdMap = {};
-  (ytdRows || []).forEach(r => {
-    ytdMap[r.distribuidor_id] = (ytdMap[r.distribuidor_id] || 0) + (r.unidades_facturadas || 0);
-  });
+  if (visitasError) console.error('Error cargando visitas:', visitasError.message);
+
   const lastVisitMap = {};
   (visitasRows || []).forEach(v => {
-    if (!lastVisitMap[v.distribuidor_id]) lastVisitMap[v.distribuidor_id] = v.fecha;
+    if (!lastVisitMap[v.distribuidor_id]) {
+      lastVisitMap[v.distribuidor_id] = v.fecha;
+    }
   });
 
-  // Compute KPI totals
-  const totalBP = Object.values(bpMap).reduce((s, v) => s + v, 0);
+  // ----- KPI totals -----
+  const totalBP  = Object.values(bpMap).reduce((s, v) => s + v, 0);
   const totalYTD = Object.values(ytdMap).reduce((s, v) => s + v, 0);
   const pct = totalBP ? Math.round(totalYTD / totalBP * 100) : 0;
   updateKPIs(totalBP, totalYTD, pct, dealers.length);
 
   const cfg = SEGMENTOS[segActivo];
+  const statusMap = {
+    activo:      'badge-green',
+    riesgo:      'badge-red',
+    nuevo:       'badge-blue',
+    seguimiento: 'badge-amber'
+  };
 
-  // Render dealer cards
+  // ----- Render dealer cards -----
   const html = dealers.map(d => {
-    const bp = bpMap[d.id] || 0;
+    const bp  = bpMap[d.id]  || 0;
     const ytd = ytdMap[d.id] || 0;
-    const p = bp ? Math.min(100, Math.round(ytd / bp * 100)) : 0;
+    const p   = bp ? Math.min(100, Math.round(ytd / bp * 100)) : 0;
     const fillColor = p >= 80 ? '#1A8C5B' : p >= 50 ? cfg.color : p > 0 ? '#B07A00' : '#E0E0EC';
     const lastVisit = lastVisitMap[d.id];
-    const statusMap = {
-      activo: 'badge-green',
-      riesgo: 'badge-red',
-      nuevo: 'badge-blue',
-      seguimiento: 'badge-amber'
-    };
     const statusLabel = d.status || 'activo';
-    const badgeClass = statusMap[statusLabel] || 'badge-blue';
+    const badgeClass  = statusMap[statusLabel] || 'badge-blue';
+    // Show group name if different from nombre, then city/state
+    const nameLine  = d.nombre || d.grupo || d.id;
+    const groupLine = (d.grupo && d.grupo !== d.nombre) ? d.grupo : null;
     const metaParts = [d.ciudad || d.plaza || '', d.estado || ''].filter(Boolean);
-    const metaStr = metaParts.join(' · ');
+    const metaStr   = metaParts.join(' · ');
 
     return `
       <div class="dealer-card">
         <div class="dc-top">
           <div class="dc-info">
-            <div class="dc-name">${d.nombre || d.grupo || d.id}</div>
-            ${metaStr ? `<div class="dc-meta">${metaStr}</div>` : ''}
+            <div class="dc-name">${escHtml(nameLine)}</div>
+            ${groupLine ? `<div class="dc-meta" style="font-weight:600">${escHtml(groupLine)}</div>` : ''}
+            ${metaStr ? `<div class="dc-meta">${escHtml(metaStr)}</div>` : ''}
           </div>
-          <span class="badge ${badgeClass}">${statusLabel}</span>
+          <span class="badge ${badgeClass}">${escHtml(statusLabel)}</span>
         </div>
         <div class="dc-prog">
           <div class="dc-prog-labels">
@@ -619,7 +684,7 @@ async function loadDealers() {
           </div>
         </div>
         ${lastVisit
-          ? `<div class="dc-last">Última visita: ${lastVisit}</div>`
+          ? `<div class="dc-last">Última visita: ${escHtml(String(lastVisit))}</div>`
           : `<div class="dc-last" style="color:var(--red)">Sin visitas registradas</div>`
         }
       </div>
@@ -629,52 +694,80 @@ async function loadDealers() {
   document.getElementById('dealers-list').innerHTML = html;
 }
 
+// ---------------------------------------------------------------------------
+// KPI bar update
+// ---------------------------------------------------------------------------
 function updateKPIs(totalBP, totalYTD, pct, dealerCount) {
   const cfg = SEGMENTOS[segActivo];
-  document.getElementById('k-bp').textContent = totalBP || '—';
-  document.getElementById('k-ytd').textContent = totalYTD || '0';
-  document.getElementById('k-pct').textContent = totalBP ? pct + '%' : '—';
-  document.getElementById('k-pct').style.color = pct >= 80 ? '#1A8C5B' : pct >= 50 ? cfg.color : '#C0392B';
+  document.getElementById('k-bp').textContent  = totalBP  ? totalBP.toLocaleString('es-MX')  : '—';
+  document.getElementById('k-ytd').textContent = totalYTD ? totalYTD.toLocaleString('es-MX') : '0';
+  document.getElementById('k-pct').textContent = totalBP  ? pct + '%' : '—';
+  document.getElementById('k-pct').style.color = pct >= 80 ? '#1A8C5B'
+                                                : pct >= 50 ? cfg.color
+                                                : pct > 0   ? '#C0392B'
+                                                : 'var(--g500)';
   document.getElementById('k-dealers').textContent = dealerCount;
 }
 
+// ---------------------------------------------------------------------------
+// Models: load pills (active only) + populate management modal (all)
+// ---------------------------------------------------------------------------
 async function loadModelos() {
-  const { data } = await db.from('modelos_segmento')
-    .select('*')
+  const { data: allModelos, error } = await db
+    .from('modelos_segmento')
+    .select('id, codigo, activo, orden')
     .eq('segmento_id', segActivo)
-    .eq('activo', true)
     .order('orden');
 
-  const cfg = SEGMENTOS[segActivo];
-  const pills = (data || []).map(m =>
-    `<span class="model-pill" style="background:${cfg.color}15;color:${cfg.color};border-color:${cfg.color}40">${m.codigo}</span>`
+  if (error) {
+    console.error('Error cargando modelos:', error.message);
+    document.getElementById('modelos-pills').innerHTML =
+      '<span style="color:var(--red);font-size:13px">Error al cargar modelos</span>';
+    return;
+  }
+
+  const cfg    = SEGMENTOS[segActivo];
+  const active = (allModelos || []).filter(m => m.activo);
+
+  // Pills: only active models
+  const pills = active.map(m =>
+    `<span class="model-pill" style="background:${cfg.color}15;color:${cfg.color};border-color:${cfg.color}40">${escHtml(m.codigo)}</span>`
   ).join('');
   document.getElementById('modelos-pills').innerHTML = pills ||
-    '<span style="color:var(--g500);font-size:13px">Sin modelos registrados</span>';
+    '<span style="color:var(--g500);font-size:13px">Sin modelos activos</span>';
 
-  renderModelosModal(data || []);
+  // Modal list: all models (to allow activating inactive ones)
+  renderModelosModal(allModelos || []);
 }
 
 function renderModelosModal(modelos) {
   const html = modelos.map(m => `
     <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--g100)">
-      <span style="font-size:13px;font-weight:600">${m.codigo}</span>
-      <button onclick="toggleModelo('${m.id}', ${m.activo})"
-        style="font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid;cursor:pointer;background:${m.activo ? '#FDECEA' : 'var(--green-bg)'};color:${m.activo ? '#C0392B' : 'var(--green)'};border-color:${m.activo ? '#F5C6C2' : '#A3D9B9'}">
+      <span style="font-size:13px;font-weight:600;${m.activo ? '' : 'color:var(--g500)'}">${escHtml(m.codigo)}</span>
+      <button onclick="toggleModelo('${escHtml(m.id)}', ${m.activo})"
+        style="font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid;cursor:pointer;
+          background:${m.activo ? '#FDECEA' : 'var(--green-bg)'};
+          color:${m.activo ? '#C0392B' : 'var(--green)'};
+          border-color:${m.activo ? '#F5C6C2' : '#A3D9B9'}">
         ${m.activo ? 'Desactivar' : 'Activar'}
       </button>
     </div>
   `).join('');
   document.getElementById('modal-modelos-list').innerHTML = html ||
-    '<div style="color:var(--g500);font-size:13px;padding:8px 0">Sin modelos</div>';
+    '<div style="color:var(--g500);font-size:13px;padding:8px 0">Sin modelos registrados</div>';
 }
 
+// ---------------------------------------------------------------------------
+// Add new model
+// ---------------------------------------------------------------------------
 async function addModelo() {
-  const inp = document.getElementById('new-modelo-inp');
-  const codigo = inp.value.trim();
+  const inp    = document.getElementById('new-modelo-inp');
+  const codigo = inp.value.trim().toUpperCase();
   if (!codigo) return;
 
-  const { data: existing } = await db.from('modelos_segmento')
+  // Check if model already exists in this segment (active or inactive)
+  const { data: existing } = await db
+    .from('modelos_segmento')
     .select('id, activo')
     .eq('segmento_id', segActivo)
     .eq('codigo', codigo)
@@ -683,27 +776,43 @@ async function addModelo() {
   const found = existing && existing[0];
   if (found) {
     if (!found.activo) {
-      await db.from('modelos_segmento').update({ activo: true }).eq('id', found.id);
+      const { error } = await db
+        .from('modelos_segmento')
+        .update({ activo: true })
+        .eq('id', found.id);
+      if (error) { showToast('Error al reactivar'); return; }
       showToast('Modelo reactivado');
     } else {
-      showToast('Modelo ya existe');
+      showToast('Modelo ya existe y está activo');
       return;
     }
   } else {
-    const { error } = await db.from('modelos_segmento').insert({ segmento_id: segActivo, codigo, activo: true });
+    const { error } = await db
+      .from('modelos_segmento')
+      .insert({ segmento_id: segActivo, codigo, activo: true });
     if (error) { showToast('Error al agregar'); return; }
-    showToast('Modelo agregado ✓');
+    showToast('Modelo agregado');
   }
 
   inp.value = '';
   await loadModelos();
 }
 
+// ---------------------------------------------------------------------------
+// Toggle model active state
+// ---------------------------------------------------------------------------
 async function toggleModelo(id, currentActive) {
-  await db.from('modelos_segmento').update({ activo: !currentActive }).eq('id', id);
+  const { error } = await db
+    .from('modelos_segmento')
+    .update({ activo: !currentActive })
+    .eq('id', id);
+  if (error) { showToast('Error al actualizar modelo'); return; }
   await loadModelos();
 }
 
+// ---------------------------------------------------------------------------
+// Modal helpers
+// ---------------------------------------------------------------------------
 function openModelosModal() {
   document.getElementById('modal-modelos').classList.add('open');
 }
@@ -713,6 +822,9 @@ function closeModelosModal() {
   loadModelos();
 }
 
+// ---------------------------------------------------------------------------
+// Toast
+// ---------------------------------------------------------------------------
 let _toastTimer;
 function showToast(msg) {
   const el = document.getElementById('toast');
@@ -720,6 +832,17 @@ function showToast(msg) {
   el.classList.add('show');
   clearTimeout(_toastTimer);
   _toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ---------------------------------------------------------------------------
+// XSS helper: escape HTML for dynamic content
+// ---------------------------------------------------------------------------
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 </script>
 <script src="./_nav.js?v=5"></script>
