@@ -551,27 +551,45 @@ async function switchSeg(seg) {
 async function loadDealers() {
   document.getElementById('dealers-list').innerHTML = '<div class="loading">Cargando...</div>';
 
-  // Early exit: regional with no assignments
-  if (rol === 'regional' && userDealerIds !== null && userDealerIds.length === 0) {
+  let dealerIds = [];
+
+  if (rol === 'regional') {
+    // Regional: their own assignments for their segment
+    if (userDealerIds !== null && userDealerIds.length === 0) {
+      document.getElementById('dealers-list').innerHTML =
+        '<div class="empty">Sin distribuidores asignados</div>';
+      updateKPIs(0, 0, 0, 0);
+      return;
+    }
+    dealerIds = userDealerIds || [];
+  } else {
+    // director / direccion / admin: get all dealers assigned in this segment via asignaciones
+    const { data: asigRows, error: asigErr } = await db
+      .from('asignaciones')
+      .select('distribuidor_id')
+      .eq('segmento_id', segActivo);
+    if (asigErr) {
+      console.error('Error cargando asignaciones:', asigErr.message);
+      document.getElementById('dealers-list').innerHTML =
+        '<div class="empty">Error al cargar distribuidores</div>';
+      updateKPIs(0, 0, 0, 0);
+      return;
+    }
+    dealerIds = [...new Set((asigRows || []).map(r => r.distribuidor_id))];
+  }
+
+  if (!dealerIds.length) {
     document.getElementById('dealers-list').innerHTML =
-      '<div class="empty">Sin distribuidores asignados</div>';
+      '<div class="empty">Sin distribuidores en este segmento</div>';
     updateKPIs(0, 0, 0, 0);
     return;
   }
 
-  // Build dealers query
-  let query = db
+  const { data: dealers, error: dealersError } = await db
     .from('distribuidores')
-    .select('id, nombre, grupo, ciudad, estado, plaza, status, segmento')
-    .eq('segmento', segActivo)   // always filter by active segment
+    .select('id, nombre, grupo, ciudad, estado, plaza, status')
+    .in('id', dealerIds)
     .order('nombre');
-
-  // For regional, further restrict to their assigned dealer IDs
-  if (rol === 'regional' && userDealerIds && userDealerIds.length > 0) {
-    query = query.in('id', userDealerIds);
-  }
-
-  const { data: dealers, error: dealersError } = await query;
 
   if (dealersError) {
     console.error('Error cargando distribuidores:', dealersError.message);
@@ -588,34 +606,32 @@ async function loadDealers() {
     return;
   }
 
-  const dealerIds = dealers.map(d => d.id);
-
-  // ----- BP: suma objetivo anual (todos los meses del año) -----
-  // Table: bp(distribuidor_id, anio, mes, objetivo, facturado_ytd)
+  // ----- BP anual: sum unidades_bp per dealer -----
   const { data: bpRows, error: bpError } = await db
-    .from('bp')
-    .select('distribuidor_id, objetivo, facturado_ytd')
+    .from('bp_anual')
+    .select('distribuidor_id, unidades_bp')
     .in('distribuidor_id', dealerIds)
     .eq('anio', ANIO);
 
   if (bpError) console.error('Error cargando BP:', bpError.message);
 
-  // Build per-dealer maps
-  // objetivo  → sum of all months in the year (= BP anual)
-  // facturado → take the highest facturado_ytd value per dealer
-  //             (facturado_ytd is cumulative so the last available month
-  //              has the full YTD figure; we take max to be safe with any
-  //              ordering issues)
-  const bpMap  = {};  // distribuidor_id → total objetivo anual
-  const ytdMap = {};  // distribuidor_id → facturado YTD
+  // ----- Facturado YTD: sum all months' unidades_facturadas per dealer -----
+  const { data: ytdRows, error: ytdError } = await db
+    .from('facturado_ytd')
+    .select('distribuidor_id, unidades_facturadas')
+    .in('distribuidor_id', dealerIds)
+    .eq('anio', ANIO);
+
+  if (ytdError) console.error('Error cargando YTD:', ytdError.message);
+
+  const bpMap  = {};  // distribuidor_id → total unidades_bp anual
+  const ytdMap = {};  // distribuidor_id → total unidades_facturadas YTD
 
   (bpRows || []).forEach(r => {
-    const did = r.distribuidor_id;
-    bpMap[did]  = (bpMap[did]  || 0) + (r.objetivo || 0);
-    // facturado_ytd is cumulative; keep the largest value
-    if ((r.facturado_ytd || 0) > (ytdMap[did] || 0)) {
-      ytdMap[did] = r.facturado_ytd || 0;
-    }
+    bpMap[r.distribuidor_id] = (bpMap[r.distribuidor_id] || 0) + (r.unidades_bp || 0);
+  });
+  (ytdRows || []).forEach(r => {
+    ytdMap[r.distribuidor_id] = (ytdMap[r.distribuidor_id] || 0) + (r.unidades_facturadas || 0);
   });
 
   // ----- Last visit per dealer -----
