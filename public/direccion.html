@@ -1142,7 +1142,7 @@ async function openMinutas(dealerId, dealerName) {
           <div class="mn-acuerdo">
             <div class="mn-acuerdo-dot"></div>
             <div>
-              <div class="mn-acuerdo-text">${a.descripcion || ''}</div>
+              <div class="mn-acuerdo-text">${a.texto || ''}</div>
               ${a.responsable || a.fecha_compromiso ? `<div class="mn-acuerdo-meta">${[a.responsable, a.fecha_compromiso].filter(Boolean).join(' · ')}</div>` : ''}
             </div>
           </div>`).join('')
@@ -1247,7 +1247,7 @@ async function descargarExcelVisita(visitaId, distribuidorId) {
     (acuerdos || []).forEach((ac, i) => {
       if (i >= 11) return;
       const rn = 42 + i;
-      if (ac.descripcion) sc(`B${rn}`, ac.descripcion);
+      if (ac.texto) sc(`B${rn}`, ac.texto);
       if (ac.responsable)  sc(`V${rn}`, ac.responsable);
       if (ac.fecha_compromiso) sc(`AC${rn}`, ac.fecha_compromiso);
     });

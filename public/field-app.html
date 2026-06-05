@@ -31,14 +31,6 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{font-family:var(--font);background:var(--g50);color:var(--g900);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;padding-bottom:0}
 
-/* ── SECTION TAB BAR (sticky below header) ───────────────── */
-.tab-bar{position:sticky;top:56px;left:0;right:0;z-index:150;background:var(--white);border-bottom:1px solid var(--g100);display:flex;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
-.tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:9px 4px 7px;border:none;background:none;cursor:pointer;transition:all .15s;gap:3px}
-.tab-btn svg{width:22px;height:22px;stroke:var(--g300);fill:none;stroke-width:1.8;transition:stroke .15s}
-.tab-btn span{font-size:10px;font-weight:600;color:var(--g300);letter-spacing:.3px;transition:color .15s}
-.tab-btn.active svg{stroke:var(--b700)}
-.tab-btn.active span{color:var(--b700)}
-
 /* ── HEADER ──────────────────────────────────────────────── */
 .header{background:var(--b800);height:56px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(4,44,83,.22)}
 .hd-left{display:flex;align-items:center;gap:11px}
@@ -48,23 +40,13 @@ body{font-family:var(--font);background:var(--g50);color:var(--g900);font-size:1
 .hd-text .hd-sub{font-size:10px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.8px}
 .hd-badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:7px;padding:5px 11px;font-size:11px;font-weight:700;color:rgba(255,255,255,.85);font-family:var(--tight)}
 
-/* ── DEALER BAR ──────────────────────────────────────────── */
-.dealer-bar{background:var(--b900);padding:9px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.08)}
-.dealer-bar label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.4);white-space:nowrap}
-.dealer-bar select{flex:1;padding:7px 10px;border-radius:7px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);color:#fff;font-size:13px;font-family:var(--font);outline:none}
-.dealer-bar select option{background:var(--b900);color:#fff}
-
-/* ── DEALER BANNER ───────────────────────────────────────── */
-.dealer-banner{background:var(--b700);border-bottom:1px solid var(--b600);padding:10px 16px;display:none}
-.db-name{font-family:var(--tight);font-size:13px;font-weight:700;color:#fff;margin-bottom:3px}
-.db-foco{font-size:12px;color:rgba(255,255,255,.72);line-height:1.5}
-.db-pill{display:inline-flex;align-items:center;font-size:10px;font-weight:700;text-transform:uppercase;padding:2px 9px;border-radius:20px;background:rgba(255,255,255,.13);color:#fff;border:1px solid rgba(255,255,255,.22);margin-bottom:5px}
-
-/* ── PHASE TABS ──────────────────────────────────────────── */
-.phase-tabs{display:flex;overflow-x:auto;background:var(--white);border-bottom:2px solid var(--g100);scrollbar-width:none;box-shadow:0 1px 4px rgba(0,0,0,.05)}
-.phase-tabs::-webkit-scrollbar{display:none}
-.phase-tab{flex-shrink:0;padding:11px 15px;font-size:11px;font-weight:700;font-family:var(--font);color:var(--g500);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all .15s;text-transform:uppercase;letter-spacing:.6px}
-.phase-tab.active{color:var(--b700);border-bottom-color:var(--b700)}
+/* ── SECTION TAB BAR (sticky below header) ───────────────── */
+.tab-bar{position:sticky;top:56px;left:0;right:0;z-index:150;background:var(--white);border-bottom:1px solid var(--g100);display:flex;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:9px 4px 7px;border:none;background:none;cursor:pointer;transition:all .15s;gap:3px}
+.tab-btn svg{width:22px;height:22px;stroke:var(--g300);fill:none;stroke-width:1.8;transition:stroke .15s}
+.tab-btn span{font-size:10px;font-weight:600;color:var(--g300);letter-spacing:.3px;transition:color .15s}
+.tab-btn.active svg{stroke:var(--b700)}
+.tab-btn.active span{color:var(--b700)}
 
 /* ── PAGES ───────────────────────────────────────────────── */
 .page{display:none}.page.active{display:block}
@@ -75,91 +57,25 @@ body{font-family:var(--font);background:var(--g50);color:var(--g900);font-size:1
 .card-title{display:flex;align-items:center;gap:7px;font-family:var(--tight);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--b700);margin-bottom:14px}
 .card-title::before{content:"";display:block;width:3px;height:14px;background:var(--b700);border-radius:2px;flex-shrink:0}
 
-/* ── SEC HERO ────────────────────────────────────────────── */
-.sec-hero{background:linear-gradient(135deg,var(--b800),var(--b600));border-radius:12px;padding:16px;margin-bottom:14px;display:flex;align-items:center;gap:14px}
-.sec-hero-num{width:40px;height:40px;background:rgba(255,255,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--tight);font-size:18px;font-weight:800;color:#fff;flex-shrink:0}
-.sec-hero-title{font-family:var(--tight);font-size:17px;font-weight:800;color:#fff}
-.sec-hero-sub{font-size:12px;color:rgba(255,255,255,.65);margin-top:2px}
-
-/* ── BADGES ──────────────────────────────────────────────── */
-.badge{flex-shrink:0;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap}
-.bkpi{background:var(--b50);color:var(--b700)}
-.bmin{background:var(--green-bg);color:var(--green-t)}
-.brisk{background:var(--red-bg);color:var(--red)}
-.btip{background:var(--amber-bg);color:var(--amber)}
-
-/* ── CHECKLIST ───────────────────────────────────────────── */
-.chk{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid var(--g100);cursor:pointer}
-.chk:last-child{border-bottom:none;padding-bottom:0}
-.chk:first-child{padding-top:0}
-.chkbox{width:20px;height:20px;border-radius:5px;border:2px solid var(--g300);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;margin-top:1px}
-.chk.done .chkbox{background:var(--b700);border-color:var(--b700)}
-.chk.done .chkbox::after{content:"";width:10px;height:6px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translateY(-1px);display:block}
-.chk.done .chk-text{opacity:.45;text-decoration:line-through}
-.chk-body{flex:1}
-.chk-text{font-size:14px;color:var(--g900);line-height:1.4;font-weight:500}
-.chk-sub{font-size:12px;color:var(--g500);margin-top:3px;line-height:1.4}
-.chk-tags{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap}
-
-/* ── INSIGHT ─────────────────────────────────────────────── */
-.insight{border-left:3px solid var(--b500);padding:10px 13px;background:var(--b50);border-radius:0 10px 10px 0;font-size:13px;color:var(--g700);line-height:1.6;margin-bottom:12px}
-.insight strong{color:var(--b800);font-weight:600}
-
-/* ── TIPO CARDS ──────────────────────────────────────────── */
-.tipo-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.tipo-card{background:var(--g50);border-radius:11px;border:1.5px solid var(--g100);padding:13px;cursor:pointer;transition:all .15s}
-.tipo-card.selected{background:var(--b50);border-color:var(--b500)}
-.tc-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.tc-name{font-family:var(--tight);font-size:13px;font-weight:700;color:var(--g900);margin-bottom:5px}
-.tc-items{font-size:11px;color:var(--g500);line-height:1.8}
-
-/* ── TIMELINE ────────────────────────────────────────────── */
-.tl-item{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--g100)}
-.tl-item:last-child{border-bottom:none}
-.tl-left{display:flex;flex-direction:column;align-items:center;width:44px;flex-shrink:0}
-.tl-time{font-family:var(--tight);font-size:12px;font-weight:700;color:var(--b700);margin-bottom:6px;white-space:nowrap}
-.tl-line{flex:1;width:2px;background:var(--b100);border-radius:1px;min-height:20px}
-.tl-item:last-child .tl-line{display:none}
-.tl-body{flex:1;padding-bottom:4px}
-.tl-title{font-family:var(--tight);font-size:14px;font-weight:700;color:var(--g900)}
-.tl-sub{font-size:12px;color:var(--g500);margin-top:4px;line-height:1.5}
-.tl-tags{display:flex;gap:5px;margin-top:7px;flex-wrap:wrap}
-
-/* ── MAP ROWS ────────────────────────────────────────────── */
-.map-row{display:flex;gap:10px;padding:8px 2px;border-bottom:1px solid var(--g100);align-items:flex-start}
-.map-row:last-child{border-bottom:none}
-.map-key{font-size:11px;font-weight:700;color:var(--g500);width:115px;flex-shrink:0;padding-top:1px;text-transform:uppercase;letter-spacing:.3px}
-.map-val{font-size:13px;color:var(--g700);flex:1;line-height:1.5}
-
-/* ── DEALER CARDS ────────────────────────────────────────── */
-.dc{background:var(--white);border-radius:12px;border:1px solid var(--g100);box-shadow:0 1px 4px rgba(0,0,0,.04);padding:14px;margin-bottom:10px;transition:border-color .15s}
-.dc.hl{border-color:var(--b400);box-shadow:0 0 0 3px var(--b50)}
-.dc-hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px}
-.dc-name{font-family:var(--tight);font-size:14px;font-weight:700;color:var(--g900)}
-.dc-meta{font-size:11px;color:var(--g500);margin-top:2px}
-.spill{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.3px;flex-shrink:0;white-space:nowrap}
-.sv{background:var(--green-bg);color:var(--green-t)}
-.sr{background:var(--red-bg);color:var(--red)}
-.sa{background:var(--amber-bg);color:var(--amber)}
-.sb{background:var(--b50);color:var(--b700)}
-.prog-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.prog-track{flex:1;height:6px;background:var(--g100);border-radius:3px;overflow:hidden}
-.prog-fill{height:100%;border-radius:3px;transition:width .6s cubic-bezier(.4,0,.2,1)}
-.prog-pct{font-family:var(--tight);font-size:13px;font-weight:700;width:36px;text-align:right}
-.dc-foco{font-size:12px;color:var(--g500);background:var(--g50);padding:8px 10px;border-radius:8px;line-height:1.5;margin-bottom:10px}
-.dc-foco strong{color:var(--g700);font-weight:600}
-.dc-acts{display:flex;gap:7px}
-.da{flex:1;padding:8px;border-radius:8px;font-size:12px;font-weight:600;border:1.5px solid var(--g100);background:var(--white);color:var(--g700);cursor:pointer;font-family:var(--font);transition:all .15s}
-.da.p{background:var(--b700);border-color:var(--b700);color:#fff}
-
-/* ── CTA BLOCK ───────────────────────────────────────────── */
-.cta{background:linear-gradient(135deg,var(--b800),var(--b700));border-radius:14px;padding:20px 16px;text-align:center;margin-bottom:12px;box-shadow:0 4px 16px rgba(12,68,124,.22)}
-.cta p{font-size:13px;color:rgba(255,255,255,.7);margin-bottom:14px;line-height:1.6}
-.cta strong{color:#fff}
-.cta button{background:#fff;color:var(--b800);border:none;border-radius:10px;padding:13px 24px;font-size:14px;font-weight:700;cursor:pointer;width:100%;font-family:var(--tight);transition:all .15s}
-
-/* ── RESET BTN ───────────────────────────────────────────── */
-.reset-btn{font-size:11px;color:var(--b700);background:var(--b50);border:1px solid var(--b200);border-radius:7px;padding:5px 12px;cursor:pointer;margin-bottom:12px;font-weight:600;font-family:var(--font)}
+/* ── SELECTION SCREEN ────────────────────────────────────── */
+.sel-screen{min-height:calc(100vh - 56px);display:flex;flex-direction:column;background:var(--g50)}
+.sel-hero{background:linear-gradient(135deg,var(--b900),var(--b700));padding:28px 20px 24px;text-align:center}
+.sel-hero-title{font-family:var(--tight);font-size:22px;font-weight:800;color:#fff;margin-bottom:6px}
+.sel-hero-sub{font-size:13px;color:rgba(255,255,255,.65);line-height:1.5}
+.sel-body{padding:20px 16px;flex:1}
+.sel-field{margin-bottom:16px}
+.sel-field label{display:block;font-size:11px;font-weight:700;color:var(--g500);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.sel-field select,.sel-field input[type=date]{width:100%;padding:13px 14px;border:1.5px solid var(--g100);border-radius:12px;font-size:15px;font-family:var(--font);color:var(--g900);background:var(--white);outline:none;transition:border-color .15s;-webkit-appearance:none;appearance:none}
+.sel-field select:focus,.sel-field input[type=date]:focus{border-color:var(--b700)}
+.sel-field select:disabled{opacity:.55;background:var(--g50)}
+.sel-locked{width:100%;padding:13px 14px;border:1.5px solid var(--b200);border-radius:12px;font-size:15px;font-family:var(--font);color:var(--b800);background:var(--b50);font-weight:600}
+.sel-locked-label{font-size:11px;color:var(--b700);margin-top:5px}
+.sel-info-row{background:var(--b50);border:1px solid var(--b200);border-radius:10px;padding:10px 13px;margin-top:8px;font-size:12px;color:var(--b800);display:none}
+.sel-info-row.visible{display:block}
+.sel-info-row strong{font-weight:700}
+.btn-comenzar{width:100%;padding:16px;background:var(--b700);color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;font-family:var(--tight);cursor:pointer;transition:opacity .15s;margin-top:4px}
+.btn-comenzar:disabled{opacity:.4;cursor:not-allowed}
+.btn-comenzar:not(:disabled):active{opacity:.85}
 
 /* ── MINUTA FORM ─────────────────────────────────────────── */
 .field{margin-bottom:14px}
@@ -208,6 +124,19 @@ body{font-family:var(--font);background:var(--g50);color:var(--g900);font-size:1
 .ac-meta{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .rnum{width:24px;height:24px;background:var(--g50);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--g500);font-weight:600;flex-shrink:0;margin:auto}
 
+/* ── SEC HERO ────────────────────────────────────────────── */
+.sec-hero{background:linear-gradient(135deg,var(--b800),var(--b600));border-radius:12px;padding:16px;margin-bottom:14px;display:flex;align-items:center;gap:14px}
+.sec-hero-num{width:40px;height:40px;background:rgba(255,255,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--tight);font-size:18px;font-weight:800;color:#fff;flex-shrink:0}
+.sec-hero-title{font-family:var(--tight);font-size:17px;font-weight:800;color:#fff}
+.sec-hero-sub{font-size:12px;color:rgba(255,255,255,.65);margin-top:2px}
+
+/* ── CONTEXT BAR (debajo del header en minuta) ───────────── */
+.context-bar{background:var(--b900);padding:8px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.08)}
+.ctx-regional{font-size:11px;font-weight:700;color:rgba(255,255,255,.55);white-space:nowrap}
+.ctx-dist{font-size:13px;font-weight:700;color:#fff;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ctx-fecha{font-size:11px;color:rgba(255,255,255,.55);white-space:nowrap}
+.ctx-change{font-size:11px;color:var(--b400);background:none;border:none;cursor:pointer;padding:0;font-weight:600;white-space:nowrap}
+
 /* ── PHOTOS ──────────────────────────────────────────────── */
 .photos-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
 .photo-thumb{aspect-ratio:4/3;border-radius:10px;overflow:hidden;position:relative;background:var(--g50);border:1.5px dashed var(--g300);display:flex;align-items:center;justify-content:center;cursor:pointer}
@@ -223,14 +152,6 @@ canvas#firma-canvas{width:100%;height:140px;display:block;touch-action:none}
 .btn-sm{padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;border:1.5px solid var(--g100);background:var(--white);color:var(--g900);cursor:pointer}
 .btn-sm.danger{color:var(--red);border-color:var(--red-bg)}
 
-/* ── BOTTOM NAV (minuta) ─────────────────────────────────── */
-.step-nav-bar{position:fixed;bottom:60px;left:0;right:0;background:var(--white);border-top:1px solid var(--g100);display:none;gap:10px;padding:10px 16px;z-index:150}
-.step-nav-bar.visible{display:flex}
-.btn-prev,.btn-next{padding:13px;border-radius:12px;font-size:14px;font-weight:700;border:none;cursor:pointer;transition:all .15s;font-family:var(--font)}
-.btn-prev{flex:1;background:var(--g50);color:var(--g500)}
-.btn-next{flex:2;background:var(--b700);color:#fff}
-.btn-prev:disabled{opacity:.3;pointer-events:none}
-
 /* ── MINUTA PROGRESS ─────────────────────────────────────── */
 .m-progress{background:var(--white);padding:10px 16px 12px;border-bottom:1px solid var(--g100)}
 .m-prog-labels{display:flex;justify-content:space-between;margin-bottom:6px}
@@ -240,175 +161,11 @@ canvas#firma-canvas{width:100%;height:140px;display:block;touch-action:none}
 .m-prog-fill{height:4px;background:var(--b700);border-radius:2px;transition:width .3s}
 
 /* ── MINUTA STEP NAV ─────────────────────────────────────── */
-.m-step-tabs{display:flex;overflow-x:auto;background:var(--white);border-bottom:1px solid var(--g100);scrollbar-width:none;display:none}
-.m-step-tabs.visible{display:flex}
+.m-step-tabs{display:flex;overflow-x:auto;background:var(--white);border-bottom:1px solid var(--g100);scrollbar-width:none}
 .m-step-tabs::-webkit-scrollbar{display:none}
 .m-step-tab{flex-shrink:0;padding:10px 14px;font-size:11px;font-weight:700;color:var(--g300);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all .15s;text-transform:uppercase;letter-spacing:.5px}
 .m-step-tab.active{color:var(--b700);border-bottom-color:var(--b700)}
 .m-step-tab.done{color:var(--green)}
-
-/* ── TOAST ───────────────────────────────────────────────── */
-.toast{position:fixed;bottom:140px;left:50%;transform:translateX(-50%);background:var(--g900);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;white-space:nowrap}
-.toast.show{opacity:1}
-
-
-/* ── AGENDA OPERATIVA ────────────────────────────────────── */
-.agenda-progress-bar {
-  background: var(--white); padding: 10px 16px 12px;
-  border-bottom: 1px solid var(--g100);
-  display: none;
-}
-.agenda-progress-bar.visible { display: block; }
-.apb-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-.apb-label { font-size: 11px; font-weight: 700; color: var(--b700); text-transform: uppercase; letter-spacing: .5px; }
-.apb-count { font-family: var(--tight); font-size: 13px; font-weight: 700; color: var(--g500); }
-.apb-count span { color: var(--b700); }
-.apb-track { height: 6px; background: var(--g100); border-radius: 3px; overflow: hidden; }
-.apb-fill { height: 100%; background: linear-gradient(90deg, var(--b700), var(--b500)); border-radius: 3px; transition: width .4s cubic-bezier(.4,0,.2,1); }
-
-.agenda-item {
-  background: var(--white); border-radius: 14px;
-  border: 1.5px solid var(--g100);
-  box-shadow: 0 1px 4px rgba(0,0,0,.04);
-  margin-bottom: 10px; overflow: hidden;
-  transition: border-color .2s;
-}
-.agenda-item.ai-done { border-color: var(--b200); }
-.agenda-item.ai-done .ai-header { background: var(--b50); }
-
-.ai-header {
-  display: flex; align-items: center; gap: 12px;
-  padding: 13px 14px; cursor: pointer;
-  transition: background .15s; user-select: none;
-}
-.ai-num {
-  width: 28px; height: 28px; border-radius: 8px;
-  background: var(--g100); display: flex; align-items: center; justify-content: center;
-  font-family: var(--tight); font-size: 13px; font-weight: 700; color: var(--g500);
-  flex-shrink: 0; transition: all .2s;
-}
-.agenda-item.ai-done .ai-num { background: var(--b700); color: white; }
-.agenda-item.ai-done .ai-num::after { content: "✓"; }
-.agenda-item:not(.ai-done) .ai-num-text { display: block; }
-.agenda-item.ai-done .ai-num-text { display: none; }
-
-.ai-info { flex: 1; }
-.ai-title { font-family: var(--tight); font-size: 14px; font-weight: 700; color: var(--g900); line-height: 1.3; }
-.ai-subtitle { font-size: 11px; color: var(--g500); margin-top: 2px; }
-.ai-tags { display: flex; gap: 4px; margin-top: 5px; flex-wrap: wrap; }
-
-.ai-check-btn {
-  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
-  border: 2px solid var(--g300); background: var(--white);
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: all .2s;
-}
-.agenda-item.ai-done .ai-check-btn { background: var(--b700); border-color: var(--b700); }
-.ai-check-btn svg { width: 14px; height: 14px; stroke: var(--g300); stroke-width: 2.5; fill: none; transition: stroke .2s; }
-.agenda-item.ai-done .ai-check-btn svg { stroke: white; }
-
-.ai-body {
-  display: none; padding: 0 14px 14px; border-top: 1px solid var(--g100);
-}
-.ai-body.open { display: block; }
-
-.ai-comment-label {
-  font-size: 11px; font-weight: 700; color: var(--g500); text-transform: uppercase;
-  letter-spacing: .5px; margin: 12px 0 5px;
-}
-.ai-comment {
-  width: 100%; padding: 10px 12px; border: 1.5px solid var(--g100);
-  border-radius: 10px; font-size: 13px; font-family: var(--font); color: var(--g900);
-  background: var(--g50); outline: none; resize: none; line-height: 1.5;
-  transition: border-color .15s;
-}
-.ai-comment:focus { border-color: var(--b700); background: var(--white); }
-
-.ai-data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-.ai-data-field label { font-size: 10px; font-weight: 700; color: var(--g500); text-transform: uppercase; letter-spacing: .4px; display: block; margin-bottom: 4px; }
-.ai-data-field input, .ai-data-field select {
-  width: 100%; padding: 8px 10px; border: 1.5px solid var(--g100); border-radius: 9px;
-  font-size: 13px; font-family: var(--font); color: var(--g900);
-  background: var(--white); outline: none; -webkit-appearance: none;
-}
-.ai-data-field input:focus, .ai-data-field select:focus { border-color: var(--b700); }
-
-.ai-photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 10px; }
-.ai-photo-thumb {
-  aspect-ratio: 1; border-radius: 9px; overflow: hidden;
-  background: var(--g50); border: 1.5px dashed var(--g300);
-  display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;
-}
-.ai-photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
-.ai-photo-thumb .ai-rm {
-  position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,.55);
-  color: white; border: none; border-radius: 50%; width: 20px; height: 20px;
-  font-size: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer;
-}
-.ai-add-photo {
-  width: 100%; margin-top: 8px; padding: 10px; background: var(--g50);
-  border: 1.5px dashed var(--g300); border-radius: 10px; font-size: 12px; font-weight: 600;
-  color: var(--b700); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
-  font-family: var(--font);
-}
-.ai-add-photo:active { background: var(--b50); }
-
-.ai-expand-icon {
-  width: 20px; height: 20px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  transition: transform .2s;
-}
-.ai-expand-icon svg { width: 16px; height: 16px; stroke: var(--g300); stroke-width: 2; fill: none; }
-.ai-body.open ~ * .ai-expand-icon,
-.ai-header.expanded .ai-expand-icon { transform: rotate(180deg); }
-
-.agenda-summary-bar {
-  background: linear-gradient(135deg, var(--b800), var(--b700));
-  border-radius: 14px; padding: 14px 16px; margin-bottom: 12px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.asb-text { color: white; }
-.asb-title { font-family: var(--tight); font-size: 14px; font-weight: 700; }
-.asb-sub { font-size: 11px; color: rgba(255,255,255,.65); margin-top: 2px; }
-.asb-btn {
-  background: white; color: var(--b800); border: none; border-radius: 9px;
-  padding: 9px 16px; font-size: 12px; font-weight: 700; cursor: pointer;
-  font-family: var(--tight); white-space: nowrap; flex-shrink: 0;
-}
-
-.agenda-filter-tabs {
-  display: flex; gap: 6px; padding: 12px 16px 0; overflow-x: auto; scrollbar-width: none;
-}
-.agenda-filter-tabs::-webkit-scrollbar { display: none; }
-.aft-btn {
-  flex-shrink: 0; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600;
-  border: 1.5px solid var(--g100); background: var(--white); color: var(--g500);
-  cursor: pointer; transition: all .15s; font-family: var(--font);
-}
-.aft-btn.active { background: var(--b700); border-color: var(--b700); color: white; }
-
-
-/* ── AGENDA GERENCIAL ────────────────────────────────────── */
-.ag-section-header {
-  display: flex; align-items: center; gap: 10px;
-  padding: 14px 16px 8px;
-}
-.ag-section-pill {
-  flex-shrink: 0; font-size: 10px; font-weight: 700; text-transform: uppercase;
-  letter-spacing: .6px; padding: 4px 12px; border-radius: 20px;
-}
-.ag-pill-ops { background: var(--b50); color: var(--b700); border: 1px solid var(--b200); }
-.ag-pill-ger { background: #F0F0FB; color: #3730A3; border: 1px solid #C7D2FE; }
-.ag-section-line { flex: 1; height: 1px; background: var(--g100); }
-.ag-section-label { font-family: var(--tight); font-size: 13px; font-weight: 700; color: var(--g500); white-space: nowrap; }
-
-.agenda-item.ai-gerencial .ai-num { background: #EEF2FF; }
-.agenda-item.ai-gerencial.ai-done .ai-num { background: #3730A3; }
-.agenda-item.ai-gerencial .ai-check-btn { border-color: #A5B4FC; }
-.agenda-item.ai-gerencial.ai-done .ai-check-btn { background: #3730A3; border-color: #3730A3; }
-.agenda-item.ai-gerencial.ai-done { border-color: #C7D2FE; }
-.agenda-item.ai-gerencial.ai-done .ai-header { background: #EEF2FF; }
-.badge-ger { background: #EEF2FF; color: #3730A3; }
 
 /* ── RESUMEN ─────────────────────────────────────────────── */
 .rb{background:var(--g50);border-radius:10px;padding:12px 14px;margin-bottom:10px}
@@ -416,6 +173,22 @@ canvas#firma-canvas{width:100%;height:140px;display:block;touch-action:none}
 .rb-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px solid var(--g100)}
 .rb-row:last-child{border-bottom:none}
 .rb-val{font-weight:600;color:var(--g900)}
+
+/* ── BADGES ──────────────────────────────────────────────── */
+.badge{flex-shrink:0;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap}
+.bkpi{background:var(--b50);color:var(--b700)}
+.bmin{background:var(--green-bg);color:var(--green-t)}
+.brisk{background:var(--red-bg);color:var(--red)}
+.btip{background:var(--amber-bg);color:var(--amber)}
+
+/* ── TOAST ───────────────────────────────────────────────── */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--g900);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;white-space:nowrap}
+.toast.show{opacity:1}
+
+/* ── SPINNER ─────────────────────────────────────────────── */
+.spinner{display:inline-block;width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-row{text-align:center;padding:20px;color:var(--g500);font-size:13px}
 </style>
 <script src="./_config.js?v=3"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -423,7 +196,7 @@ canvas#firma-canvas{width:100%;height:140px;display:block;touch-action:none}
 <body>
 
 <!-- ══════════════════════════════════════════════════════════
-     HEADER (shared)
+     HEADER
 ══════════════════════════════════════════════════════════ -->
 <header class="header">
   <div class="hd-left">
@@ -432,333 +205,160 @@ canvas#firma-canvas{width:100%;height:140px;display:block;touch-action:none}
     </div>
     <div class="hd-div"></div>
     <div class="hd-text">
-      <div class="hd-title" id="hd-title">Guía de Visita</div>
-      <div class="hd-sub">GR Centro-Sur · Israel Esperanza</div>
+      <div class="hd-title" id="hd-title">Nueva Visita</div>
+      <div class="hd-sub" id="hd-sub">Registro de campo</div>
     </div>
   </div>
   <div class="hd-badge" id="hd-badge">Campo</div>
 </header>
 
 <!-- ══════════════════════════════════════════════════════════
-     PAGE: GUÍA DE VISITA
+     PAGE: SELECCIÓN (pantalla inicial)
 ══════════════════════════════════════════════════════════ -->
-<div class="page active" id="page-guia">
-
-  <!-- Dealer bar -->
-  <div class="dealer-bar">
-    <label>Dealer</label>
-    <select id="dealer-select" onchange="onDealerChange()">
-      <option value="">Seleccionar distribuidor...</option>
-      <option value="gcm">Grupo Carrocero Milenio — Tula</option>
-      <option value="tang">Asia Central (Tangamanga) — SLP</option>
-      <option value="bavi">Burk Automotriz (BAVI) — Uruapan</option>
-      <option value="astur">Autos Emcg (ASTURCAR) — Puebla</option>
-      <option value="orient">Camiones Orientales — León</option>
-      <option value="prem">Camiones Premium del Centro — Querétaro</option>
-      <option value="pen">Veh. Comerciales Peninsula — Cancún/Mérida</option>
-      <option value="xian">Xian Motors — Guadalajara</option>
-    </select>
-  </div>
-  <div class="dealer-banner" id="dealer-banner">
-    <div class="db-pill" id="db-status"></div>
-    <div class="db-name" id="db-name"></div>
-    <div class="db-foco" id="db-foco"></div>
-  </div>
-
-  <!-- Phase tabs -->
-  <nav class="phase-tabs" id="guia-tabs">
-    <button class="phase-tab active" onclick="goGuia(0,this)">Pre-visita</button>
-    <button class="phase-tab" onclick="goGuia(1,this)">Tipo</button>
-    <button class="phase-tab" onclick="goGuia(2,this)">Agenda</button>
-    <button class="phase-tab" onclick="goGuia(3,this)">Minuta</button>
-    <button class="phase-tab" onclick="goGuia(4,this)">Post-visita</button>
-    <button class="phase-tab" onclick="goGuia(5,this)">Dealers</button>
-  </nav>
-
-  <!-- G0: PRE-VISITA -->
-  <div class="section active" id="g-0">
-    <div class="sec-hero"><div class="sec-hero-num">48h</div><div><div class="sec-hero-title">Pre-visita</div><div class="sec-hero-sub">Lo que preparas antes define el resultado</div></div></div>
-    <button class="reset-btn" onclick="resetChk('g-0')">↺ Reiniciar</button>
-    <div class="card">
-      <div class="card-title">Revisión de indicadores</div>
-      <div class="chk" onclick="toggleChk(this)"><div class="chkbox"></div><div class="chk-body"><div class="chk-text">Abrir BP Tracker — wholesale YTD vs BP anual por modelo</div><div class="chk-sub">Calcula la brecha y el ritmo mensual para cerrar el año</div><div class="chk-tags"><span class="badge bkpi">KPI</span></div></div></div>
-      <div class="chk" onclick="toggleChk(this)"><div class="chkbox"></div><div class="chk-body"><div class="chk-text">Revisar inventario físico y back order pendiente</div><div class="chk-sub">Identificar unidades en piso antes de llegar</div><div class="chk-tags"><span class="badge bmin">Minuta</span></div></div></div>
-      <div class="chk" onclick="toggleChk(this)"><div class="chkbox"></div><div class="chk-body"><div class="chk-text">Consultar acuerdos de visita anterior — ¿se cumplieron?</div><div class="chk-sub">El dealer sabe que se revisarán — establece accountability</div><div class="chk-tags"><span class="badge bkpi">KPI</span></div></div></div>
-      <div class="chk" onclick="toggleChk(this)"><div class="chkbox"></div><div class="chk-body"><div class="chk-text">Revisar pipeline activo del distribuidor (Asesor App)</div><div class="chk-sub">¿Cuántos prospectos abiertos? ¿Cuáles cierran este mes?</div><div class="chk-tags"><span class="badge bkpi">KPI</span></div></div></div>
-      <div class="chk" onclick="toggleChk(this)"><div class="chkbox"></div><div class="chk-body"><div class="chk-text">Identificar incentivos activos — DCF-32, bonos vigentes</div><div class="chk-sub">Pedidos de reposición hasta el 30 de junio 2026</div><div class="chk-tags"><span class="badge bmin">Minuta</span></div></div></div>
+<div class="page active" id="page-seleccion">
+  <div class="sel-screen">
+    <div class="sel-hero">
+      <div class="sel-hero-title">Registrar visita</div>
+      <div class="sel-hero-sub">Selecciona el regional, distribuidor y fecha para comenzar</div>
     </div>
-    <div class="card">
-      <div class="card-title">Preparación del objetivo</div>
-      <div class="chk" onclick="toggleChk(this)"><div class="chkbox"></div><div class="chk-body"><div class="chk-text">Definir el tipo de visita a registrar en la minuta</div><div class="chk-sub">Puede ser más de uno simultáneamente</div><div class="chk-tags"><span class="badge bmin">Minuta</span></div></div></div>
-      <div class="chk" onclick="toggleChk(this)"><div class="chkbox"></div><div class="chk-body"><div class="chk-text">Definir el tema principal — ¿cuál es la palanca del día?</div><div class="chk-sub">¿Wholesale rezagado? ¿Capacitación? ¿Prospecto caliente?</div><div class="chk-tags"><span class="badge bkpi">KPI</span></div></div></div>
-      <div class="chk" onclick="toggleChk(this)"><div class="chkbox"></div><div class="chk-body"><div class="chk-text">Preparar argumentario si hay cierre en puerta</div><div class="chk-sub">Argumentario financiero · Banorte · TIP México · Solufi</div><div class="chk-tags"><span class="badge btip">Tip</span></div></div></div>
-      <div class="chk" onclick="toggleChk(this)"><div class="chkbox"></div><div class="chk-body"><div class="chk-text">Confirmar asistencia del contacto clave</div><div class="chk-sub">Gerente, dueño o encargado de ventas</div><div class="chk-tags"><span class="badge btip">Logística</span></div></div></div>
-    </div>
-    <div class="insight"><strong>Regla de oro:</strong> llegar con los números, no descubrirlos ahí. Si el dealer sabe más de su propio avance que tú, pierdes autoridad consultiva desde el primer minuto.</div>
-  </div>
+    <div class="sel-body">
 
-  <!-- G1: TIPO -->
-  <div class="section" id="g-1">
-    <div class="sec-hero"><div class="sec-hero-num">🎯</div><div><div class="sec-hero-title">Tipo de visita</div><div class="sec-hero-sub">Define el enfoque antes de llegar</div></div></div>
-    <div class="card">
-      <div class="card-title">Selecciona el perfil del día</div>
-      <div class="tipo-grid">
-        <div class="tipo-card" onclick="this.classList.toggle('selected')"><div class="tc-tag" style="color:var(--b700)">Dealer nuevo</div><div class="tc-name">Inauguración</div><div class="tc-items">→ Relación con dueños<br>→ Diagnóstico de capacidades<br>→ Plan comercial inicial<br>→ Cadencia semanal</div></div>
-        <div class="tipo-card" onclick="this.classList.toggle('selected')"><div class="tc-tag" style="color:var(--green)">Dealer activo</div><div class="tc-name">Operativa</div><div class="tc-items">→ KPIs: wholesale vs BP<br>→ Pipeline activo<br>→ Prospectos calientes<br>→ Inventario y pedidos</div></div>
-        <div class="tipo-card" onclick="this.classList.toggle('selected')"><div class="tc-tag" style="color:var(--red)">Dealer rezagado</div><div class="tc-name">Intervención</div><div class="tc-items">→ Diagnóstico causa raíz<br>→ Fuerza de ventas<br>→ Activar bonos/financieras<br>→ Plan acción con fechas</div></div>
-        <div class="tipo-card" onclick="this.classList.toggle('selected')"><div class="tc-tag" style="color:var(--amber)">Cualquier dealer</div><div class="tc-name">Capacitación</div><div class="tc-items">→ Master Driver v2<br>→ Roleplay de cierre<br>→ AMT / Euro VI / DPF<br>→ Registrar tipo + personas</div></div>
+      <!-- Campo A: Regional -->
+      <div class="sel-field" id="field-regional">
+        <label>Regional (quién hace la visita)</label>
+        <div id="regional-locked" style="display:none">
+          <div class="sel-locked" id="regional-locked-name">—</div>
+          <div class="sel-locked-label" id="regional-locked-seg"></div>
+        </div>
+        <select id="sel-regional" style="display:none" onchange="onRegionalChange()">
+          <option value="">Seleccionar regional...</option>
+        </select>
+        <div class="loading-row" id="regional-loading">
+          <span class="spinner" style="border-top-color:var(--b700);border-color:var(--b200)"></span> Cargando...
+        </div>
+      </div>
+
+      <!-- Campo B: Distribuidor -->
+      <div class="sel-field">
+        <label>Distribuidor a visitar</label>
+        <select id="sel-distribuidor" disabled onchange="onDistribuidorChange()">
+          <option value="">Primero selecciona el regional...</option>
+        </select>
+        <div class="sel-info-row" id="dist-info-row">
+          <strong id="dist-info-nombre"></strong>
+          <span id="dist-info-meta" style="color:var(--b700);margin-left:6px"></span>
+        </div>
+      </div>
+
+      <!-- Campo C: Fecha -->
+      <div class="sel-field">
+        <label>Fecha de visita</label>
+        <input type="date" id="sel-fecha">
+      </div>
+
+      <button class="btn-comenzar" id="btn-comenzar" disabled onclick="comenzarVisita()">
+        Comenzar visita
+      </button>
+
+      <div style="margin-top:16px;padding:12px;background:var(--white);border-radius:10px;border:1px solid var(--g100);font-size:12px;color:var(--g500);line-height:1.6" id="sel-hint">
+        Al presionar <strong style="color:var(--g700)">"Comenzar visita"</strong> se abrirá directamente el formulario de minuta con los datos prellenados.
       </div>
     </div>
-    <div class="insight"><strong>Nota:</strong> puedes seleccionar más de uno. En Tula (21 mayo) se marcaron Inauguración + Fuerza de ventas + Plan Comercial simultáneamente.</div>
   </div>
-
-  <!-- G2: AGENDA -->
-  <div class="section" id="g-2">
-    <div class="sec-hero"><div class="sec-hero-num">3h</div><div><div class="sec-hero-title">Agenda en campo</div><div class="sec-hero-sub">Estructura de 3 horas efectivas</div></div></div>
-    <div class="card">
-      <div class="card-title">Timeline de visita</div>
-      <div class="tl-item"><div class="tl-left"><div class="tl-time">0:00</div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-title">Apertura — acuerdos previos</div><div class="tl-sub">¿Qué se comprometió? ¿Quién cumplió? Establece accountability desde el inicio.</div><div class="tl-tags"><span class="badge btip">Acuerdos</span></div></div></div>
-      <div class="tl-item"><div class="tl-left"><div class="tl-time">0:20</div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-title">Revisión de indicadores comerciales</div><div class="tl-sub">BP vs wholesale YTD. Retail. Inventario. Back order. Llena la tabla de la minuta junto con el dealer.</div><div class="tl-tags"><span class="badge bkpi">KPI</span><span class="badge bmin">Minuta</span></div></div></div>
-      <div class="tl-item"><div class="tl-left"><div class="tl-time">0:50</div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-title">Revisión de pipeline</div><div class="tl-sub">¿Cuántas oportunidades abiertas? ¿Cuáles cierran este mes? Llena la tabla de acompañamiento.</div><div class="tl-tags"><span class="badge bkpi">KPI</span><span class="badge bmin">Minuta</span></div></div></div>
-      <div class="tl-item"><div class="tl-left"><div class="tl-time">1:20</div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-title">Acompañamiento / Capacitación</div><div class="tl-sub">Prospecto caliente: visita conjunta o roleplay. Si no: Master Driver v2 con el equipo.</div><div class="tl-tags"><span class="badge bmin">Minuta</span><span class="badge btip">Acción</span></div></div></div>
-      <div class="tl-item"><div class="tl-left"><div class="tl-time">2:10</div><div class="tl-line"></div></div><div class="tl-body"><div class="tl-title">Plan comercial del mes</div><div class="tl-sub">Acciones de marketing, sectores a atacar. ¿Qué necesita el dealer para cerrar su brecha?</div><div class="tl-tags"><span class="badge bmin">Minuta</span><span class="badge bkpi">KPI</span></div></div></div>
-      <div class="tl-item"><div class="tl-left"><div class="tl-time">2:40</div></div><div class="tl-body"><div class="tl-title">Cierre — acuerdos y compromisos</div><div class="tl-sub">Máx. 5 acuerdos. Nombre + fecha + responsable. Lee en voz alta. Toma fotos del equipo y showroom.</div><div class="tl-tags"><span class="badge btip">Acuerdos</span><span class="badge bmin">Minuta</span></div></div></div>
-    </div>
-    <div class="cta"><p><strong>¿Listo para documentar?</strong><br>Abre la minuta y llénala mientras estás en campo.</p><button onclick="goPage('minuta')">Abrir minuta de visita →</button></div>
-  </div>
-
-  <!-- G3: LLENADO MINUTA -->
-  <div class="section" id="g-3">
-    <div class="sec-hero"><div class="sec-hero-num">📋</div><div><div class="sec-hero-title">Llenado de minuta</div><div class="sec-hero-sub">Qué capturar en cada campo</div></div></div>
-    <div class="card"><div class="card-title">Cabecera</div><div class="map-row"><div class="map-key">Segmento</div><div class="map-val">Siempre MDT/LDT — portafolio S3 a S12</div></div><div class="map-row"><div class="map-key">Distribuidor</div><div class="map-val">Nombre completo + siglas del grupo (ej. GCM)</div></div><div class="map-row"><div class="map-key">Tipo de visita</div><div class="map-val">Puede marcarse más de uno simultáneamente</div></div><div class="map-row"><div class="map-key">Participantes</div><div class="map-val">Mínimo el contacto clave. Ideal: Gerente + 1 vendedor</div></div></div>
-    <div class="card"><div class="card-title">Temas a marcar</div><div class="map-row"><div class="map-key">Fuerza de ventas</div><div class="map-val">Siempre — tu KPI cualitativo más importante</div></div><div class="map-row"><div class="map-key">Plan Comercial</div><div class="map-val">Cuando definas acciones concretas del mes</div></div><div class="map-row"><div class="map-key">Inventario Físico</div><div class="map-val">Si revisas unidades en piso — captura en tabla indicadores</div></div><div class="map-row"><div class="map-key">Bonos / Mktg</div><div class="map-val">Si activas circular — documenta cuál y fecha límite</div></div></div>
-    <div class="card"><div class="card-title">Indicadores comerciales</div><div class="map-row"><div class="map-key">BP 2026</div><div class="map-val">Dato fijo del Business Plan anual — no cambia</div></div><div class="map-row"><div class="map-key">Whole YTD / %</div><div class="map-val">Unidades facturadas acumuladas vs BP — se calcula solo</div></div><div class="map-row"><div class="map-key">Retail YTD</div><div class="map-val">Unidades registradas ante cliente final</div></div><div class="map-row"><div class="map-key">Inventario / B.O.</div><div class="map-val">Unidades en piso / pedidas sin recibir</div></div></div>
-    <div class="card"><div class="card-title">Regla de los 5 acuerdos</div><div class="map-row"><div class="map-key">Máx. 5</div><div class="map-val">Más de 5 y nadie los cumple — prioriza lo que mueve aguja</div></div><div class="map-row"><div class="map-key">Responsable</div><div class="map-val">Nombre específico: Karla, Samir, Erick — no "el dealer"</div></div><div class="map-row"><div class="map-key">Fecha</div><div class="map-val">"Inmediato" = antes del viernes · "Prox visita" = mes siguiente</div></div></div>
-    <div class="insight"><strong>Logros/Estrategia:</strong> 2–3 líneas de qué se logró y qué palanca se activó. Es lo que Daniel Alcántara leerá primero en el PDF.</div>
-    <div class="cta"><p><strong>Llena la minuta ahora</strong><br>PDF con fotos y firma se genera al terminar.</p><button onclick="goPage('minuta')">Llenar minuta →</button></div>
-  </div>
-
-  <!-- G4: POST-VISITA -->
-  <div class="section" id="g-4">
-    <div class="sec-hero"><div class="sec-hero-num">24h</div><div><div class="sec-hero-title">Post-visita</div><div class="sec-hero-sub">Primeras 24 horas — cierra el ciclo</div></div></div>
-    <button class="reset-btn" onclick="resetChk('g-4')">↺ Reiniciar</button>
-    <div class="card">
-      <div class="card-title">Cierre operativo</div>
-      <div class="chk" onclick="toggleChk(this)"><div class="chkbox"></div><div class="chk-body"><div class="chk-text">Completar y firmar la minuta — descargar PDF</div><div class="chk-sub">Subir a carpeta Foton. Enviar a dirección si se requiere</div><div class="chk-tags"><span class="badge bmin">Minuta</span></div></div></div>
-      <div class="chk" onclick="toggleChk(this)"><div class="chkbox"></div><div class="chk-body"><div class="chk-text">Enviar resumen de acuerdos al dealer por WhatsApp</div><div class="chk-sub">Los 5 acuerdos pactados con nombre + fecha compromiso</div><div class="chk-tags"><span class="badge btip">Seguimiento</span></div></div></div>
-      <div class="chk" onclick="toggleChk(this)"><div class="chkbox"></div><div class="chk-body"><div class="chk-text">Actualizar BP Tracker con indicadores capturados</div><div class="chk-sub">Wholesale YTD, inventario y back order actualizados</div><div class="chk-tags"><span class="badge bkpi">KPI</span></div></div></div>
-      <div class="chk" onclick="toggleChk(this)"><div class="chkbox"></div><div class="chk-body"><div class="chk-text">Registrar capacitación si aplica: tipo, tema, personas</div><div class="chk-sub">KPI cualitativo acumulado para reporte a Daniel Alcántara</div><div class="chk-tags"><span class="badge bkpi">KPI</span></div></div></div>
-      <div class="chk" onclick="toggleChk(this)"><div class="chkbox"></div><div class="chk-body"><div class="chk-text">Escalar a Daniel si se detectó riesgo estructural</div><div class="chk-sub">Rotación vendedores · Atlas bloqueado · problema financiero</div><div class="chk-tags"><span class="badge brisk">Riesgo</span></div></div></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Cadencia inter-visita</div>
-      <div class="chk" onclick="toggleChk(this)"><div class="chkbox"></div><div class="chk-body"><div class="chk-text">Confirmar reporte semanal de miércoles con el dealer</div><div class="chk-sub">Operaciones relevantes, leads activos, novedades del piso</div><div class="chk-tags"><span class="badge btip">Cadencia</span></div></div></div>
-      <div class="chk" onclick="toggleChk(this)"><div class="chkbox"></div><div class="chk-body"><div class="chk-text">Mid-month: revisar avance de acuerdos por WhatsApp</div><div class="chk-sub">No esperes la próxima visita — el seguimiento mid-month es clave</div><div class="chk-tags"><span class="badge bkpi">KPI</span></div></div></div>
-      <div class="chk" onclick="toggleChk(this)"><div class="chkbox"></div><div class="chk-body"><div class="chk-text">Si hay cierre potencial: activar seguimiento o visita exprés</div><div class="chk-sub">Un S12 o S6 no se cierra solo — acompaña el momento decisivo</div><div class="chk-tags"><span class="badge brisk">Prioritario</span></div></div></div>
-    </div>
-    <div class="insight"><strong>Principio de cadencia:</strong> la visita mensual es el punto de revisión. El trabajo real vive en los miércoles de reporte y las intervenciones de mid-month.</div>
-  </div>
-
-  <!-- G5: DEALERS -->
-  <div class="section" id="g-5">
-    <div class="sec-hero"><div class="sec-hero-num">8</div><div><div class="sec-hero-title">Estado de dealers</div><div class="sec-hero-sub">Perfil y prioridad de cada distribuidor</div></div></div>
-    <div id="dealers-list"></div>
-  </div>
-
-</div><!-- /page-guia -->
+</div>
 
 <!-- ══════════════════════════════════════════════════════════
      PAGE: MINUTA
 ══════════════════════════════════════════════════════════ -->
 <div class="page" id="page-minuta">
 
+  <!-- Context bar: muestra regional + distribuidor seleccionados -->
+  <div class="context-bar" id="minuta-context-bar">
+    <div style="flex:1;min-width:0">
+      <div class="ctx-regional" id="ctx-regional-name">—</div>
+      <div class="ctx-dist" id="ctx-dist-name">Selecciona distribuidor</div>
+    </div>
+    <div class="ctx-fecha" id="ctx-fecha">—</div>
+    <button class="ctx-change" onclick="goPage('seleccion')">Cambiar</button>
+  </div>
+
   <!-- Minuta progress bar -->
   <div class="m-progress">
     <div class="m-prog-labels">
       <span class="m-prog-lbl active" id="ml-0">General</span>
-      <span class="m-prog-lbl" id="ml-1">Agenda</span>
-      <span class="m-prog-lbl" id="ml-2">Pipeline</span>
-      <span class="m-prog-lbl" id="ml-3">Indicadores</span>
-      <span class="m-prog-lbl" id="ml-4">Acuerdos</span>
-      <span class="m-prog-lbl" id="ml-5">Cierre</span>
+      <span class="m-prog-lbl" id="ml-1">Indicadores</span>
+      <span class="m-prog-lbl" id="ml-2">Acuerdos</span>
+      <span class="m-prog-lbl" id="ml-3">Cierre</span>
     </div>
-    <div class="m-prog-track"><div class="m-prog-fill" id="m-prog-fill" style="width:16.6%"></div></div>
+    <div class="m-prog-track"><div class="m-prog-fill" id="m-prog-fill" style="width:25%"></div></div>
   </div>
 
   <!-- Minuta step tabs -->
-  <div class="m-step-tabs visible" id="m-step-tabs">
+  <div class="m-step-tabs" id="m-step-tabs">
     <button class="m-step-tab active" onclick="goMStep(0)" id="ms-0">1. General</button>
-    <button class="m-step-tab" onclick="goMStep(1)" id="ms-1">2. Agenda</button>
-    <button class="m-step-tab" onclick="goMStep(2)" id="ms-2">3. Pipeline</button>
-    <button class="m-step-tab" onclick="goMStep(3)" id="ms-3">4. Indicadores</button>
-    <button class="m-step-tab" onclick="goMStep(4)" id="ms-4">5. Acuerdos</button>
-    <button class="m-step-tab" onclick="goMStep(5)" id="ms-5">6. Cierre</button>
+    <button class="m-step-tab" onclick="goMStep(1)" id="ms-1">2. Indicadores</button>
+    <button class="m-step-tab" onclick="goMStep(2)" id="ms-2">3. Acuerdos</button>
+    <button class="m-step-tab" onclick="goMStep(3)" id="ms-3">4. Cierre</button>
   </div>
 
   <!-- M0: INFO GENERAL -->
   <div class="section active" id="m-0" style="padding:16px">
-    <div class="sec-hero"><div class="sec-hero-num">1</div><div><div class="sec-hero-title">Información general</div><div class="sec-hero-sub">Datos del distribuidor y tipo de visita</div></div></div>
-    <!-- Form type selector -->
-    <div class="card" id="card-form-type">
-      <div class="card-title">Tipo de informe</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="tipo-btn active" id="btn-ft-dist" onclick="setFormType('distribuidor')">Visita a Distribuidor</button>
-        <button class="tipo-btn" id="btn-ft-cd" onclick="setFormType('cliente_directo')">Visita a Cliente Directo</button>
-      </div>
-    </div>
-    <div id="section-dist-general">
-    <div class="card">
-      <div class="card-title">Distribuidor</div>
-      <div class="field"><label>Distribuidor</label><select id="f-dist" onchange="onFDistChange()"><option value="">Seleccionar...</option><option>Grupo Carrocero Milenio</option><option>Autos Y Camiones Asia Central</option><option>Burk Automotriz</option><option>Autos Emcg</option><option>Camiones Orientales De Leon</option><option>Camiones Premium Del Centro</option><option>Vehiculos Comerciales Peninsula</option><option>Xian Motors</option><option>Camiones Metropolitanos Del Valle</option><option>Camiones Metropolitanos GR</option><option>Velcen Motors</option><option>Ssandier</option><option>Gad Vehiculos Comerciales</option><option>Eco Trucks</option><option>Policars</option><option>Profesional En Servicio Y Diagnostico</option></select></div>
-      <div class="field-row"><div class="field"><label>Plaza</label><input type="text" id="f-plaza" placeholder="Ciudad"></div><div class="field"><label>Grupo</label><input type="text" id="f-grupo" placeholder="Ej. GCM"></div></div>
-      <div class="field-row"><div class="field"><label>Segmento</label><select id="f-seg"><option selected>MDT/LDT</option><option>P&V</option><option>HDT</option><option>EV</option></select></div><div class="field"><label>Gte. Regional</label><select id="f-reg"><option selected>Israel Esperanza</option><option>Andres Arrangoiz</option></select></div></div>
-      <div class="field-row"><div class="field"><label>Fecha</label><input type="date" id="f-fecha"></div><div class="field"><label>Hora</label><input type="time" id="f-hora"></div></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Participantes</div>
-      <div id="parts-list"><div class="field"><label>Participante 1</label><input type="text" class="part-inp" placeholder="Nombre y cargo"></div><div class="field"><label>Participante 2</label><input type="text" class="part-inp" placeholder="Nombre y cargo"></div><div class="field"><label>Participante 3</label><input type="text" class="part-inp" placeholder="Nombre y cargo"></div></div>
-      <button onclick="addPart()" style="font-size:13px;color:var(--b700);background:none;border:none;cursor:pointer;padding:6px 0;font-weight:700">+ Agregar participante</button>
-    </div>
+    <div class="sec-hero"><div class="sec-hero-num">1</div><div><div class="sec-hero-title">Información general</div><div class="sec-hero-sub">Tipo de visita, participantes y objetivo</div></div></div>
+
     <div class="card">
       <div class="card-title">Tipo de visita</div>
       <div class="tipo-wrap" id="tipo-wrap">
+        <button class="tipo-btn" onclick="this.classList.toggle('active')">Presencial</button>
+        <button class="tipo-btn" onclick="this.classList.toggle('active')">Virtual</button>
+        <button class="tipo-btn" onclick="this.classList.toggle('active')">Telefónica</button>
         <button class="tipo-btn" onclick="this.classList.toggle('active')">Acompañamiento Comercial</button>
-        <button class="tipo-btn" onclick="this.classList.toggle('active')">Operativa</button>
         <button class="tipo-btn" onclick="this.classList.toggle('active')">Capacitación</button>
+        <button class="tipo-btn" onclick="this.classList.toggle('active')">Operativa</button>
         <button class="tipo-btn" onclick="this.classList.toggle('active')">Inauguración</button>
-        <button class="tipo-btn" onclick="this.classList.toggle('active')">Otro</button>
       </div>
     </div>
-    </div><!-- /section-dist-general -->
 
-    <div id="section-cd-general" style="display:none">
-      <div class="card">
-        <div class="card-title">Generales del cliente</div>
-        <div class="field"><label>Gte. Regional</label><select id="cd-reg"><option selected>Israel Esperanza</option><option>Andres Arrangoiz</option></select></div>
-        <div class="field"><label>Fecha</label><input type="date" id="cd-fecha"></div>
-        <div class="field"><label>Razón social</label><input type="text" id="cd-razon" placeholder="Nombre de la empresa o cliente"></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div class="field"><label>Tamaño de flota</label><input type="text" id="cd-flota-size" placeholder="Ej. 50 unidades"></div>
-          <div class="field"><label>Giro</label><input type="text" id="cd-giro" placeholder="Ej. Construcción, Logística"></div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div class="field"><label>Cobertura</label><input type="text" id="cd-cobertura" placeholder="Zona de operación"></div>
-          <div class="field"><label>Tipo de cliente</label><select id="cd-tipo-cliente"><option value="">Seleccionar...</option><option>Conquista</option><option>Re-Conquista</option><option>Seguimiento</option></select></div>
-        </div>
+    <div class="card">
+      <div class="card-title">Participantes</div>
+      <div id="parts-list">
+        <div class="field"><label>Participante 1</label><input type="text" class="part-inp" placeholder="Nombre y cargo"></div>
+        <div class="field"><label>Participante 2</label><input type="text" class="part-inp" placeholder="Nombre y cargo"></div>
       </div>
+      <button onclick="addPart()" style="font-size:13px;color:var(--b700);background:none;border:none;cursor:pointer;padding:6px 0;font-weight:700">+ Agregar participante</button>
+    </div>
 
-      <div class="card">
-        <div class="card-title">Tipo de visita</div>
-        <div class="cd-tipo-visita-group" style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="tipo-btn" onclick="this.classList.toggle('active')">Presentación Comercial</button>
-          <button class="tipo-btn" onclick="this.classList.toggle('active')">Capacitación Producto</button>
-          <button class="tipo-btn" onclick="this.classList.toggle('active')">Capacitación Operativa</button>
-          <button class="tipo-btn" onclick="this.classList.toggle('active')">Otro</button>
-        </div>
-        <div class="field" style="margin-top:12px"><label>Objetivo de la visita</label><textarea id="cd-objetivo" rows="3" class="field-inp" placeholder="Describir objetivo principal de la visita..."></textarea></div>
+    <div class="card">
+      <div class="card-title">Objetivo de la visita</div>
+      <div class="field">
+        <textarea id="f-objetivo" rows="3" placeholder="Describe el objetivo principal de esta visita..."></textarea>
       </div>
+    </div>
 
-      <div class="card">
-        <div class="card-title">Contactos principales</div>
-        <div id="cd-contactos-list">
-          <div class="cd-contacto-row" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-            <input type="text" class="cd-contacto-nombre" placeholder="Nombre" style="padding:9px 12px;border:1.5px solid var(--g100);border-radius:8px;font-size:13px">
-            <input type="text" class="cd-contacto-puesto" placeholder="Puesto" style="padding:9px 12px;border:1.5px solid var(--g100);border-radius:8px;font-size:13px">
-          </div>
-        </div>
-        <button onclick="addCdContacto()" style="font-size:12px;color:var(--b700);background:none;border:1.5px dashed var(--b200);border-radius:8px;padding:8px 14px;cursor:pointer;width:100%;margin-top:4px">+ Agregar contacto</button>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Información de su flota</div>
-        <div id="cd-flota-list">
-          <div class="cd-flota-row" style="display:grid;grid-template-columns:1fr 1fr 80px;gap:8px;margin-bottom:8px">
-            <input type="text" class="cd-fl-marca" placeholder="Marca" style="padding:9px 12px;border:1.5px solid var(--g100);border-radius:8px;font-size:13px">
-            <input type="text" class="cd-fl-modelo" placeholder="Modelo" style="padding:9px 12px;border:1.5px solid var(--g100);border-radius:8px;font-size:13px">
-            <input type="number" class="cd-fl-cant" placeholder="Cant." style="padding:9px 12px;border:1.5px solid var(--g100);border-radius:8px;font-size:13px">
-          </div>
-        </div>
-        <button onclick="addCdFlota()" style="font-size:12px;color:var(--b700);background:none;border:1.5px dashed var(--b200);border-radius:8px;padding:8px 14px;cursor:pointer;width:100%;margin-top:4px">+ Agregar equipo</button>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Historial de ventas FOTON</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
-          <div class="field"><label>2024</label><input type="number" id="cd-hist-2024" placeholder="0" min="0"></div>
-          <div class="field"><label>2025</label><input type="number" id="cd-hist-2025" placeholder="0" min="0"></div>
-          <div class="field"><label>Proy. 2026</label><input type="number" id="cd-hist-2026" placeholder="0" min="0"></div>
-        </div>
-        <div class="field" style="margin-top:8px"><label>Eventos asistidos</label>
-          <div class="cd-eventos-group" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
-            <button class="tipo-btn" onclick="this.classList.toggle('active')">China</button>
-            <button class="tipo-btn" onclick="this.classList.toggle('active')">F1</button>
-            <button class="tipo-btn" onclick="this.classList.toggle('active')">Super Copa</button>
-            <button class="tipo-btn" onclick="this.classList.toggle('active')">Torneo Golf</button>
-            <button class="tipo-btn" onclick="this.classList.toggle('active')">Expo Transporte</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Requerimientos del cliente</div>
-        <div class="field"><label>Modelo de interés</label><input type="text" id="cd-modelo" placeholder="Ej. S12, FT5 180"></div>
-        <div class="field"><label>Tipo de carrocería</label><input type="text" id="cd-carroceria" placeholder="Ej. Estacas, Volteo, Caja seca"></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div class="field"><label>Proyección de compra</label><input type="text" id="cd-proyeccion" placeholder="Ej. Q3 2026, 2 unidades"></div>
-          <div class="field"><label>Financiamiento</label><input type="text" id="cd-financiamiento" placeholder="Ej. Banorte, Contado"></div>
-        </div>
-      </div>
-    </div><!-- /section-cd-general -->
-  </div>
-
-  <!-- M1: AGENDA -->
-  <div class="section" id="m-1" style="padding:16px">
-    <div class="sec-hero"><div class="sec-hero-num">2</div><div><div class="sec-hero-title">Agenda</div><div class="sec-hero-sub">Temas revisados en la visita</div></div></div>
     <div class="card">
       <div class="card-title">Temas a revisar</div>
       <div class="cb-grid">
         <label class="cb-item" onclick="toggleCb(this)"><input type="checkbox"><div class="cb-box"></div><span class="cb-label">Back Order</span></label>
-        <label class="cb-item" onclick="toggleCb(this)"><input type="checkbox"><div class="cb-box"></div><span class="cb-label">Inventario Facturado</span></label>
-        <label class="cb-item" onclick="toggleCb(this)"><input type="checkbox"><div class="cb-box"></div><span class="cb-label">Bonos</span></label>
         <label class="cb-item" onclick="toggleCb(this)"><input type="checkbox"><div class="cb-box"></div><span class="cb-label">Inventario Físico</span></label>
-        <label class="cb-item" onclick="toggleCb(this)"><input type="checkbox"><div class="cb-box"></div><span class="cb-label">Estado de cuenta</span></label>
-        <label class="cb-item" onclick="toggleCb(this)"><input type="checkbox"><div class="cb-box"></div><span class="cb-label">Notas de crédito</span></label>
+        <label class="cb-item" onclick="toggleCb(this)"><input type="checkbox"><div class="cb-box"></div><span class="cb-label">Bonos</span></label>
         <label class="cb-item" onclick="toggleCb(this)"><input type="checkbox"><div class="cb-box"></div><span class="cb-label">Estrategia Marketing</span></label>
         <label class="cb-item" onclick="toggleCb(this)"><input type="checkbox"><div class="cb-box"></div><span class="cb-label">Pedidos nuevos</span></label>
-        <label class="cb-item" onclick="toggleCb(this)"><input type="checkbox"><div class="cb-box"></div><span class="cb-label">Facturación</span></label>
         <label class="cb-item" onclick="toggleCb(this)"><input type="checkbox"><div class="cb-box"></div><span class="cb-label">Plan Comercial</span></label>
         <label class="cb-item" onclick="toggleCb(this)"><input type="checkbox"><div class="cb-box"></div><span class="cb-label">Fuerza de ventas</span></label>
-        <label class="cb-item" onclick="toggleCb(this)"><input type="checkbox"><div class="cb-box"></div><span class="cb-label">Plan Piso</span></label>
         <label class="cb-item" onclick="toggleCb(this)"><input type="checkbox"><div class="cb-box"></div><span class="cb-label">Posventa</span></label>
-        <label class="cb-item" onclick="toggleCb(this)"><input type="checkbox"><div class="cb-box"></div><span class="cb-label">Retail</span></label>
-        <label class="cb-item" onclick="toggleCb(this)"><input type="checkbox"><div class="cb-box"></div><span class="cb-label">Prog. de citas</span></label>
+        <label class="cb-item" onclick="toggleCb(this)"><input type="checkbox"><div class="cb-box"></div><span class="cb-label">Estado de cuenta</span></label>
         <label class="cb-item" onclick="toggleCb(this)"><input type="checkbox"><div class="cb-box"></div><span class="cb-label">Prospección/Leads</span></label>
+        <label class="cb-item" onclick="toggleCb(this)"><input type="checkbox"><div class="cb-box"></div><span class="cb-label">Retail</span></label>
+        <label class="cb-item" onclick="toggleCb(this)"><input type="checkbox"><div class="cb-box"></div><span class="cb-label">Facturación</span></label>
       </div>
     </div>
-    <div class="card">
-      <div class="card-title">Capacitación</div>
-      <div class="field"><label>Tipo</label><select id="f-captype"><option value="">Seleccionar...</option><option>Técnica</option><option>Comercial</option><option>Producto</option><option>Proceso de ventas</option></select></div>
-      <div class="field"><label>Tema principal</label><input type="text" id="f-captema" placeholder="Ej. AMT y Euro VI, Roleplay de objeciones..."></div>
-      <div class="field"><label>N° personas capacitadas</label><input type="number" id="f-cappax" placeholder="0" min="0" style="max-width:120px"></div>
-      <div class="field"><label>Comentarios</label><textarea id="f-capcom" rows="3" placeholder="Observaciones..."></textarea></div>
-    </div>
   </div>
 
-  <!-- M2: PIPELINE -->
-  <div class="section" id="m-2" style="padding:16px">
-    <div class="sec-hero"><div class="sec-hero-num">3</div><div><div class="sec-hero-title">Pipeline</div><div class="sec-hero-sub">Prospectos y operaciones activas</div></div></div>
-    <div class="card">
-      <div class="card-title">Acompañamiento de prospectos</div>
-      <div class="tbl-wrap"><table class="pipe-tbl"><thead><tr><th style="width:28px">#</th><th style="min-width:130px">Cliente</th><th style="min-width:75px">Modelo</th><th style="min-width:90px">% Avance</th><th style="min-width:150px">Comentarios</th></tr></thead><tbody id="pipe-body"></tbody></table></div>
-      <button onclick="addPipeRow()" style="font-size:13px;color:var(--b700);background:none;border:none;cursor:pointer;padding:10px 0 4px;font-weight:700">+ Agregar prospecto</button>
-    </div>
-  </div>
+  <!-- M1: INDICADORES -->
+  <div class="section" id="m-1" style="padding:16px">
+    <div class="sec-hero"><div class="sec-hero-num">2</div><div><div class="sec-hero-title">Indicadores</div><div class="sec-hero-sub">BP 2026 vs desempeño real</div></div></div>
 
-  <!-- M3: INDICADORES -->
-  <div class="section" id="m-3" style="padding:16px">
-    <div class="sec-hero"><div class="sec-hero-num">4</div><div><div class="sec-hero-title">Indicadores</div><div class="sec-hero-sub">BP 2026 vs desempeño real</div></div></div>
     <div class="card" id="ind-resumen-card" style="margin-bottom:12px">
-      <div class="card-title">Resumen BP vs Facturado (Supabase)</div>
+      <div class="card-title">Resumen BP vs Facturado</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:4px 0">
         <div style="text-align:center"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--g500);margin-bottom:4px">BP 2026</div><div id="ind-bp" style="font-size:22px;font-weight:700;color:var(--b700)">—</div></div>
         <div style="text-align:center"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--g500);margin-bottom:4px">Facturado YTD</div><div id="ind-fac" style="font-size:22px;font-weight:700;color:var(--green)">—</div></div>
@@ -766,23 +366,36 @@ canvas#firma-canvas{width:100%;height:140px;display:block;touch-action:none}
         <div style="text-align:center"><div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--g500);margin-bottom:4px">Por cerrar</div><div id="ind-porcerrar" style="font-size:22px;font-weight:700;color:var(--amber)">—</div></div>
       </div>
     </div>
+
     <div class="card">
       <div class="card-title">Tabla por modelo</div>
       <div class="tbl-wrap"><table class="ind-tbl"><thead><tr><th style="min-width:45px">Modelo</th><th style="min-width:52px">BP 2026</th><th style="min-width:58px">Whole YTD</th><th style="min-width:56px">% Avance</th><th style="min-width:58px">Retail YTD</th><th style="min-width:58px">Inventario</th><th style="min-width:42px">B.O.</th></tr></thead><tbody id="ind-body"></tbody></table></div>
     </div>
-    <div class="card"><div class="card-title">Logros / Estrategia</div><div class="field"><textarea id="f-logros" rows="4" placeholder="Describe los logros de la visita y la palanca activada. Este campo es el resumen ejecutivo..."></textarea></div></div>
-    <div class="card"><div class="card-title">Comentarios adicionales</div><div class="field"><textarea id="f-coments" rows="3" placeholder="Primera visita, diagnóstico, pendientes..."></textarea></div></div>
+
+    <div class="card">
+      <div class="card-title">Pipeline / Acompañamiento</div>
+      <div class="tbl-wrap"><table class="pipe-tbl"><thead><tr><th style="width:28px">#</th><th style="min-width:130px">Cliente</th><th style="min-width:75px">Modelo</th><th style="min-width:90px">% Avance</th><th style="min-width:150px">Comentarios</th></tr></thead><tbody id="pipe-body"></tbody></table></div>
+      <button onclick="addPipeRow()" style="font-size:13px;color:var(--b700);background:none;border:none;cursor:pointer;padding:10px 0 4px;font-weight:700">+ Agregar prospecto</button>
+    </div>
+
+    <div class="card"><div class="card-title">Logros / Observaciones</div><div class="field"><textarea id="f-logros" rows="4" placeholder="Describe los logros de la visita y la palanca activada..."></textarea></div></div>
+    <div class="card"><div class="card-title">Comentarios adicionales</div><div class="field"><textarea id="f-coments" rows="3" placeholder="Observaciones, diagnóstico, pendientes..."></textarea></div></div>
   </div>
 
-  <!-- M4: ACUERDOS -->
-  <div class="section" id="m-4" style="padding:16px">
-    <div class="sec-hero"><div class="sec-hero-num">5</div><div><div class="sec-hero-title">Acuerdos</div><div class="sec-hero-sub">Máximo 5 — nombre + fecha + responsable</div></div></div>
-    <div class="card"><div class="card-title">Compromisos de la visita</div><div id="acuerdos-list"></div><button onclick="addAcuerdo()" id="btn-add-ac" style="font-size:13px;color:var(--b700);background:none;border:none;cursor:pointer;padding:10px 0 4px;font-weight:700">+ Agregar acuerdo</button></div>
+  <!-- M2: ACUERDOS -->
+  <div class="section" id="m-2" style="padding:16px">
+    <div class="sec-hero"><div class="sec-hero-num">3</div><div><div class="sec-hero-title">Acuerdos</div><div class="sec-hero-sub">Máximo 5 — nombre + fecha + responsable</div></div></div>
+    <div class="card">
+      <div class="card-title">Compromisos de la visita</div>
+      <div id="acuerdos-list"></div>
+      <button onclick="addAcuerdo()" id="btn-add-ac" style="font-size:13px;color:var(--b700);background:none;border:none;cursor:pointer;padding:10px 0 4px;font-weight:700">+ Agregar acuerdo</button>
+    </div>
   </div>
 
-  <!-- M5: CIERRE -->
-  <div class="section" id="m-5" style="padding:16px">
-    <div class="sec-hero"><div class="sec-hero-num">6</div><div><div class="sec-hero-title">Cierre</div><div class="sec-hero-sub">Fotos, firma y descarga PDF</div></div></div>
+  <!-- M3: CIERRE -->
+  <div class="section" id="m-3" style="padding:16px">
+    <div class="sec-hero"><div class="sec-hero-num">4</div><div><div class="sec-hero-title">Cierre</div><div class="sec-hero-sub">Firma, fotos y descarga</div></div></div>
+
     <div class="card">
       <div class="card-title">Fotos de la visita</div>
       <div class="photos-grid" id="photos-grid"></div>
@@ -799,6 +412,7 @@ canvas#firma-canvas{width:100%;height:140px;display:block;touch-action:none}
       <input type="file" id="photo-camera" accept="image/*" capture="environment" style="display:none" onchange="handlePhotos(this)">
       <input type="file" id="photo-gallery" accept="image/*" multiple style="display:none" onchange="handlePhotos(this)">
     </div>
+
     <div class="card">
       <div class="card-title">Firma — Gte. Regional Foton</div>
       <div class="firma-wrap">
@@ -807,166 +421,46 @@ canvas#firma-canvas{width:100%;height:140px;display:block;touch-action:none}
         <div style="display:flex;gap:8px;justify-content:center;margin-top:10px"><button class="btn-sm danger" onclick="clearFirma()">Borrar firma</button></div>
       </div>
     </div>
+
     <div class="card"><div class="card-title">Resumen</div><div id="resumen-content"></div></div>
+
+    <button onclick="guardarVisita()" id="btn-guardar" style="width:100%;background:var(--green);color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;font-family:var(--tight);margin-bottom:8px">
+      Guardar visita
+    </button>
     <button onclick="generarPDF()" style="width:100%;background:var(--b700);color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;font-family:var(--tight);margin-bottom:8px">
-      ↓ Descargar minuta PDF
+      Descargar PDF
     </button>
     <button onclick="descargarExcelDistribuidor()" id="btn-excel-dist" style="width:100%;background:#1A7C4F;color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;font-family:var(--tight);margin-bottom:8px">
-      ↓ Descargar Excel (Informe Oficial)
-    </button>
-    <button onclick="descargarExcelCD()" id="btn-excel-cd" style="width:100%;display:none;background:#7C3D1A;color:#fff;border:none;border-radius:14px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;font-family:var(--tight);margin-bottom:8px">
-      ↓ Descargar Excel Cliente Directo
+      Descargar Excel (Informe Oficial)
     </button>
   </div>
 
-
-<!-- Minuta step nav — sticky inside page -->
-<div id="minuta-step-nav" style="
-  position:sticky; bottom:0; left:0; right:0;
-  background:var(--white); border-top:1px solid var(--g100);
-  display:flex; gap:10px; padding:10px 16px;
-  padding-bottom:max(10px, env(safe-area-inset-bottom));
-  z-index:50; box-shadow:0 -2px 8px rgba(0,0,0,0.06);
-">
-  <button id="btn-prev" onclick="prevMStep()" disabled style="
-    flex:1; padding:13px; border-radius:12px; font-size:14px; font-weight:700;
-    border:none; cursor:pointer; background:var(--g100); color:var(--g500);
-    font-family:var(--font); transition:all .15s;
-  ">← Anterior</button>
-  <button id="btn-next" onclick="nextMStep()" style="
-    flex:2; padding:13px; border-radius:12px; font-size:14px; font-weight:700;
-    border:none; cursor:pointer; background:var(--b700); color:white;
-    font-family:var(--font); transition:all .15s;
-  ">Siguiente →</button>
-</div>
-</div><!-- /page-minuta -->
-
-
-<!-- ══════════════════════════════════════════════════════════
-     PAGE: AGENDA OPERATIVA
-══════════════════════════════════════════════════════════ -->
-<div class="page" id="page-agenda">
-
-  <!-- Dealer Card — visible en Agenda Operativa -->
-  <div id="agenda-dealer-card" style="
-    margin:0; padding:12px 16px 0;
-    display:none;
+  <!-- Minuta step nav — sticky inside page -->
+  <div id="minuta-step-nav" style="
+    position:sticky; bottom:0; left:0; right:0;
+    background:var(--white); border-top:1px solid var(--g100);
+    display:flex; gap:10px; padding:10px 16px;
+    padding-bottom:max(10px, env(safe-area-inset-bottom));
+    z-index:50; box-shadow:0 -2px 8px rgba(0,0,0,0.06);
   ">
-    <div style="
-      background:var(--white);border-radius:12px;
-      border:1.5px solid var(--b200);
-      overflow:hidden;margin-bottom:0;
-    ">
-      <!-- Header azul -->
-      <div style="
-        background:var(--b800);padding:10px 14px;
-        display:flex;align-items:center;justify-content:space-between;
-      ">
-        <div style="display:flex;align-items:center;gap:10px">
-          <div style="
-            width:36px;height:36px;background:rgba(255,255,255,0.15);
-            border-radius:9px;display:flex;align-items:center;justify-content:center;
-            font-family:var(--tight);font-size:16px;font-weight:800;color:white;
-            flex-shrink:0;
-          " id="adc-initials">--</div>
-          <div>
-            <div style="font-family:var(--tight);font-size:14px;font-weight:700;color:white" id="adc-name">Selecciona un distribuidor</div>
-            <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-top:1px" id="adc-meta">—</div>
-          </div>
-        </div>
-        <span style="
-          font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;
-          padding:3px 10px;border-radius:20px;background:rgba(255,255,255,0.15);
-          color:white;border:1px solid rgba(255,255,255,0.25);white-space:nowrap;
-        " id="adc-status">—</span>
-      </div>
-      <!-- Datos del dealer -->
-      <div style="padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:8px" id="adc-fields">
-        <div>
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--g500);margin-bottom:3px">Gte. Regional</div>
-          <div style="font-size:13px;font-weight:600;color:var(--g900)" id="adc-regional">Israel Esperanza</div>
-        </div>
-        <div>
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--g500);margin-bottom:3px">Fecha de visita</div>
-          <div style="font-size:13px;font-weight:600;color:var(--g900)" id="adc-fecha">—</div>
-        </div>
-        <div>
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--g500);margin-bottom:3px">Plaza</div>
-          <div style="font-size:13px;font-weight:600;color:var(--g900)" id="adc-plaza">—</div>
-        </div>
-        <div>
-          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--g500);margin-bottom:3px">Contacto clave</div>
-          <div style="font-size:13px;font-weight:600;color:var(--g900)" id="adc-contacto">—</div>
-        </div>
-      </div>
-      <!-- Warning si no hay dealer -->
-      <div id="adc-warning" style="
-        display:none;padding:10px 14px;
-        background:var(--amber-bg);border-top:1px solid #FDE8A0;
-        font-size:12px;color:var(--amber);font-weight:500;
-        display:flex;align-items:center;gap:7px;
-      ">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        Selecciona un distribuidor arriba para comenzar la agenda
-      </div>
-    </div>
+    <button id="btn-prev" onclick="prevMStep()" disabled style="
+      flex:1; padding:13px; border-radius:12px; font-size:14px; font-weight:700;
+      border:none; cursor:pointer; background:var(--g100); color:var(--g500);
+      font-family:var(--font); transition:all .15s;
+    ">← Anterior</button>
+    <button id="btn-next" onclick="nextMStep()" style="
+      flex:2; padding:13px; border-radius:12px; font-size:14px; font-weight:700;
+      border:none; cursor:pointer; background:var(--b700); color:white;
+      font-family:var(--font); transition:all .15s;
+    ">Siguiente →</button>
   </div>
-
-
-  <!-- Progress bar -->
-  <div class="agenda-progress-bar visible" id="agenda-pb">
-    <div class="apb-top">
-      <div class="apb-label">Avance de visita</div>
-      <div class="apb-count"><span id="apb-done">0</span> / <span id="apb-total">15</span> puntos</div>
-    </div>
-    <div class="apb-track"><div class="apb-fill" id="apb-fill" style="width:0%"></div></div>
-  </div>
-
-  <!-- Filter tabs -->
-  <div class="agenda-filter-tabs">
-    <button class="aft-btn active" onclick="filterAgenda('all',this)">Todos</button>
-    <button class="aft-btn" onclick="filterAgenda('pending',this)">Pendientes</button>
-    <button class="aft-btn" onclick="filterAgenda('done',this)">Revisados</button>
-    <button class="aft-btn" onclick="filterAgenda('foto',this)">Con foto</button>
-  </div>
-
-  <div style="padding:12px 16px 0">
-    <!-- Summary / CTA -->
-    <div class="agenda-summary-bar">
-      <div class="asb-text">
-        <div class="asb-title">Agenda operativa</div>
-        <div class="asb-sub">Revisa, comenta y documenta cada punto con el dealer</div>
-      </div>
-      <button class="asb-btn" onclick="pasarAMinuta()">→ Minuta</button>
-    </div>
-
-    <!-- Section label ops -->
-    <div class="ag-section-header" style="padding:0 0 8px 0">
-      <div class="ag-section-line"></div>
-      <div class="ag-section-label">Equipo de Ventas</div>
-      <span class="ag-section-pill ag-pill-ops">Con el equipo</span>
-      <div class="ag-section-line"></div>
-    </div>
-    <!-- ITEMS -->
-    <div id="agenda-items-wrap"></div>
-
-    <button onclick="pasarAMinuta()" style="width:100%;background:var(--b700);color:#fff;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;font-family:var(--tight);margin-bottom:8px">
-      Pasar datos a minuta →
-    </button>
-  </div>
-</div>
-
-<!-- step-nav moved inside page-minuta -->
+</div><!-- /page-minuta -->
 
 <!-- BOTTOM TAB BAR -->
 <nav class="tab-bar">
-  <button class="tab-btn active" id="tab-guia" onclick="goPage('guia')">
+  <button class="tab-btn active" id="tab-seleccion" onclick="goPage('seleccion')">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    <span>Guía</span>
-  </button>
-  <button class="tab-btn" id="tab-agenda" onclick="goPage('agenda')">
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="9 16 11 18 15 14"/></svg>
-    <span>Agenda</span>
+    <span>Inicio</span>
   </button>
   <button class="tab-btn" id="tab-minuta" onclick="goPage('minuta')">
     <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
@@ -977,1234 +471,685 @@ canvas#firma-canvas{width:100%;height:140px;display:block;touch-action:none}
 <div class="toast" id="toast"></div>
 
 <script>
-
 // ── Supabase ─────────────────────────────────────────────
 const { createClient } = supabase;
 const db = (window.FOTON_CONFIG)
   ? createClient(window.FOTON_CONFIG.SUPABASE_URL, window.FOTON_CONFIG.SUPABASE_ANON_KEY)
   : null;
 
-// ── Load dealer BP + facturado indicators ────────────────
-async function loadDealerIndicators(dealerId) {
-  if (!db || !dealerId) return;
-  const anio = 2026;
-  const mesActual = new Date().getMonth() + 1;
+// ── Estado global de la selección ─────────────────────────
+const estado = {
+  regionalId: null,
+  regionalNombre: null,
+  regionalSegmentoId: null,
+  distribuidorId: null,
+  distribuidorNombre: null,
+  distribuidorGrupo: null,
+  distribuidorPlaza: null,
+  fecha: null,
+};
+
+// ── Constantes de formulario ───────────────────────────────
+const MODELOS = ["S2","S3","S5","S6","S8","S12"];
+const AVANCE_OPTS = ["10% - Primer contacto","20% - Interés inicial","40% - Cotización enviada","60% - Negociando","80% - Decisión inminente","100% - Cerrado"];
+const RESP_OPTS = ["Regional Foton","Distribuidor","Gerente","Asesor de ventas","Por definir"];
+const FECHA_OPTS = ["Inmediato","Esta semana","Próxima semana","Próxima visita"];
+
+let currentPage = "seleccion", currentMStep = 0;
+let photos = [], pipeCount = 0, acCount = 0;
+let firmaCtx, firmaDrawing = false, firmaHasContent = false;
+
+// ── PAGE NAVIGATION ───────────────────────────────────────
+function goPage(page) {
+  ["seleccion","minuta"].forEach(p => {
+    const el = document.getElementById("page-" + p);
+    if (el) el.classList.toggle("active", page === p);
+    const t = document.getElementById("tab-" + p);
+    if (t) t.classList.toggle("active", page === p);
+  });
+  const titles = { seleccion:"Nueva Visita", minuta:"Minuta de Visita" };
+  const badges = { seleccion:"Campo", minuta:"Llenar" };
+  document.getElementById("hd-title").textContent = titles[page] || "Foton OS";
+  document.getElementById("hd-badge").textContent = badges[page] || "Campo";
+  currentPage = page;
+  if (page === "minuta") {
+    actualizarContextBar();
+    if (firmaCtx === undefined || !firmaCtx) initFirma();
+  }
+  window.scrollTo(0, 0);
+}
+
+// ── MINUTA STEP NAVIGATION ────────────────────────────────
+function goMStep(n) {
+  const total = 4;
+  ["m-0","m-1","m-2","m-3"].forEach(function(id){
+    const el = document.getElementById(id);
+    if (el) el.classList.remove("active");
+  });
+  document.querySelectorAll(".m-step-tab").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(".m-prog-lbl").forEach(l => l.classList.remove("active"));
+  const sec = document.getElementById("m-" + n);
+  if (sec) sec.classList.add("active");
+  const tab = document.getElementById("ms-" + n);
+  if (tab) tab.classList.add("active");
+  const lbl = document.getElementById("ml-" + n);
+  if (lbl) lbl.classList.add("active");
+  document.getElementById("m-prog-fill").style.width = ((n + 1) / total * 100) + "%";
+  document.getElementById("btn-prev").disabled = n === 0;
+  document.getElementById("btn-next").textContent = n === 3 ? "Finalizar ✓" : "Siguiente →";
+  currentMStep = n;
+  if (n === 3) buildResumen();
+  window.scrollTo(0, 0);
+}
+function nextMStep() { if (currentMStep < 3) goMStep(currentMStep + 1); }
+function prevMStep() { if (currentMStep > 0) goMStep(currentMStep - 1); }
+
+// ── CARGA DE REGIONALES ───────────────────────────────────
+async function cargarRegionales() {
+  if (!db) return;
+  const rol = window.FOTON_ROL;
+  const userId = window.FOTON_USER && window.FOTON_USER.id;
+
+  if (rol === 'regional' || rol === 'director') {
+    // Preseleccionar al usuario actual
+    const { data: rows } = await db
+      .from('usuarios')
+      .select('id, nombre, segmento_id')
+      .eq('id', userId)
+      .limit(1);
+    const user = rows && rows[0];
+    if (user) {
+      estado.regionalId = user.id;
+      estado.regionalNombre = user.nombre;
+      estado.regionalSegmentoId = user.segmento_id;
+      document.getElementById('regional-loading').style.display = 'none';
+      document.getElementById('regional-locked').style.display = 'block';
+      document.getElementById('regional-locked-name').textContent = user.nombre;
+      document.getElementById('regional-locked-seg').textContent = user.segmento_id ? 'Segmento: ' + user.segmento_id.toUpperCase() : '';
+      await cargarDistribuidores(user.id);
+    }
+  } else if (rol === 'direccion' || rol === 'admin') {
+    // Mostrar dropdown con todos los regionales
+    const { data: rows } = await db
+      .from('usuarios')
+      .select('id, nombre, segmento_id')
+      .in('rol', ['regional', 'director'])
+      .order('nombre');
+    document.getElementById('regional-loading').style.display = 'none';
+    const sel = document.getElementById('sel-regional');
+    sel.style.display = 'block';
+    if (rows && rows.length) {
+      rows.forEach(function(u) {
+        const opt = document.createElement('option');
+        opt.value = u.id;
+        opt.textContent = u.nombre + (u.segmento_id ? ' (' + u.segmento_id.toUpperCase() + ')' : '');
+        opt.dataset.segmento = u.segmento_id || '';
+        opt.dataset.nombre = u.nombre;
+        sel.appendChild(opt);
+      });
+    } else {
+      sel.innerHTML = '<option value="">No hay regionales disponibles</option>';
+    }
+  } else {
+    // Sin rol definido aún — intentar usar usuario actual
+    if (userId) {
+      const { data: rows } = await db
+        .from('usuarios')
+        .select('id, nombre, segmento_id, rol')
+        .eq('id', userId)
+        .limit(1);
+      const user = rows && rows[0];
+      if (user) {
+        estado.regionalId = user.id;
+        estado.regionalNombre = user.nombre;
+        estado.regionalSegmentoId = user.segmento_id;
+        document.getElementById('regional-loading').style.display = 'none';
+        document.getElementById('regional-locked').style.display = 'block';
+        document.getElementById('regional-locked-name').textContent = user.nombre;
+        document.getElementById('regional-locked-seg').textContent = user.segmento_id ? 'Segmento: ' + user.segmento_id.toUpperCase() : '';
+        await cargarDistribuidores(user.id);
+        return;
+      }
+    }
+    document.getElementById('regional-loading').style.display = 'none';
+    document.getElementById('sel-regional').style.display = 'block';
+  }
+}
+
+// ── CARGA DE DISTRIBUIDORES por asignaciones ──────────────
+async function cargarDistribuidores(regionalId) {
+  if (!db || !regionalId) return;
+  const selDist = document.getElementById('sel-distribuidor');
+  selDist.innerHTML = '<option value="">Cargando distribuidores...</option>';
+  selDist.disabled = true;
+
   try {
+    const { data: asigs } = await db
+      .from('asignaciones')
+      .select('distribuidor_id')
+      .eq('usuario_id', regionalId);
+
+    if (!asigs || asigs.length === 0) {
+      selDist.innerHTML = '<option value="">Sin distribuidores asignados</option>';
+      return;
+    }
+    const ids = asigs.map(function(a) { return a.distribuidor_id; });
+    const { data: dists } = await db
+      .from('distribuidores')
+      .select('id, nombre, grupo, plaza, ciudad, estado, segmento')
+      .in('id', ids)
+      .order('nombre');
+
+    selDist.innerHTML = '<option value="">Seleccionar distribuidor...</option>';
+    if (dists && dists.length) {
+      dists.forEach(function(d) {
+        const opt = document.createElement('option');
+        opt.value = d.id;
+        opt.textContent = d.nombre + (d.plaza ? ' — ' + d.plaza : '');
+        opt.dataset.grupo = d.grupo || '';
+        opt.dataset.plaza = d.plaza || (d.ciudad || '');
+        opt.dataset.ciudad = d.ciudad || '';
+        opt.dataset.estado = d.estado || '';
+        opt.dataset.segmento = d.segmento || '';
+        opt.dataset.nombre = d.nombre;
+        selDist.appendChild(opt);
+      });
+    }
+    selDist.disabled = false;
+
+    // Pre-seleccionar si viene de sessionStorage
+    const preselId = sessionStorage.getItem('visita_distribuidor_id');
+    if (preselId) {
+      sessionStorage.removeItem('visita_distribuidor_id');
+      selDist.value = preselId;
+      if (selDist.value === preselId) onDistribuidorChange();
+    }
+  } catch(e) {
+    console.error('[Foton OS] cargarDistribuidores error:', e.message);
+    selDist.innerHTML = '<option value="">Error al cargar distribuidores</option>';
+  }
+}
+
+// ── EVENTOS DE SELECCIÓN ──────────────────────────────────
+async function onRegionalChange() {
+  const sel = document.getElementById('sel-regional');
+  const selOpt = sel.options[sel.selectedIndex];
+  estado.regionalId = sel.value || null;
+  estado.regionalNombre = sel.value ? (selOpt.dataset.nombre || selOpt.textContent.split(' (')[0]) : null;
+  estado.regionalSegmentoId = sel.value ? selOpt.dataset.segmento : null;
+  estado.distribuidorId = null;
+  estado.distribuidorNombre = null;
+  document.getElementById('sel-distribuidor').innerHTML = '<option value="">Seleccionar distribuidor...</option>';
+  document.getElementById('sel-distribuidor').disabled = true;
+  document.getElementById('dist-info-row').classList.remove('visible');
+  verificarBotonComenzar();
+  if (sel.value) await cargarDistribuidores(sel.value);
+}
+
+function onDistribuidorChange() {
+  const sel = document.getElementById('sel-distribuidor');
+  const selOpt = sel.options[sel.selectedIndex];
+  estado.distribuidorId = sel.value || null;
+  if (sel.value && selOpt) {
+    estado.distribuidorNombre = selOpt.dataset.nombre || selOpt.textContent.split(' —')[0];
+    estado.distribuidorGrupo = selOpt.dataset.grupo || '';
+    estado.distribuidorPlaza = selOpt.dataset.plaza || selOpt.dataset.ciudad || '';
+    const infoRow = document.getElementById('dist-info-row');
+    document.getElementById('dist-info-nombre').textContent = estado.distribuidorNombre;
+    document.getElementById('dist-info-meta').textContent = (estado.distribuidorPlaza ? estado.distribuidorPlaza : '') + (estado.distribuidorGrupo ? ' · ' + estado.distribuidorGrupo : '');
+    infoRow.classList.add('visible');
+  } else {
+    estado.distribuidorNombre = null;
+    estado.distribuidorGrupo = null;
+    estado.distribuidorPlaza = null;
+    document.getElementById('dist-info-row').classList.remove('visible');
+  }
+  verificarBotonComenzar();
+}
+
+function verificarBotonComenzar() {
+  const btn = document.getElementById('btn-comenzar');
+  const ok = estado.regionalId && estado.distribuidorId && document.getElementById('sel-fecha').value;
+  btn.disabled = !ok;
+}
+
+function comenzarVisita() {
+  estado.fecha = document.getElementById('sel-fecha').value;
+  if (!estado.regionalId || !estado.distribuidorId || !estado.fecha) {
+    showToast('Selecciona regional, distribuidor y fecha');
+    return;
+  }
+  // Pre-llenar participante 1 con nombre del regional
+  const partInputs = document.querySelectorAll('.part-inp');
+  if (partInputs.length > 0 && !partInputs[0].value && estado.regionalNombre) {
+    partInputs[0].value = estado.regionalNombre + ' (Regional Foton)';
+  }
+  // Cargar indicadores BP del distribuidor
+  loadDealerIndicators(estado.distribuidorId);
+  goPage('minuta');
+}
+
+// ── CONTEXT BAR ───────────────────────────────────────────
+function actualizarContextBar() {
+  document.getElementById('ctx-regional-name').textContent = estado.regionalNombre || '—';
+  document.getElementById('ctx-dist-name').textContent = estado.distribuidorNombre || 'Sin distribuidor';
+  if (estado.fecha) {
+    const parts = estado.fecha.split('-');
+    document.getElementById('ctx-fecha').textContent = parts[2] + '/' + parts[1] + '/' + parts[0];
+  } else {
+    document.getElementById('ctx-fecha').textContent = '—';
+  }
+}
+
+// ── CARGAR INDICADORES BP desde tablas bp_anual y facturado_ytd ──
+async function loadDealerIndicators(distribuidorId) {
+  if (!db || !distribuidorId) return;
+  const anio = 2026;
+  try {
+    // BP anual por modelo
     const { data: bpRows } = await db
       .from('bp_anual')
-      .select('modelo,unidades_bp')
-      .eq('distribuidor_id', dealerId)
+      .select('modelo, unidades_bp, monto_bp')
+      .eq('distribuidor_id', distribuidorId)
       .eq('anio', anio);
-    const { data: facRows } = await db
+
+    // YTD facturado por mes y modelo
+    const { data: ytdRows } = await db
       .from('facturado_ytd')
-      .select('modelo,unidades_facturadas,mes')
-      .eq('distribuidor_id', dealerId)
+      .select('mes, modelo, unidades_facturadas')
+      .eq('distribuidor_id', distribuidorId)
       .eq('anio', anio)
-      .lte('mes', mesActual);
-    const bpTotal  = bpRows  ? bpRows.reduce((s,r)  => s + (r.unidades_bp||0),  0) : 0;
-    const facTotal = facRows ? facRows.reduce((s,r)  => s + (r.unidades_facturadas||0), 0) : 0;
-    const avance   = bpTotal > 0 ? Math.round((facTotal/bpTotal)*100) : 0;
+      .order('mes', { ascending: true });
+
+    const bpTotal = bpRows
+      ? bpRows.reduce(function(s, r) { return s + (r.unidades_bp || 0); }, 0)
+      : 0;
+    const facTotal = ytdRows
+      ? ytdRows.reduce(function(s, r) { return s + (r.unidades_facturadas || 0); }, 0)
+      : 0;
+    const avance = bpTotal > 0 ? Math.round((facTotal / bpTotal) * 100) : 0;
     const porCerrar = Math.max(0, bpTotal - facTotal);
-    // Inject into minuta indicator cells (update if the IDs exist)
-    ['ind-bp','ind-fac','ind-avance','ind-porcerrar'].forEach((id, i) => {
-      const el = document.getElementById(id);
-      if (el) el.textContent = [bpTotal, facTotal, avance+'%', porCerrar][i];
-    });
-    // Also store globally for use in minuta
-    window._dealerIndicators = { bpTotal, facTotal, avance, porCerrar };
+
+    const bp = document.getElementById('ind-bp');
+    const fac = document.getElementById('ind-fac');
+    const av = document.getElementById('ind-avance');
+    const pc = document.getElementById('ind-porcerrar');
+    if (bp) bp.textContent = bpTotal || '—';
+    if (fac) fac.textContent = facTotal || '—';
+    if (av) av.textContent = bpTotal ? avance + '%' : '—';
+    if (pc) pc.textContent = bpTotal ? porCerrar : '—';
+
+    window._dealerIndicators = { bpTotal, facTotal, avance, porCerrar, bpRows, ytdRows };
   } catch(e) {
     console.warn('[Foton OS] loadDealerIndicators error:', e.message);
   }
 }
 
-// ── Save visita to Supabase ──────────────────────────────
-async function saveVisitaToSupabase(visitaData) {
-  if (!db) return null;
+// ── GUARDAR VISITA ────────────────────────────────────────
+async function guardarVisita() {
+  if (!estado.distribuidorId || !estado.fecha) {
+    showToast('Faltan datos: vuelve a la selección');
+    return;
+  }
+  const btn = document.getElementById('btn-guardar');
+  if (btn) { btn.disabled = true; btn.textContent = 'Guardando...'; }
   try {
-    const { data, error } = await db.from('visitas').insert({
-      distribuidor_id: visitaData.dealerId,
-      fecha: visitaData.fecha,
-      tipo_visita: Array.isArray(visitaData.tipos) ? visitaData.tipos.join(', ') : (visitaData.tipos || ''),
-      objetivo: visitaData.objetivo || '',
-      logros: visitaData.logros || '',
-      comentarios: visitaData.comentarios || ''
-    }).select().limit(1);
-    if (error) { console.error('[Foton OS] saveVisita error:', error.message); return null; }
-    return data && data[0] ? data[0].id : null;
-  } catch(e) { console.error('[Foton OS] saveVisita exception:', e.message); return null; }
-}
+    const tipos = [...document.querySelectorAll('#tipo-wrap .tipo-btn.active')].map(function(b) { return b.textContent.trim(); });
+    const logros = document.getElementById('f-logros') ? document.getElementById('f-logros').value : '';
+    const comentarios = document.getElementById('f-coments') ? document.getElementById('f-coments').value : '';
 
-async function saveAgendaToSupabase(visitaId, items) {
-  if (!db || !visitaId || !items || !items.length) return;
-  try {
-    await db.from('visita_agenda').insert(
-      items.map(item => ({
-        visita_id: visitaId,
-        item_id: item.id || String(item.idx || ''),
-        seccion: item.seccion || 'ops',
-        done: !!item.done,
-        comentario: item.comentario || '',
-        datos: item.datos || {}
-      }))
-    );
-  } catch(e) { console.error('[Foton OS] saveAgenda error:', e.message); }
-}
+    const participantesRaw = [...document.querySelectorAll('.part-inp')].map(function(i) { return i.value.trim(); }).filter(Boolean);
 
-async function saveAcuerdosToSupabase(visitaId, acuerdos) {
-  if (!db || !visitaId || !acuerdos || !acuerdos.length) return;
-  try {
-    await db.from('visita_acuerdos').insert(
-      acuerdos.map((a, i) => ({
-        visita_id: visitaId,
-        descripcion: a.descripcion || a.texto || a.text || String(a),
-        responsable: a.responsable || '',
-        fecha_compromiso: a.fecha_compromiso || a.fecha || a.fechaCompromiso || null,
-        cumplido: false
-      }))
-    );
-  } catch(e) { console.error('[Foton OS] saveAcuerdos error:', e.message); }
-}
+    const { data: vRows, error: vErr } = await db.from('visitas').insert({
+      distribuidor_id: estado.distribuidorId,
+      fecha: estado.fecha,
+      tipo_visita: tipos,
+      regional: estado.regionalNombre || '',
+      participantes: participantesRaw,
+      logros: logros,
+      comentarios: comentarios,
+      status: 'completada',
+      created_by: window.FOTON_USER ? window.FOTON_USER.id : null
+    }).select('id').limit(1);
 
-async function uploadFotoToSupabase(visitaId, itemId, file) {
-  if (!db || !file) return null;
-  try {
-    const path = `${visitaId}/${itemId}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
-    const { error: upErr } = await db.storage.from('visita-fotos').upload(path, file, { upsert: true });
-    if (upErr) { console.error('[Foton OS] upload error:', upErr.message); return null; }
-    await db.from('visita_fotos').insert({ visita_id: visitaId, agenda_item_id: String(itemId), storage_path: path });
-    return path;
-  } catch(e) { console.error('[Foton OS] uploadFoto exception:', e.message); return null; }
-}
-
-// ── DEALERS DATA ──────────────────────────────────────────
-const DEALERS=[
-  {id:"gcm",name:"Grupo Carrocero Milenio",meta:"Tula · Karla Santillán",status:"nuevo",sl:"Nuevo dealer",pct:5,fc:"#2070BB",foco:"Arranque total: plan comercial, capacitación del equipo y cadencia de reporte semanal. Primera visita 21 mayo 2026."},
-  {id:"tang",name:"Asia Central (Tangamanga)",meta:"San Luis Potosí · Erick Elizalde",status:"verde",sl:"Estratégico",pct:45,fc:"#1A8C5B",foco:"Pipeline S12 activo. Capacitación vendedores pendiente. Activar Asesor App con Erick."},
-  {id:"bavi",name:"Burk Automotriz (BAVI)",meta:"Uruapan · Samir Daud",status:"verde",sl:"Activo",pct:38,fc:"#1A8C5B",foco:"S6 para agroindustria aguacatera — sector prioritario. Reforzar Asesor App. Samir seed user activo."},
-  {id:"astur",name:"Autos Emcg (ASTURCAR)",meta:"Puebla · Por definir",status:"rojo",sl:"En riesgo",pct:18,fc:"#C0392B",foco:"Causa raíz: vacante ejecutiva Atlas CDMX bloquea el financiamiento. Escalar con Alejandro Wabi."},
-  {id:"orient",name:"Camiones Orientales",meta:"León, Gto.",status:"verde",sl:"Activo",pct:40,fc:"#1A8C5B",foco:"Retail YTD por debajo del wholesale. Pipeline S5/S6 a fortalecer."},
-  {id:"prem",name:"Camiones Premium del Centro",meta:"Querétaro / Constituyentes",status:"amber",sl:"Seguimiento",pct:25,fc:"#B07A00",foco:"Plan comercial Q2 sin definir. Bonos DCF-32 activos — activar antes del 31 mayo."},
-  {id:"pen",name:"Veh. Comerciales Peninsula",meta:"Cancún / Mérida",status:"amber",sl:"Seguimiento",pct:22,fc:"#B07A00",foco:"Contactar Alejandro Wabi y Franklin Salmean (Atlas sureste) para destrabar financiamiento."},
-  {id:"xian",name:"Xian Motors",meta:"Guadalajara",status:"amber",sl:"Seguimiento",pct:28,fc:"#B07A00",foco:"Pedidos nuevos S6/S12 pendientes. Mayor mercado de transporte del occidente."},
-];
-const SC={verde:"sv",rojo:"sr",amber:"sa",nuevo:"sb"};
-const DIST_DATA={"Grupo Carrocero Milenio":{plaza:"Tula",grupo:"GCM"},"Autos Y Camiones Asia Central":{plaza:"San Luis Potosí",grupo:"Tangamanga"},"Burk Automotriz":{plaza:"Uruapan",grupo:"BAVI"},"Autos Emcg":{plaza:"Puebla",grupo:"Asturcar"},"Camiones Orientales De Leon":{plaza:"León",grupo:"Plascencia"},"Camiones Premium Del Centro":{plaza:"Querétaro",grupo:"Premium"},"Vehiculos Comerciales Peninsula":{plaza:"Cancún / Mérida",grupo:"Enerkom"},"Xian Motors":{plaza:"Guadalajara",grupo:"Xian"}};
-const MODELOS=["S2","S3","S5","S6","S8","S12"];
-const AVANCE_OPTS=["10% - Primer contacto","20% - Interés inicial","40% - Cotización enviada","60% - Negociando","80% - Decisión inminente","100% - Cerrado"];
-const RESP_OPTS=["Karla Santillán","Erick Elizalde","Samir Daud","Israel Esperanza","Distribuidor","Por definir"];
-const FECHA_OPTS=["Inmediato","Esta semana","Próxima semana","Próxima visita"];
-
-let currentPage="guia", currentGuia=0, currentMStep=0, photos=[], pipeCount=0, acCount=0, firmaCtx, firmaDrawing=false, firmaHasContent=false;
-
-// ── PAGE NAVIGATION ───────────────────────────────────────
-function goPage(page){
-  ["guia","agenda","minuta"].forEach(p => {
-    document.getElementById("page-"+p).classList.toggle("active", page===p);
-    const t = document.getElementById("tab-"+p);
-    if(t) t.classList.toggle("active", page===p);
-  });
-  document.getElementById("agenda-pb").classList.toggle("visible", page==="agenda");
-  const titles = {guia:"Guía de Visita", agenda:"Agenda Operativa", minuta:"Minuta de Visita"};
-  const badges = {guia:"Campo", agenda:"En visita", minuta:"Llenar"};
-  document.getElementById("hd-title").textContent = titles[page];
-  document.getElementById("hd-badge").textContent = badges[page];
-  currentPage = page;
-  window.scrollTo(0,0);
-}
-
-// ── GUIA NAVIGATION ───────────────────────────────────────
-function goGuia(n,btn){
-  document.querySelectorAll("[id^='g-']").forEach(s=>s.classList.remove("active"));
-  document.querySelectorAll("#guia-tabs .phase-tab").forEach(t=>t.classList.remove("active"));
-  document.getElementById("g-"+n).classList.add("active");
-  if(btn) btn.classList.add("active");
-  currentGuia=n; window.scrollTo(0,0);
-}
-
-// ── MINUTA STEP NAVIGATION ────────────────────────────────
-function goMStep(n){
-  ["m-0","m-1","m-2","m-3","m-4","m-5"].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.remove("active");});
-  document.querySelectorAll(".m-step-tab").forEach(t=>t.classList.remove("active"));
-  document.querySelectorAll(".m-prog-lbl").forEach(l=>l.classList.remove("active"));
-  document.getElementById("m-"+n).classList.add("active");
-  document.getElementById("ms-"+n).classList.add("active");
-  document.getElementById("ml-"+n).classList.add("active");
-  document.getElementById("m-prog-fill").style.width=((n+1)/6*100)+"%";
-  document.getElementById("btn-prev").disabled=n===0;
-  document.getElementById("btn-next").textContent=n===5?"Finalizar ✓":"Siguiente →";
-  currentMStep=n;
-  if(n===5) buildResumen();
-  window.scrollTo(0,0);
-}
-function nextMStep(){if(currentMStep<5)goMStep(currentMStep+1)}
-function prevMStep(){if(currentMStep>0)goMStep(currentMStep-1)}
-
-// ── DEALER SELECT ─────────────────────────────────────────
-function buildDealers(){
-  const c=document.getElementById("dealers-list"); c.innerHTML="";
-  DEALERS.forEach(d=>{
-    c.innerHTML+=`<div class="dc" id="dc-${d.id}"><div class="dc-hdr"><div><div class="dc-name">${d.name}</div><div class="dc-meta">${d.meta}</div></div><span class="spill ${SC[d.status]}">${d.sl}</span></div><div class="prog-row"><div class="prog-track"><div class="prog-fill" style="width:${d.pct}%;background:${d.fc}"></div></div><div class="prog-pct" style="color:${d.fc}">${d.pct}%</div></div><div class="dc-foco"><strong>Foco:</strong> ${d.foco}</div><div class="dc-acts"><button class="da" onclick="selectDealer('${d.id}')">Seleccionar</button><button class="da p" onclick="goPage('minuta')">Abrir minuta →</button></div></div>`;
-  });
-}
-function selectDealer(id){
-  document.getElementById("dealer-select").value=id;
-  onDealerChange();
-  goGuia(0,document.querySelectorAll("#guia-tabs .phase-tab")[0]);
-  window.scrollTo(0,0);
-}
-function onDealerChange(){
-  var id = document.getElementById("dealer-select").value;
-  var d = DEALERS.find(function(x){ return x.id===id; });
-  var banner = document.getElementById("dealer-banner");
-
-  if (!d) { if(banner) banner.style.display="none"; return; }
-
-  // ── Update banner ─────────────────────────────────────────────────
-  document.getElementById("db-name").textContent = d.name + " — " + d.meta;
-  document.getElementById("db-foco").textContent = d.foco;
-  document.getElementById("db-status").textContent = d.sl;
-  banner.style.display = "block";
-  document.querySelectorAll(".dc").forEach(function(c){ c.classList.remove("hl"); });
-  var dc = document.getElementById("dc-"+id);
-  if (dc) dc.classList.add("hl");
-
-  // ── Map dealer id → minuta form data ─────────────────────────────
-  var DIST_MAP = {
-    "gcm":    { dist:"Grupo Carrocero Milenio",        plaza:"Tula",            grupo:"GCM",       contacto:"Karla Santillan",  segmento:"MDT/LDT" },
-    "tang":   { dist:"Autos Y Camiones Asia Central",  plaza:"San Luis Potosi", grupo:"Tangamanga",contacto:"Erick Elizalde",   segmento:"MDT/LDT" },
-    "bavi":   { dist:"Burk Automotriz",                plaza:"Uruapan",         grupo:"BAVI",      contacto:"Samir Daud",       segmento:"MDT/LDT" },
-    "astur":  { dist:"Autos Emcg",                     plaza:"Puebla",          grupo:"Asturcar",  contacto:"Por definir",      segmento:"MDT/LDT" },
-    "orient": { dist:"Camiones Orientales De Leon",    plaza:"Leon",            grupo:"Plascencia",contacto:"Por definir",      segmento:"MDT/LDT" },
-    "prem":   { dist:"Camiones Premium Del Centro",    plaza:"Queretaro",       grupo:"Premium",   contacto:"Por definir",      segmento:"MDT/LDT" },
-    "pen":    { dist:"Vehiculos Comerciales Peninsula",plaza:"Cancun / Merida", grupo:"Enerkom",   contacto:"Por definir",      segmento:"MDT/LDT" },
-    "xian":   { dist:"Xian Motors",                    plaza:"Guadalajara",     grupo:"Xian",      contacto:"Por definir",      segmento:"MDT/LDT" }
-  };
-
-  var dm = DIST_MAP[id];
-  if (!dm) return;
-
-  // ── Pre-fill Minuta: info general ────────────────────────────────
-  // Distribuidor select — find matching option
-  var fDist = document.getElementById("f-dist");
-  if (fDist) {
-    for (var oi = 0; oi < fDist.options.length; oi++) {
-      var optTxt = fDist.options[oi].text || fDist.options[oi].value;
-      if (optTxt.indexOf(dm.dist.split(" ")[0]) > -1 || optTxt.indexOf(dm.grupo) > -1) {
-        fDist.value = fDist.options[oi].value;
-        break;
-      }
+    if (vErr) {
+      console.error('[Foton OS] guardarVisita error:', vErr.message);
+      showToast('Error al guardar visita');
+      return;
     }
+
+    const visitaId = vRows && vRows[0] ? vRows[0].id : null;
+    if (!visitaId) { showToast('Error al obtener ID de visita'); return; }
+
+    // Guardar acuerdos
+    const acuerdos = [];
+    let acNumero = 0;
+    document.querySelectorAll('.acuerdo-row').forEach(function(row) {
+      const textoEl = row.querySelector('.ac-texto');
+      if (textoEl && textoEl.value.trim()) {
+        acNumero++;
+        acuerdos.push({
+          visita_id: visitaId,
+          numero: acNumero,
+          texto: textoEl.value.trim(),
+          responsable: (row.querySelector('.ac-resp') || {}).value || '',
+          fecha_compromiso: (row.querySelector('.ac-fecha-input') || {}).value || null,
+          cumplido: false
+        });
+      }
+    });
+    if (acuerdos.length) {
+      const { error: acErr } = await db.from('visita_acuerdos').insert(acuerdos);
+      if (acErr) console.warn('[Foton OS] saveAcuerdos error:', acErr.message);
+    }
+
+    showToast('Visita guardada correctamente');
+    window._visitaGuardadaId = visitaId;
+  } catch(e) {
+    console.error('[Foton OS] guardarVisita exception:', e.message);
+    showToast('Error al guardar');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Guardar visita'; }
   }
-  var fPlaza = document.getElementById("f-plaza");
-  if (fPlaza) fPlaza.value = dm.plaza;
-
-  var fGrupo = document.getElementById("f-grupo");
-  if (fGrupo) fGrupo.value = dm.grupo;
-
-  var fSeg = document.getElementById("f-seg");
-  if (fSeg) fSeg.value = dm.segmento;
-
-  // Gte Regional — set Israel Esperanza
-  var fReg = document.getElementById("f-reg");
-  if (fReg) fReg.value = "Israel Esperanza";
-
-  // Date / time — refresh to current moment
-  var today = new Date();
-  var fFecha = document.getElementById("f-fecha");
-  if (fFecha && !fFecha.value) fFecha.value = today.toISOString().split("T")[0];
-  var fHora = document.getElementById("f-hora");
-  if (fHora && !fHora.value) fHora.value = today.toTimeString().slice(0,5);
-
-  // ── Pre-fill Participante 1 ───────────────────────────────────────
-  var partInputs = document.querySelectorAll(".part-inp");
-  if (partInputs.length > 0) partInputs[0].value = dm.contacto;
-
-  // ── Update header subtitle ────────────────────────────────────────
-  var topbarDealer = document.getElementById("topbar-dealer");
-  if (topbarDealer) topbarDealer.textContent = dm.dist + " · " + dm.plaza;
-
-  // ── Visual feedback — pulse the Minuta tab ────────────────────────
-  var tabMinuta = document.getElementById("tab-minuta");
-  if (tabMinuta) {
-    tabMinuta.style.transition = "background 0.3s";
-    tabMinuta.style.background = "var(--b50)";
-    setTimeout(function(){ tabMinuta.style.background = ""; }, 800);
-  }
-
-  // ── Update Agenda Dealer Card ─────────────────────────────────────
-  var card = document.getElementById("agenda-dealer-card");
-  if (card) card.style.display = "block";
-
-  // Initials from dealer name
-  var initials = dm.dist.split(" ").slice(0,2).map(function(w){ return w[0]; }).join("").toUpperCase();
-  var adcInit = document.getElementById("adc-initials");
-  if (adcInit) adcInit.textContent = initials;
-
-  var adcName = document.getElementById("adc-name");
-  if (adcName) adcName.textContent = dm.dist;
-
-  var adcMeta = document.getElementById("adc-meta");
-  if (adcMeta) adcMeta.textContent = dm.plaza + " · " + dm.grupo;
-
-  var adcStatus = document.getElementById("adc-status");
-  if (adcStatus) {
-    var statusMap = {
-      gcm:"Nuevo dealer", tang:"Estratégico", bavi:"Activo",
-      astur:"En riesgo", orient:"Activo", prem:"Seguimiento",
-      pen:"Seguimiento", xian:"Seguimiento"
-    };
-    adcStatus.textContent = statusMap[id] || "Activo";
-  }
-
-  var adcPlaza = document.getElementById("adc-plaza");
-  if (adcPlaza) adcPlaza.textContent = dm.plaza;
-
-  var adcContacto = document.getElementById("adc-contacto");
-  if (adcContacto) adcContacto.textContent = dm.contacto;
-
-  var adcFecha = document.getElementById("adc-fecha");
-  if (adcFecha) {
-    var now = new Date();
-    var dd = String(now.getDate()).padStart(2,"0");
-    var mm = String(now.getMonth()+1).padStart(2,"0");
-    adcFecha.textContent = dd + "/" + mm + "/" + now.getFullYear();
-  }
-
-  var adcRegional = document.getElementById("adc-regional");
-  if (adcRegional) {
-    var fRegEl = document.getElementById("f-reg");
-    adcRegional.textContent = fRegEl ? (fRegEl.value || "Israel Esperanza") : "Israel Esperanza";
-  }
-
-  var adcWarning = document.getElementById("adc-warning");
-  if (adcWarning) adcWarning.style.display = "none";
-
-  // ── Load Supabase indicators for this dealer ──────────────────────
-  loadDealerIndicators(id);
 }
-
-
-
-// ── GUIA CHECKLIST ────────────────────────────────────────
-function toggleChk(item){item.classList.toggle("done")}
-function resetChk(secId){document.getElementById(secId).querySelectorAll(".chk").forEach(i=>i.classList.remove("done"))}
 
 // ── MINUTA: PARTICIPANTES ─────────────────────────────────
-function addPart(){const l=document.getElementById("parts-list");const n=l.querySelectorAll(".field").length+1;const d=document.createElement("div");d.className="field";d.innerHTML=`<label>Participante ${n}</label><input type="text" class="part-inp" placeholder="Nombre y cargo">`;l.appendChild(d)}
-
-// ── MINUTA: TIPO BTN ──────────────────────────────────────
-function onFDistChange(){const v=document.getElementById("f-dist").value;const d=DIST_DATA[v];if(d){document.getElementById("f-plaza").value=d.plaza;document.getElementById("f-grupo").value=d.grupo}}
+function addPart() {
+  const l = document.getElementById("parts-list");
+  const n = l.querySelectorAll(".field").length + 1;
+  const d = document.createElement("div");
+  d.className = "field";
+  d.innerHTML = '<label>Participante ' + n + '</label><input type="text" class="part-inp" placeholder="Nombre y cargo">';
+  l.appendChild(d);
+}
 
 // ── MINUTA: CHECKBOXES ────────────────────────────────────
-function toggleCb(label){const cb=label.querySelector("input[type=checkbox]");setTimeout(()=>{label.classList.toggle("checked",cb.checked)},0)}
+function toggleCb(label) {
+  const cb = label.querySelector("input[type=checkbox]");
+  setTimeout(function() { label.classList.toggle("checked", cb.checked); }, 0);
+}
 
 // ── MINUTA: PIPELINE ──────────────────────────────────────
-function addPipeRow(){
+function addPipeRow() {
   pipeCount++;
-  const tbody=document.getElementById("pipe-body");
-  const tr=document.createElement("tr");
-  const mOpts=MODELOS.map(m=>`<option>${m}</option>`).join("");
-  const aOpts=AVANCE_OPTS.map(a=>`<option>${a}</option>`).join("");
-  tr.innerHTML=`<td><div class="rnum">${pipeCount}</div></td><td><input type="text" placeholder="Empresa / Prospecto"></td><td><select><option value="">--</option>${mOpts}</select></td><td><select><option value="">--</option>${aOpts}</select></td><td><input type="text" placeholder="Siguiente paso, fecha..."></td>`;
+  const tbody = document.getElementById("pipe-body");
+  const tr = document.createElement("tr");
+  const mOpts = MODELOS.map(function(m) { return '<option>' + m + '</option>'; }).join("");
+  const aOpts = AVANCE_OPTS.map(function(a) { return '<option>' + a + '</option>'; }).join("");
+  tr.innerHTML = '<td><div class="rnum">' + pipeCount + '</div></td><td><input type="text" placeholder="Empresa / Prospecto"></td><td><select><option value="">--</option>' + mOpts + '</select></td><td><select><option value="">--</option>' + aOpts + '</select></td><td><input type="text" placeholder="Siguiente paso, fecha..."></td>';
   tbody.appendChild(tr);
 }
 
 // ── MINUTA: INDICADORES ───────────────────────────────────
-function buildIndTable(){
-  const tbody=document.getElementById("ind-body");
-  MODELOS.forEach(m=>{
-    const tr=document.createElement("tr");
-    tr.innerHTML=`<td class="model-cell">${m}</td><td><input type="number" class="ind-bp" data-m="${m}" placeholder="0" min="0" oninput="calcPct('${m}')"></td><td><input type="number" class="ind-ytd" data-m="${m}" placeholder="0" min="0" oninput="calcPct('${m}')"></td><td><div class="pct-cell" id="pct-${m}">—</div></td><td><input type="number" placeholder="0" min="0"></td><td><input type="number" placeholder="0" min="0"></td><td><input type="number" placeholder="0" min="0"></td>`;
+function buildIndTable() {
+  const tbody = document.getElementById("ind-body");
+  MODELOS.forEach(function(m) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = '<td class="model-cell">' + m + '</td><td><input type="number" class="ind-bp" data-m="' + m + '" placeholder="0" min="0" oninput="calcPct(\'' + m + '\')"></td><td><input type="number" class="ind-ytd" data-m="' + m + '" placeholder="0" min="0" oninput="calcPct(\'' + m + '\')"></td><td><div class="pct-cell" id="pct-' + m + '">—</div></td><td><input type="number" placeholder="0" min="0"></td><td><input type="number" placeholder="0" min="0"></td><td><input type="number" placeholder="0" min="0"></td>';
     tbody.appendChild(tr);
   });
 }
-function calcPct(m){
-  const bp=parseFloat(document.querySelector(`.ind-bp[data-m="${m}"]`).value)||0;
-  const ytd=parseFloat(document.querySelector(`.ind-ytd[data-m="${m}"]`).value)||0;
-  const el=document.getElementById("pct-"+m);
-  if(!bp){el.textContent="—";el.className="pct-cell";return}
-  const pct=Math.round(ytd/bp*100);
-  el.textContent=pct+"%";
-  el.className="pct-cell"+(pct>=35?" ok":"");
+function calcPct(m) {
+  const bp = parseFloat(document.querySelector('.ind-bp[data-m="' + m + '"]').value) || 0;
+  const ytd = parseFloat(document.querySelector('.ind-ytd[data-m="' + m + '"]').value) || 0;
+  const el = document.getElementById("pct-" + m);
+  if (!bp) { el.textContent = "—"; el.className = "pct-cell"; return; }
+  const pct = Math.round(ytd / bp * 100);
+  el.textContent = pct + "%";
+  el.className = "pct-cell" + (pct >= 35 ? " ok" : "");
 }
 
 // ── MINUTA: ACUERDOS ──────────────────────────────────────
-function addAcuerdo(){
-  if(acCount>=5){showToast("Máximo 5 acuerdos");return}
+function addAcuerdo() {
+  if (acCount >= 5) { showToast("Máximo 5 acuerdos"); return; }
   acCount++;
-  const list=document.getElementById("acuerdos-list");
-  const rOpts=RESP_OPTS.map(r=>`<option>${r}</option>`).join("");
-  const fOpts=FECHA_OPTS.map(f=>`<option>${f}</option>`).join("");
-  const div=document.createElement("div");div.className="acuerdo-row";
-  div.innerHTML=`<div class="ac-num">${acCount}</div><div class="ac-fields"><input type="text" class="ac-texto" placeholder="Describir el acuerdo o compromiso..."><div class="ac-meta"><select class="ac-resp"><option value="">Responsable...</option>${rOpts}</select><select class="ac-fecha"><option value="">Fecha...</option>${fOpts}</select></div></div>`;
+  const list = document.getElementById("acuerdos-list");
+  const rOpts = RESP_OPTS.map(function(r) { return '<option>' + r + '</option>'; }).join("");
+  const div = document.createElement("div");
+  div.className = "acuerdo-row";
+  div.innerHTML = '<div class="ac-num">' + acCount + '</div><div class="ac-fields"><input type="text" class="ac-texto" placeholder="Describir el acuerdo o compromiso..."><div class="ac-meta"><select class="ac-resp"><option value="">Responsable...</option>' + rOpts + '</select><input type="date" class="ac-fecha-input" placeholder="Fecha compromiso" style="font-size:13px"></div></div>';
   list.appendChild(div);
-  if(acCount>=5)document.getElementById("btn-add-ac").style.display="none";
+  if (acCount >= 5) document.getElementById("btn-add-ac").style.display = "none";
 }
 
 // ── FOTOS ─────────────────────────────────────────────────
-function handlePhotos(input){
-  Array.from(input.files).forEach(file=>{
-    if(photos.length>=8){showToast("Máximo 8 fotos");return}
-    const r=new FileReader();
-    r.onload=e=>{photos.push(e.target.result);renderPhotos()};
-    r.readAsDataURL(file);
-  });
-  input.value="";
-}
-function renderPhotos(){
-  const grid=document.getElementById("photos-grid");grid.innerHTML="";
-  photos.forEach((src,i)=>{
-    const div=document.createElement("div");div.className="photo-thumb";
-    div.innerHTML=`<img src="${src}"><button class="rm" onclick="removePhoto(${i})">×</button>`;
-    grid.appendChild(div);
-  });
-}
-function removePhoto(i){photos.splice(i,1);renderPhotos()}
-
-// ── FIRMA ─────────────────────────────────────────────────
-function initFirma(){
-  const canvas=document.getElementById("firma-canvas");
-  const dpr=window.devicePixelRatio||1;
-  canvas.width=canvas.offsetWidth*dpr;
-  canvas.height=140*dpr;
-  firmaCtx=canvas.getContext("2d");
-  firmaCtx.scale(dpr,dpr);
-  firmaCtx.strokeStyle="#111118";firmaCtx.lineWidth=2;firmaCtx.lineCap="round";firmaCtx.lineJoin="round";
-  const gp=e=>{const r=canvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:(t.clientX-r.left),y:(t.clientY-r.top)}};
-  canvas.addEventListener("mousedown",e=>{firmaDrawing=true;const p=gp(e);firmaCtx.beginPath();firmaCtx.moveTo(p.x,p.y)});
-  canvas.addEventListener("mousemove",e=>{if(!firmaDrawing)return;const p=gp(e);firmaCtx.lineTo(p.x,p.y);firmaCtx.stroke();firmaHasContent=true});
-  canvas.addEventListener("mouseup",()=>{firmaDrawing=false});
-  canvas.addEventListener("touchstart",e=>{e.preventDefault();firmaDrawing=true;const p=gp(e);firmaCtx.beginPath();firmaCtx.moveTo(p.x,p.y)},{passive:false});
-  canvas.addEventListener("touchmove",e=>{e.preventDefault();if(!firmaDrawing)return;const p=gp(e);firmaCtx.lineTo(p.x,p.y);firmaCtx.stroke();firmaHasContent=true},{passive:false});
-  canvas.addEventListener("touchend",()=>{firmaDrawing=false});
-}
-function clearFirma(){const c=document.getElementById("firma-canvas");firmaCtx.clearRect(0,0,c.width,c.height);firmaHasContent=false}
-
-// ── RESUMEN ───────────────────────────────────────────────
-function buildResumen(){
-  const dist=document.getElementById("f-dist").value||"—";
-  const plaza=document.getElementById("f-plaza").value||"—";
-  const fecha=document.getElementById("f-fecha").value||"—";
-  const tipos=[...document.querySelectorAll(".tipo-btn.active")].map(b=>b.textContent).join(", ")||"—";
-  const temas=[...document.querySelectorAll(".cb-item.checked .cb-label")].map(l=>l.textContent).join(", ")||"—";
-  const acuerdos=[...document.querySelectorAll(".ac-texto")].filter(i=>i.value).map((i,n)=>`${n+1}. ${i.value}`);
-  document.getElementById("resumen-content").innerHTML=`
-    <div class="rb"><div class="rb-title">Datos generales</div><div class="rb-row"><span>Distribuidor</span><span class="rb-val">${dist}</span></div><div class="rb-row"><span>Plaza</span><span class="rb-val">${plaza}</span></div><div class="rb-row"><span>Fecha</span><span class="rb-val">${fecha}</span></div><div class="rb-row"><span>Tipo</span><span class="rb-val">${tipos}</span></div></div>
-    <div class="rb"><div class="rb-title">Temas</div><div style="font-size:13px;color:var(--g700);line-height:1.7">${temas}</div></div>
-    <div class="rb"><div class="rb-title">Acuerdos (${acuerdos.length})</div>${acuerdos.map(a=>`<div style="font-size:13px;padding:4px 0;border-bottom:1px solid var(--g100)">${a}</div>`).join("")||"<div style='font-size:13px;color:var(--g500)'>Sin acuerdos registrados</div>"}</div>
-    <div class="rb"><div class="rb-title">Fotos</div><div style="font-size:13px;color:var(--g700)">${photos.length} foto${photos.length!==1?"s":""} adjunta${photos.length!==1?"s":""}</div></div>`;
-}
-
-// ── PDF ───────────────────────────────────────────────────
-async function generarPDF(){
-  // Save to Supabase
-  (async () => {
-    const _dealerId = (document.getElementById('dealer-select') || {}).value || null;
-    const _fecha = document.getElementById('f-fecha')?.value || new Date().toISOString().slice(0,10);
-    const _tipos = [...document.querySelectorAll('#tipo-wrap .tipo-btn.active')].map(b => b.textContent.trim());
-    const _logros = document.getElementById('f-logros')?.value || '';
-    const _coments = document.getElementById('f-coments')?.value || '';
-    const _objetivo = document.getElementById('f-objetivo')?.value || '';
-    const visitaId = await saveVisitaToSupabase({
-      dealerId: _dealerId,
-      fecha: _fecha,
-      tipos: _tipos,
-      objetivo: _objetivo,
-      logros: _logros,
-      comentarios: _coments
-    });
-    if (visitaId) {
-      const acuerdosItems = [...document.querySelectorAll('.acuerdo-row')].filter(row => row.querySelector('.ac-texto')?.value).map(row => ({
-        descripcion: row.querySelector('.ac-texto')?.value || '',
-        responsable: row.querySelector('.ac-resp')?.value || '',
-        fecha_compromiso: row.querySelector('.ac-fecha')?.value || null
-      }));
-      await saveAcuerdosToSupabase(visitaId, acuerdosItems);
-    }
-  })();
-  showToast("Generando PDF...");
-  const {jsPDF}=window.jspdf;
-  const doc=new jsPDF({orientation:"portrait",unit:"mm",format:"letter"});
-  const W=215.9,ml=14,mr=14,cw=W-ml-mr;
-  const B8=[12,68,124],B7=[24,95,165],DARK=[17,17,24],GRAY=[107,107,128],LG=[244,244,246],BD=[224,224,230];
-  let y=14;
-  // Header band
-  doc.setFillColor(...B8);doc.rect(ml,y,cw,10,"F");
-  doc.setTextColor(255,255,255);doc.setFontSize(11);doc.setFont("helvetica","bold");
-  doc.text("INFORME · VISITA COMERCIAL — DISTRIBUIDOR",W/2,y+6.5,{align:"center"});
-  y+=14;
-  // Sub-header
-  doc.setFillColor(...LG);doc.roundedRect(ml,y,cw,8,2,2,"F");
-  doc.setTextColor(...DARK);doc.setFontSize(9);doc.setFont("helvetica","normal");
-  doc.text("FOTON MÉXICO · LDR Solutions S.A. de C.V.",ml+4,y+5);
-  doc.text("GR Centro-Sur · Israel Esperanza",W-mr-4,y+5,{align:"right"});
-  y+=12;
-  const dist=document.getElementById("f-dist").value||"—";
-  const plaza=document.getElementById("f-plaza").value||"—";
-  const grupo=document.getElementById("f-grupo").value||"—";
-  const segm=document.getElementById("f-seg").value||"—";
-  const reg=document.getElementById("f-reg").value||"—";
-  const fecha=document.getElementById("f-fecha").value||"—";
-  const hora=document.getElementById("f-hora").value||"—";
-  const tipos=[...document.querySelectorAll(".tipo-btn.active")].map(b=>b.textContent).join(" | ")||"—";
-  // Section helper
-  const secH=(title,yp)=>{doc.setFillColor(...B8);doc.rect(ml,yp,cw,6,"F");doc.setFontSize(8);doc.setFont("helvetica","bold");doc.setTextColor(255,255,255);doc.text(title,ml+2,yp+4.2);return yp+8};
-  y=secH("INFORMACIÓN GENERAL",y);
-  [["Distribuidor",dist,"Segmento",segm],["Plaza",plaza,"Gte. Regional",reg],["Grupo",grupo,"Fecha / Hora",fecha+" "+hora],["Tipo de visita",tipos,"",""]].forEach(row=>{
-    doc.setFontSize(8);doc.setFont("helvetica","bold");doc.setTextColor(...GRAY);
-    doc.text(row[0].toUpperCase(),ml+2,y+4);
-    doc.setFont("helvetica","normal");doc.setTextColor(...DARK);doc.text(row[1],ml+2,y+8.5);
-    if(row[2]){doc.setFont("helvetica","bold");doc.setTextColor(...GRAY);doc.text(row[2].toUpperCase(),W/2+2,y+4);doc.setFont("helvetica","normal");doc.setTextColor(...DARK);doc.text(row[3],W/2+2,y+8.5)}
-    doc.setDrawColor(...BD);doc.line(ml,y+11,W-mr,y+11);y+=12;
-  });
-  const parts=[...document.querySelectorAll(".part-inp")].map(i=>i.value).filter(v=>v);
-  if(parts.length){doc.setFontSize(8);doc.setFont("helvetica","bold");doc.setTextColor(...GRAY);doc.text("PARTICIPANTES:",ml+2,y+4);doc.setFont("helvetica","normal");doc.setTextColor(...DARK);doc.text(parts.join(" · "),ml+32,y+4);y+=8}
-  y+=3;
-  // Temas
-  const temas=[...document.querySelectorAll(".cb-item.checked .cb-label")].map(l=>l.textContent);
-  if(temas.length){
-    y=secH("AGENDA — TEMAS REVISADOS",y);
-    doc.setFontSize(8);doc.setFont("helvetica","normal");doc.setTextColor(...DARK);
-    const lines=doc.splitTextToSize(temas.join("  ·  "),cw-4);
-    lines.forEach(l=>{doc.text(l,ml+2,y);y+=5});y+=3;
-  }
-  // Indicadores
-  y=secH("INDICADORES COMERCIALES",y);
-  const iCols=[22,28,28,24,28,28,18];
-  const iH=["Modelo","BP 2026","Whole YTD","% Avance","Retail YTD","Inventario","B.O."];
-  doc.setFillColor(...B8);doc.rect(ml,y-0.5,iCols.reduce((a,b)=>a+b,0),7,"F");
-  doc.setFontSize(8);doc.setFont("helvetica","bold");doc.setTextColor(255,255,255);
-  let x=ml+2;iH.forEach((h,i)=>{doc.text(h,x,y+4.5);x+=iCols[i]});y+=7;
-  document.querySelectorAll("#ind-body tr").forEach((tr,i)=>{
-    const cells=tr.querySelectorAll("td");
-    const modelo=cells[0].textContent;
-    const vals=[...cells].slice(1).map((td,ci)=>ci===2?td.querySelector("div")?.textContent:td.querySelector("input")?.value||"");
-    doc.setFillColor(i%2===0?255:248,i%2===0?255:248,i%2===0?255:250);
-    doc.rect(ml,y-0.5,cw,7,"F");
-    doc.setFontSize(8);doc.setFont("helvetica","bold");doc.setTextColor(...DARK);doc.text(modelo,ml+2,y+4.5);
-    doc.setFont("helvetica","normal");let px=ml+2+iCols[0];
-    vals.forEach((v,ci)=>{doc.text(v||"0",px+iCols[ci+1]/2,y+4.5,{align:"center"});px+=iCols[ci+1]});
-    y+=7;
-  });y+=4;
-  // Pipeline
-  const pipeData=[];
-  document.querySelectorAll("#pipe-body tr").forEach(tr=>{
-    const c=tr.querySelectorAll("td");if(c.length<5)return;
-    const cl=c[1].querySelector("input").value;const m=c[2].querySelector("select").value;
-    if(cl||m)pipeData.push({cl,m,a:c[3].querySelector("select").value,co:c[4].querySelector("input").value});
-  });
-  if(pipeData.length){
-    y=secH("PIPELINE / ACOMPAÑAMIENTO",y);
-    const pCols=[22,50,22,50];const pH=["Modelo","Cliente","% Avance","Comentarios"];
-    doc.setFillColor(...B8);doc.rect(ml,y-0.5,pCols.reduce((a,b)=>a+b,0),7,"F");
-    doc.setFontSize(8);doc.setFont("helvetica","bold");doc.setTextColor(255,255,255);
-    let px=ml+2;pH.forEach((h,i)=>{doc.text(h,px,y+4.5);px+=pCols[i]});y+=7;
-    pipeData.forEach((r,i)=>{
-      doc.setFillColor(i%2===0?255:248,i%2===0?255:248,i%2===0?255:250);doc.rect(ml,y-0.5,cw,7,"F");
-      doc.setFontSize(8);doc.setFont("helvetica","normal");doc.setTextColor(...DARK);
-      let px=ml+2;[r.m,r.cl,r.a.split(" ")[0],doc.splitTextToSize(r.co,48)[0]].forEach((v,ci)=>{doc.text(v||"—",px,y+4.5);px+=pCols[ci]});
-      y+=7;
-    });y+=4;
-  }
-  // Logros
-  const logros=document.getElementById("f-logros").value;
-  if(logros){
-    if(y>220){doc.addPage();y=14}
-    y=secH("LOGROS / ESTRATEGIA",y);
-    doc.setFontSize(8);doc.setFont("helvetica","normal");doc.setTextColor(...DARK);
-    doc.splitTextToSize(logros,cw-4).forEach(l=>{doc.text(l,ml+2,y);y+=4.5});y+=6;
-  }
-  // Acuerdos
-  const acs=[...document.querySelectorAll(".ac-texto")].filter(i=>i.value);
-  if(acs.length){
-    if(y>220){doc.addPage();y=14}
-    y=secH("ACUERDOS",y);
-    document.querySelectorAll(".acuerdo-row").forEach((row,i)=>{
-      const t=row.querySelector(".ac-texto").value;const resp=row.querySelector(".ac-resp").value;const fe=row.querySelector(".ac-fecha").value;
-      if(!t)return;
-      doc.setFillColor(...B8);doc.roundedRect(ml,y,3,7,1,1,"F");
-      doc.setFontSize(8);doc.setFont("helvetica","normal");doc.setTextColor(...DARK);
-      const lines=doc.splitTextToSize(t,cw-65);doc.text(lines,ml+6,y+4.5);
-      doc.setTextColor(...GRAY);doc.text(`Resp: ${resp||"—"}`,W-mr-58,y+3);doc.text(`Fecha: ${fe||"—"}`,W-mr-58,y+7);
-      y+=Math.max(7,lines.length*5)+3;
-    });y+=2;
-  }
-  // Comentarios adicionales
-  const coments=document.getElementById("f-coments").value;
-  if(coments){
-    if(y>225){doc.addPage();y=14}
-    y=secH("COMENTARIOS ADICIONALES",y);
-    doc.setFontSize(8);doc.setFont("helvetica","normal");doc.setTextColor(...DARK);
-    doc.splitTextToSize(coments,cw-4).forEach(l=>{doc.text(l,ml+2,y);y+=4.5});y+=6;
-  }
-  // Fotos
-  if(photos.length>0){
-    doc.addPage();y=14;
-    y=secH("FOTOS / ANEXOS",y);y+=4;
-    const fw=(cw-8)/2,fh=fw*0.75;
-    for(let i=0;i<photos.length;i++){
-      const col=i%2,row2=Math.floor(i/2);
-      const px=ml+(col*(fw+8)),py=y+(row2*(fh+6));
-      if(py+fh>270){doc.addPage();y=14}
-      try{doc.addImage(photos[i],"JPEG",px,py,fw,fh)}catch(e){}
-    }
-  }
-  // Firma
-  const fCanvas=document.getElementById("firma-canvas");
-  if(firmaHasContent){
-    if(y>230){doc.addPage();y=14}
-    y=secH("FIRMA",y);y+=6;
-    doc.addImage(fCanvas.toDataURL("image/png"),"PNG",ml,y,55,20);
-    y+=22;doc.setDrawColor(...BD);doc.line(ml,y,ml+55,y);
-    doc.setFontSize(8);doc.setFont("helvetica","normal");doc.setTextColor(...GRAY);
-    doc.text("Gte. Regional FOTON",ml,y+4);doc.text(reg,ml,y+8);
-  }
-  // Footer
-  const pageCount=doc.internal.getNumberOfPages();
-  for(let p=1;p<=pageCount;p++){
-    doc.setPage(p);doc.setFillColor(...B8);doc.rect(0,271,W+10,5,"F");
-    doc.setFontSize(7);doc.setFont("helvetica","normal");doc.setTextColor(255,255,255);
-    doc.text("FOTON MÉXICO · LDR Solutions S.A. de C.V. · Confidencial — Uso interno",W/2,274,{align:"center"});
-    doc.text(`Pág. ${p} / ${pageCount}`,W-mr,274,{align:"right"});
-  }
-  const fname=`Minuta_${dist.replace(/\s+/g,"_")}_${fecha||"SinFecha"}.pdf`;
-  doc.save(fname);showToast("✓ PDF descargado");
-}
-
-// ── TOAST ─────────────────────────────────────────────────
-function showToast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2500)}
-
-
-// ══════════════════════════════════════════════════════════
-// AGENDA OPERATIVA
-// ══════════════════════════════════════════════════════════
-const AGENDA_ITEMS = [
-  {
-    id: "precios", num: 1, title: "Lista de Precios",
-    subtitle: "Verificar que el equipo tenga la lista vigente y correcta",
-    tags: ["bmin"], tagLabels: ["Minuta"],
-    minutaField: "facturacion",
-    comentPlaceholder: "Lista actualizada? Conocen precios de contado vs credito?",
-    hasPhoto: true, photoLabel: "Foto de lista de precios visible en piso",
-    extraFields: [
-      { key: "lista_version", label: "Version / Fecha lista", type: "text", placeholder: "Ej. Marzo 2026" }
-    ]
-  },
-  {
-    id: "plan_trabajo", num: 2, title: "Plan de Trabajo",
-    subtitle: "Plan comercial mensual: acciones, sectores y metas",
-    tags: ["bmin", "bkpi"], tagLabels: ["Minuta", "KPI"],
-    minutaField: "plancom",
-    comentPlaceholder: "Tienen plan definido? Que sectores atacan este mes?",
-    hasPhoto: true, photoLabel: "Foto del plan de trabajo del dealer",
-    extraFields: [
-      { key: "plan_mes", label: "Mes del plan", type: "text", placeholder: "Mayo 2026" },
-      { key: "plan_meta", label: "Meta unidades", type: "number", placeholder: "0" }
-    ]
-  },
-  {
-    id: "leads", num: 3, title: "Leads",
-    subtitle: "Cantidad y calidad de prospectos activos en seguimiento",
-    tags: ["bkpi"], tagLabels: ["KPI"],
-    minutaField: "prosp",
-    comentPlaceholder: "Cuantos leads tienen activos? Cuantos son calientes?",
-    hasPhoto: false,
-    extraFields: [
-      { key: "leads_total", label: "Total leads", type: "number", placeholder: "0" },
-      { key: "leads_calientes", label: "Leads calientes", type: "number", placeholder: "0" }
-    ]
-  },
-  {
-    id: "proyeccion", num: 4, title: "Proyeccion",
-    subtitle: "Proyeccion de cierres del mes y avance vs Business Plan",
-    tags: ["bkpi"], tagLabels: ["KPI"],
-    minutaField: "indicadores",
-    comentPlaceholder: "Cuantas unidades proyectan cerrar este mes? Van al ritmo del BP?",
-    hasPhoto: false,
-    extraFields: [
-      { key: "proy_unidades", label: "Proyeccion del mes", type: "number", placeholder: "0" },
-      { key: "proy_modelo", label: "Modelo principal", type: "text", placeholder: "S6, S12..." }
-    ]
-  },
-  {
-    id: "meta_asesor", num: 5, title: "Meta por Asesor",
-    subtitle: "Distribucion de metas individuales dentro del equipo de ventas",
-    tags: ["bkpi", "bmin"], tagLabels: ["KPI", "Minuta"],
-    minutaField: "fventas",
-    comentPlaceholder: "Cada asesor sabe su meta? Como van individualmente?",
-    hasPhoto: false,
-    extraFields: [
-      { key: "meta_num_asesores", label: "N asesores activos", type: "number", placeholder: "0" },
-      { key: "meta_unid_asesor", label: "Meta u. por asesor", type: "number", placeholder: "0" }
-    ]
-  },
-  {
-    id: "redes", num: 6, title: "Redes Sociales",
-    subtitle: "Actividad en redes, calidad del contenido y presencia digital",
-    tags: ["bmin"], tagLabels: ["Minuta"],
-    minutaField: "mktg",
-    comentPlaceholder: "Estan activos en redes? Que plataformas? Con que frecuencia publican?",
-    hasPhoto: true, photoLabel: "Screenshot del perfil o ultima publicacion",
-    extraFields: [
-      { key: "redes_plataformas", label: "Plataformas activas", type: "text", placeholder: "IG, FB, TikTok..." }
-    ]
-  },
-  {
-    id: "mkt", num: 7, title: "MKT",
-    subtitle: "Acciones de marketing activas: campanas, eventos, materiales POP",
-    tags: ["bmin"], tagLabels: ["Minuta"],
-    minutaField: "mktg",
-    comentPlaceholder: "Que acciones de marketing tienen activas? Hay eventos planeados?",
-    hasPhoto: true, photoLabel: "Foto de materiales de marketing en agencia",
-    extraFields: []
-  },
-  {
-    id: "clientes_piso", num: 8, title: "Clientes en Piso x Dia",
-    subtitle: "Trafico diario promedio de clientes visitando la agencia",
-    tags: ["bkpi"], tagLabels: ["KPI"],
-    minutaField: "prosp",
-    comentPlaceholder: "Cuantos clientes visitan el piso diariamente? En que dias hay mas flujo?",
-    hasPhoto: false,
-    extraFields: [
-      { key: "clientes_dia_prom", label: "Promedio diario", type: "number", placeholder: "0" },
-      { key: "clientes_dia_pico", label: "Dia de mayor trafico", type: "text", placeholder: "Ej. Viernes" }
-    ]
-  },
-  {
-    id: "roleplay", num: 9, title: "Role Play",
-    subtitle: "Sesion de simulacion de ventas con el equipo para reforzar argumentario",
-    tags: ["bmin", "btip"], tagLabels: ["Minuta", "Cap."],
-    minutaField: "fventas",
-    comentPlaceholder: "Se realizo roleplay? Cual fue el nivel del equipo? Que objeciones surgieron?",
-    hasPhoto: false,
-    extraFields: [
-      { key: "rp_participantes", label: "N participantes", type: "number", placeholder: "0" },
-      { key: "rp_tema", label: "Tema trabajado", type: "text", placeholder: "Ej. Precio vs competencia" }
-    ]
-  },
-  {
-    id: "carpeta", num: 10, title: "Carpeta de Ventas",
-    subtitle: "Herramientas de venta disponibles: fichas, comparativos, calculadoras",
-    tags: ["btip"], tagLabels: ["Herramienta"],
-    minutaField: "fventas",
-    comentPlaceholder: "El asesor tiene carpeta completa? Fichas tecnicas, calculadora de costo, comparativo vs competencia?",
-    hasPhoto: true, photoLabel: "Foto de carpeta de ventas del asesor",
-    extraFields: []
-  },
-  {
-    id: "cincos", num: 11, title: "5s en la Agencia",
-    subtitle: "Metodologia 5S: orden, limpieza y organizacion del showroom",
-    tags: ["btip"], tagLabels: ["Operativo"],
-    minutaField: "coments",
-    comentPlaceholder: "Como esta el orden y limpieza del piso? Hay areas de oportunidad?",
-    hasPhoto: true, photoLabel: "Foto del showroom o piso de ventas",
-    extraFields: [
-      { key: "cincos_calificacion", label: "Calificacion 1-5", type: "number", placeholder: "1-5" }
-    ]
-  },
-  {
-    id: "asesores", num: 12, title: "Numero de Asesores",
-    subtitle: "Plantilla actual del equipo de ventas y nivel de actividad",
-    tags: ["bkpi", "bmin"], tagLabels: ["KPI", "Minuta"],
-    minutaField: "fventas",
-    comentPlaceholder: "Cuantos asesores estan activos? Hay rotacion reciente? Hay vacantes?",
-    hasPhoto: false,
-    extraFields: [
-      { key: "asesores_total", label: "Total asesores", type: "number", placeholder: "0" },
-      { key: "asesores_activos", label: "Activos este mes", type: "number", placeholder: "0" }
-    ]
-  },
-  {
-    id: "fichas", num: 13, title: "Fichas Tecnicas",
-    subtitle: "Disponibilidad y conocimiento de fichas tecnicas S3-S12",
-    tags: ["bmin"], tagLabels: ["Cap."],
-    minutaField: "fventas",
-    comentPlaceholder: "El equipo tiene fichas actualizadas? Las conocen y las usan en visitas con clientes?",
-    hasPhoto: true, photoLabel: "Foto de fichas tecnicas en el piso",
-    extraFields: []
-  },
-  {
-    id: "pagos", num: 14, title: "Revision de Pagos",
-    subtitle: "Estado de cuenta, pagos pendientes y adeudos con Foton",
-    tags: ["bkpi", "brisk"], tagLabels: ["KPI", "Finanzas"],
-    minutaField: "edocta",
-    comentPlaceholder: "Tiene pagos vencidos? Estado de cuenta al corriente? Notas de credito pendientes?",
-    hasPhoto: true, photoLabel: "Foto del estado de cuenta",
-    extraFields: [
-      { key: "pagos_status", label: "Status", type: "text", placeholder: "Al corriente / Vencido" },
-      { key: "pagos_monto", label: "Monto pendiente", type: "number", placeholder: "0" }
-    ]
-  },
-  {
-    id: "pdi", num: 15, title: "Revision de PDI",
-    subtitle: "Proceso de Inspeccion Pre-Entrega: cumplimiento y calidad",
-    tags: ["bmin", "btip"], tagLabels: ["Minuta", "Operativo"],
-    minutaField: "posventa",
-    comentPlaceholder: "Estan realizando el PDI completo? Hay devoluciones o quejas por fallas en entrega?",
-    hasPhoto: true, photoLabel: "Foto del area de PDI o unidad en preparacion",
-    extraFields: [
-      { key: "pdi_cumplimiento", label: "Cumplimiento PDI", type: "text", placeholder: "Si / No / Parcial" },
-      { key: "pdi_obs", label: "Observaciones", type: "text", placeholder: "Describe hallazgos..." }
-    ]
-  }
-];
-
-
-const AGENDA_GERENCIAL = [
-  {
-    id: "g_acuerdos_prev", num: "G1", title: "Revisión de Acuerdos Anteriores",
-    subtitle: "¿Qué comprometió la gerencia en la visita pasada? ¿Se cumplió?",
-    tags: ["btip"], tagLabels: ["Apertura"],
-    minutaField: "",
-    comentPlaceholder: "Acuerdo 1: __ Status: __\nAcuerdo 2: __ Status: __",
-    hasPhoto: false,
-    extraFields: []
-  },
-  {
-    id: "g_indicadores", num: "G2", title: "Indicadores Comerciales con Gerencia",
-    subtitle: "Presentación ejecutiva: wholesale YTD vs BP, retail, brecha y ritmo para cerrar el año",
-    tags: ["bkpi"], tagLabels: ["KPI"],
-    minutaField: "indicadores",
-    comentPlaceholder: "¿Cómo reaccionó la gerencia al ver los números? ¿Hay compromiso de acción?",
-    hasPhoto: false,
-    extraFields: [
-      { key: "g_wholesale_ytd", label: "Wholesale YTD total", type: "number", placeholder: "0" },
-      { key: "g_bp_anual", label: "BP Anual total", type: "number", placeholder: "0" }
-    ]
-  },
-  {
-    id: "g_pipeline", num: "G3", title: "Pipeline y Proyección",
-    subtitle: "Operaciones calientes, probabilidad de cierre y proyección del trimestre",
-    tags: ["bkpi"], tagLabels: ["KPI"],
-    minutaField: "prosp",
-    comentPlaceholder: "¿Qué operaciones cierran este mes? ¿Hay compromisos de gerencia para destrabar alguna?",
-    hasPhoto: false,
-    extraFields: [
-      { key: "g_op_calientes", label: "Operaciones calientes", type: "number", placeholder: "0" },
-      { key: "g_proy_mes", label: "Proyección cierre mes", type: "number", placeholder: "0" }
-    ]
-  },
-  {
-    id: "g_pagos_ger", num: "G4", title: "Estado Financiero y Pagos",
-    subtitle: "Revisión de estado de cuenta, pagos vencidos, notas de crédito pendientes con Foton",
-    tags: ["brisk"], tagLabels: ["Finanzas"],
-    minutaField: "edocta",
-    comentPlaceholder: "¿Hay pagos vencidos? ¿Se comprometió fecha de pago? ¿Notas de crédito por gestionar?",
-    hasPhoto: true, photoLabel: "Captura del estado de cuenta",
-    extraFields: [
-      { key: "g_status_pago", label: "Status de pago", type: "text", placeholder: "Al corriente / Vencido" },
-      { key: "g_dias_vencido", label: "Días vencido", type: "number", placeholder: "0" }
-    ]
-  },
-  {
-    id: "g_plan_comercial", num: "G5", title: "Plan Comercial con Gerencia",
-    subtitle: "Definición de estrategia, sectores a atacar, acciones de marketing y recursos asignados",
-    tags: ["bkpi", "bmin"], tagLabels: ["KPI", "Minuta"],
-    minutaField: "plancom",
-    comentPlaceholder: "¿Qué acciones concretas se comprometió la gerencia? ¿Hay presupuesto asignado?",
-    hasPhoto: false,
-    extraFields: [
-      { key: "g_sectores", label: "Sectores objetivo", type: "text", placeholder: "Construcción, Agro, Transporte..." },
-      { key: "g_acciones_mkt", label: "Acciones MKT acordadas", type: "text", placeholder: "Evento, campaña digital..." }
-    ]
-  },
-  {
-    id: "g_pedidos", num: "G6", title: "Pedidos Nuevos y Reposición",
-    subtitle: "Intención de compra, back order activo y pedidos de reposición pendientes",
-    tags: ["bmin"], tagLabels: ["Minuta"],
-    minutaField: "pedidos",
-    comentPlaceholder: "¿Va a levantar pedido? ¿Qué modelos y cuántas unidades? ¿Conoce la circular DCF-32?",
-    hasPhoto: false,
-    extraFields: [
-      { key: "g_pedido_modelo", label: "Modelo a pedir", type: "text", placeholder: "S6, S12..." },
-      { key: "g_pedido_unidades", label: "N° unidades", type: "number", placeholder: "0" }
-    ]
-  },
-  {
-    id: "g_bonos", num: "G7", title: "Bonos e Incentivos",
-    subtitle: "Circulares activas, bonos por volumen e incentivos de financiamiento vigentes",
-    tags: ["bmin"], tagLabels: ["Minuta"],
-    minutaField: "bonos",
-    comentPlaceholder: "¿Conoce los bonos activos? ¿Esta aprovechando los incentivos vigentes? ¿Banorte/TIP/Solufi?",
-    hasPhoto: false,
-    extraFields: []
-  },
-  {
-    id: "g_personal", num: "G8", title: "Equipo y Estructura",
-    subtitle: "Plantilla, rotación reciente, vacantes críticas y plan de desarrollo del equipo",
-    tags: ["bkpi"], tagLabels: ["KPI"],
-    minutaField: "fventas",
-    comentPlaceholder: "¿Hay rotación reciente? ¿Vacantes abiertas? ¿Qué compromete la gerencia para estabilizar el equipo?",
-    hasPhoto: false,
-    extraFields: [
-      { key: "g_plantilla", label: "Plantilla total", type: "number", placeholder: "0" },
-      { key: "g_rotacion", label: "Rotación último mes", type: "number", placeholder: "0" }
-    ]
-  },
-  {
-    id: "g_satisfaccion", num: "G9", title: "Satisfacción con Foton",
-    subtitle: "Feedback de gerencia sobre producto, soporte técnico, refacciones y relación comercial",
-    tags: ["btip"], tagLabels: ["Relación"],
-    minutaField: "",
-    comentPlaceholder: "¿Qué está funcionando bien? ¿Qué necesita mejorar Foton para apoyarlos mejor?",
-    hasPhoto: false,
-    extraFields: [
-      { key: "g_nps", label: "NPS (1-10)", type: "number", placeholder: "1-10", min:1, max:10 }
-    ]
-  },
-  {
-    id: "g_acuerdos_cierre", num: "G10", title: "Acuerdos y Compromisos de Cierre",
-    subtitle: "Definición de los acuerdos finales con nombre, responsable y fecha compromiso",
-    tags: ["btip"], tagLabels: ["Cierre"],
-    minutaField: "",
-    comentPlaceholder: "Acuerdo 1: __ Resp: __ Fecha: __\nAcuerdo 2: __ Resp: __ Fecha: __",
-    hasPhoto: false,
-    extraFields: []
-  }
-];
-
-// State: item photos
-const agendaPhotos = {};
-AGENDA_ITEMS.forEach(i => { agendaPhotos[i.id] = []; });
-AGENDA_GERENCIAL.forEach(i => { agendaPhotos[i.id] = []; });
-
-function buildAgendaItems() {
-  const wrap = document.getElementById("agenda-items-wrap");
-  wrap.innerHTML = "";
-
-  function renderItem(item, extraClass) {
-    const badgeHTML = item.tags.map((t,i) =>
-      '<span class="badge ' + t + '">' + item.tagLabels[i] + '</span>').join("");
-
-    const extraFieldsHTML = item.extraFields.map(function(f) {
-      const inp = f.type === "text"
-        ? '<input type="text" id="ai-' + item.id + '-' + f.key + '" placeholder="' + (f.placeholder||"") + '">'
-        : '<input type="number" id="ai-' + item.id + '-' + f.key + '" placeholder="' + (f.placeholder||0) + '" min="' + (f.min||0) + '" ' + (f.max ? 'max="' + f.max + '"' : "") + '>';
-      return '<div class="ai-data-field"><label>' + f.label + '</label>' + inp + '</div>';
-    }).join("");
-
-    const dataGrid = item.extraFields.length
-      ? '<div class="ai-data-grid">' + extraFieldsHTML + '</div>' : "";
-
-    const photoSection = item.hasPhoto
-      ? '<div class="ai-comment-label">' + (item.photoLabel||"Foto") + '</div>' +
-        '<div class="ai-photo-grid" id="ai-photos-' + item.id + '"></div>' +
-        '<button class="ai-add-photo" onclick="aiAddPhoto(\'' + item.id + '\')">' +
-        '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M9 2l-1.5 2H4a2 2 0 00-2 2v13a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2h-3.5L15 2H9z"/></svg>' +
-        ' Agregar foto</button>' +
-        '<input type="file" id="ai-file-' + item.id + '" accept="image/*" capture="environment" multiple style="display:none" onchange="handleAiPhoto(this,\'' + item.id + '\')">'
-      : "";
-
-    var div = document.createElement("div");
-    div.className = "agenda-item" + (extraClass ? " " + extraClass : "");
-    div.id = "ai-wrap-" + item.id;
-    div.dataset.id = item.id;
-    div.innerHTML =
-      '<div class="ai-header" onclick="toggleAiBody(\'' + item.id + '\')">' +
-        '<div class="ai-num" id="ai-num-' + item.id + '"><span class="ai-num-text">' + item.num + '</span></div>' +
-        '<div class="ai-info">' +
-          '<div class="ai-title">' + item.title + '</div>' +
-          '<div class="ai-subtitle">' + item.subtitle + '</div>' +
-          '<div class="ai-tags">' + badgeHTML + '</div>' +
-        '</div>' +
-        '<button class="ai-check-btn" onclick="event.stopPropagation();toggleAiDone(\'' + item.id + '\')">' +
-          '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>' +
-        '</button>' +
-        '<div class="ai-expand-icon" id="ai-exp-' + item.id + '">' +
-          '<svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>' +
-        '</div>' +
-      '</div>' +
-      '<div class="ai-body" id="ai-body-' + item.id + '">' +
-        dataGrid +
-        '<div class="ai-comment-label">Comentarios</div>' +
-        '<textarea class="ai-comment" id="ai-com-' + item.id + '" rows="3" placeholder="' + item.comentPlaceholder.replace(/"/g,"&quot;") + '"></textarea>' +
-        photoSection +
-      '</div>';
-    wrap.appendChild(div);
-  }
-
-  AGENDA_ITEMS.forEach(function(item) { renderItem(item, ""); });
-
-  // Section divider
-  var divider = document.createElement("div");
-  divider.className = "ag-section-header";
-  divider.style.cssText = "margin:12px 0 4px";
-  divider.innerHTML =
-    '<div class="ag-section-line"></div>' +
-    '<div class="ag-section-label">Agenda Gerencial</div>' +
-    '<span class="ag-section-pill ag-pill-ger">Con Gerente / Dueño</span>' +
-    '<div class="ag-section-line"></div>';
-  wrap.appendChild(divider);
-
-  AGENDA_GERENCIAL.forEach(function(item) { renderItem(item, "ai-gerencial"); });
-
-  updateAgendaProgress();
-}
-
-function toggleAiBody(id) {
-  var body = document.getElementById("ai-body-" + id);
-  var exp  = document.getElementById("ai-exp-"  + id);
-  var isOpen = body.classList.contains("open");
-  body.classList.toggle("open", !isOpen);
-  exp.style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)";
-}
-
-function toggleAiDone(id) {
-  var wrap = document.getElementById("ai-wrap-" + id);
-  wrap.classList.toggle("ai-done");
-  if (wrap.classList.contains("ai-done")) {
-    document.getElementById("ai-body-" + id).classList.add("open");
-    document.getElementById("ai-exp-"  + id).style.transform = "rotate(180deg)";
-  }
-  updateAgendaProgress();
-}
-
-
-
-function updateAgendaProgress() {
-  const done = document.querySelectorAll(".agenda-item.ai-done").length;
-  const total = AGENDA_ITEMS.length + AGENDA_GERENCIAL.length;
-  document.getElementById("apb-done").textContent = done;
-  document.getElementById("apb-total").textContent = total;
-  document.getElementById("apb-fill").style.width = (done / total * 100) + "%";
-}
-
-function filterAgenda(filter, btn) {
-  document.querySelectorAll(".aft-btn").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-  AGENDA_ITEMS.forEach(item => {
-    const el = document.getElementById("ai-wrap-" + item.id);
-    const isDone = el.classList.contains("ai-done");
-    const hasPhoto = agendaPhotos[item.id].length > 0;
-    if (filter === "all") el.style.display = "";
-    else if (filter === "done") el.style.display = isDone ? "" : "none";
-    else if (filter === "pending") el.style.display = !isDone ? "" : "none";
-    else if (filter === "foto") el.style.display = item.hasPhoto ? "" : "none";
-  });
-}
-
-// ── PHOTOS ────────────────────────────────────────────────
-function aiAddPhoto(id) {
-  document.getElementById("ai-file-" + id).click();
-}
-function handleAiPhoto(input, id) {
-  Array.from(input.files).forEach(file => {
-    if (agendaPhotos[id].length >= 4) { showToast("Máx. 4 fotos por punto"); return; }
+function handlePhotos(input) {
+  Array.from(input.files).forEach(function(file) {
+    if (photos.length >= 8) { showToast("Máximo 8 fotos"); return; }
     const r = new FileReader();
-    r.onload = e => { agendaPhotos[id].push(e.target.result); renderAiPhotos(id); };
+    r.onload = function(e) { photos.push(e.target.result); renderPhotos(); };
     r.readAsDataURL(file);
   });
   input.value = "";
 }
-function renderAiPhotos(id) {
-  const grid = document.getElementById("ai-photos-" + id);
-  if (!grid) return;
+function renderPhotos() {
+  const grid = document.getElementById("photos-grid");
   grid.innerHTML = "";
-  agendaPhotos[id].forEach((src, i) => {
+  photos.forEach(function(src, i) {
     const div = document.createElement("div");
-    div.className = "ai-photo-thumb";
-    div.innerHTML = `<img src="${src}"><button class="ai-rm" onclick="removeAiPhoto('${id}',${i})">×</button>`;
+    div.className = "photo-thumb";
+    div.innerHTML = '<img src="' + src + '"><button class="rm" onclick="removePhoto(' + i + ')">×</button>';
     grid.appendChild(div);
   });
 }
-function removeAiPhoto(id, i) {
-  agendaPhotos[id].splice(i, 1);
-  renderAiPhotos(id);
+function removePhoto(i) { photos.splice(i, 1); renderPhotos(); }
+
+// ── FIRMA ─────────────────────────────────────────────────
+function initFirma() {
+  const canvas = document.getElementById("firma-canvas");
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = canvas.offsetWidth * dpr;
+  canvas.height = 140 * dpr;
+  firmaCtx = canvas.getContext("2d");
+  firmaCtx.scale(dpr, dpr);
+  firmaCtx.strokeStyle = "#111118";
+  firmaCtx.lineWidth = 2;
+  firmaCtx.lineCap = "round";
+  firmaCtx.lineJoin = "round";
+  const gp = function(e) {
+    const r = canvas.getBoundingClientRect();
+    const t = e.touches ? e.touches[0] : e;
+    return { x: (t.clientX - r.left), y: (t.clientY - r.top) };
+  };
+  canvas.addEventListener("mousedown", function(e) { firmaDrawing = true; const p = gp(e); firmaCtx.beginPath(); firmaCtx.moveTo(p.x, p.y); });
+  canvas.addEventListener("mousemove", function(e) { if (!firmaDrawing) return; const p = gp(e); firmaCtx.lineTo(p.x, p.y); firmaCtx.stroke(); firmaHasContent = true; });
+  canvas.addEventListener("mouseup", function() { firmaDrawing = false; });
+  canvas.addEventListener("touchstart", function(e) { e.preventDefault(); firmaDrawing = true; const p = gp(e); firmaCtx.beginPath(); firmaCtx.moveTo(p.x, p.y); }, { passive: false });
+  canvas.addEventListener("touchmove", function(e) { e.preventDefault(); if (!firmaDrawing) return; const p = gp(e); firmaCtx.lineTo(p.x, p.y); firmaCtx.stroke(); firmaHasContent = true; }, { passive: false });
+  canvas.addEventListener("touchend", function() { firmaDrawing = false; });
+}
+function clearFirma() {
+  const c = document.getElementById("firma-canvas");
+  if (firmaCtx) firmaCtx.clearRect(0, 0, c.width, c.height);
+  firmaHasContent = false;
 }
 
-// ── PASAR DATOS A MINUTA ──────────────────────────────────
-function pasarAMinuta() {
+// ── RESUMEN ───────────────────────────────────────────────
+function buildResumen() {
+  const dist = estado.distribuidorNombre || "—";
+  const plaza = estado.distribuidorPlaza || "—";
+  const regional = estado.regionalNombre || "—";
+  const fecha = estado.fecha || "—";
+  const tipos = [...document.querySelectorAll(".tipo-btn.active")].map(function(b) { return b.textContent; }).join(", ") || "—";
+  const temas = [...document.querySelectorAll(".cb-item.checked .cb-label")].map(function(l) { return l.textContent; }).join(", ") || "—";
+  const acuerdos = [...document.querySelectorAll(".ac-texto")].filter(function(i) { return i.value; }).map(function(i, n) { return (n + 1) + ". " + i.value; });
+  document.getElementById("resumen-content").innerHTML =
+    '<div class="rb"><div class="rb-title">Datos generales</div>' +
+    '<div class="rb-row"><span>Distribuidor</span><span class="rb-val">' + dist + '</span></div>' +
+    '<div class="rb-row"><span>Plaza</span><span class="rb-val">' + plaza + '</span></div>' +
+    '<div class="rb-row"><span>Regional</span><span class="rb-val">' + regional + '</span></div>' +
+    '<div class="rb-row"><span>Fecha</span><span class="rb-val">' + fecha + '</span></div>' +
+    '<div class="rb-row"><span>Tipo</span><span class="rb-val">' + tipos + '</span></div></div>' +
+    '<div class="rb"><div class="rb-title">Temas</div><div style="font-size:13px;color:var(--g700);line-height:1.7">' + temas + '</div></div>' +
+    '<div class="rb"><div class="rb-title">Acuerdos (' + acuerdos.length + ')</div>' +
+    (acuerdos.map(function(a) { return '<div style="font-size:13px;padding:4px 0;border-bottom:1px solid var(--g100)">' + a + '</div>'; }).join("") || '<div style="font-size:13px;color:var(--g500)">Sin acuerdos registrados</div>') + '</div>' +
+    '<div class="rb"><div class="rb-title">Fotos</div><div style="font-size:13px;color:var(--g700)">' + photos.length + ' foto' + (photos.length !== 1 ? 's' : '') + ' adjunta' + (photos.length !== 1 ? 's' : '') + '</div></div>';
+}
 
-  var dealerSel = document.getElementById("dealer-select");
-  var dealerVal = dealerSel ? dealerSel.value : "";
-  var DIST_MAP = {
-    "gcm":    { dist:"Grupo Carrocero Milenio",        plaza:"Tula",            grupo:"GCM",       contacto:"Karla Santillan" },
-    "tang":   { dist:"Autos Y Camiones Asia Central",  plaza:"San Luis Potosi", grupo:"Tangamanga",contacto:"Erick Elizalde" },
-    "bavi":   { dist:"Burk Automotriz",                plaza:"Uruapan",         grupo:"BAVI",      contacto:"Samir Daud" },
-    "astur":  { dist:"Autos Emcg",                     plaza:"Puebla",          grupo:"Asturcar",  contacto:"Por definir" },
-    "orient": { dist:"Camiones Orientales De Leon",    plaza:"Leon",            grupo:"Plascencia",contacto:"Por definir" },
-    "prem":   { dist:"Camiones Premium Del Centro",    plaza:"Queretaro",       grupo:"Premium",   contacto:"Por definir" },
-    "pen":    { dist:"Vehiculos Comerciales Peninsula",plaza:"Cancun / Merida", grupo:"Enerkom",   contacto:"Por definir" },
-    "xian":   { dist:"Xian Motors",                    plaza:"Guadalajara",     grupo:"Xian",      contacto:"Por definir" }
+// ── PDF ───────────────────────────────────────────────────
+async function generarPDF() {
+  showToast("Generando PDF...");
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:"portrait", unit:"mm", format:"letter" });
+  const W = 215.9, ml = 14, mr = 14, cw = W - ml - mr;
+  const B8 = [12,68,124], B7 = [24,95,165], DARK = [17,17,24], GRAY = [107,107,128], LG = [244,244,246], BD = [224,224,230];
+  let y = 14;
+
+  doc.setFillColor(...B8); doc.rect(ml, y, cw, 10, "F");
+  doc.setTextColor(255,255,255); doc.setFontSize(11); doc.setFont("helvetica","bold");
+  doc.text("INFORME · VISITA COMERCIAL — DISTRIBUIDOR", W/2, y+6.5, { align:"center" });
+  y += 14;
+
+  doc.setFillColor(...LG); doc.roundedRect(ml, y, cw, 8, 2, 2, "F");
+  doc.setTextColor(...DARK); doc.setFontSize(9); doc.setFont("helvetica","normal");
+  doc.text("FOTON MÉXICO · LDR Solutions S.A. de C.V.", ml+4, y+5);
+  doc.text(estado.regionalNombre || "—", W-mr-4, y+5, { align:"right" });
+  y += 12;
+
+  const dist = estado.distribuidorNombre || "—";
+  const plaza = estado.distribuidorPlaza || "—";
+  const grupo = estado.distribuidorGrupo || "—";
+  const fecha = estado.fecha || "—";
+  const tipos = [...document.querySelectorAll(".tipo-btn.active")].map(function(b) { return b.textContent; }).join(" | ") || "—";
+
+  const secH = function(title, yp) {
+    doc.setFillColor(...B8); doc.rect(ml, yp, cw, 6, "F");
+    doc.setFontSize(8); doc.setFont("helvetica","bold"); doc.setTextColor(255,255,255);
+    doc.text(title, ml+2, yp+4.2); return yp+8;
   };
-  if (dealerVal && DIST_MAP[dealerVal]) {
-    var d = DIST_MAP[dealerVal];
-    var fDist = document.getElementById("f-dist");
-    if (fDist && !fDist.value) {
-      for (var oi = 0; oi < fDist.options.length; oi++) {
-        if (fDist.options[oi].text.indexOf(d.dist.split(" ")[0]) > -1) { fDist.value = fDist.options[oi].value; break; }
-      }
+
+  y = secH("INFORMACIÓN GENERAL", y);
+  [
+    ["Distribuidor", dist, "Gte. Regional", estado.regionalNombre || "—"],
+    ["Plaza", plaza, "Fecha", fecha],
+    ["Grupo", grupo, "Tipo de visita", tipos],
+  ].forEach(function(row) {
+    doc.setFontSize(8); doc.setFont("helvetica","bold"); doc.setTextColor(...GRAY);
+    doc.text(row[0].toUpperCase(), ml+2, y+4);
+    doc.setFont("helvetica","normal"); doc.setTextColor(...DARK); doc.text(row[1], ml+2, y+8.5);
+    if (row[2]) {
+      doc.setFont("helvetica","bold"); doc.setTextColor(...GRAY);
+      doc.text(row[2].toUpperCase(), W/2+2, y+4);
+      doc.setFont("helvetica","normal"); doc.setTextColor(...DARK); doc.text(row[3], W/2+2, y+8.5);
     }
-    var fPlaza = document.getElementById("f-plaza");
-    if (fPlaza && !fPlaza.value) fPlaza.value = d.plaza;
-    var fGrupo = document.getElementById("f-grupo");
-    if (fGrupo && !fGrupo.value) fGrupo.value = d.grupo;
-    var partInputs = document.querySelectorAll(".part-inp");
-    if (partInputs.length > 0 && !partInputs[0].value) partInputs[0].value = d.contacto;
-  }
-
-  var cbMap = {
-    "facturacion":"cb-factura","plancom":"cb-plancom","prosp":"cb-prosp",
-    "fventas":"cb-fventas","mktg":"cb-mktg","invfis":"cb-invfis",
-    "progcitas":"cb-progcitas","pedidos":"cb-pedidos","edocta":"cb-edocta",
-    "posventa":"cb-posventa","bonos":"cb-bonos"
-  };
-  function tickCb(cbId) {
-    if (!cbId) return;
-    var el = document.getElementById(cbId);
-    if (el) { el.checked = true; var p = el.closest(".cb-item"); if (p) p.classList.add("checked"); }
-  }
-  var allItems = AGENDA_ITEMS.concat(AGENDA_GERENCIAL);
-  allItems.forEach(function(item) {
-    var wrap = document.getElementById("ai-wrap-" + item.id);
-    if (!wrap || !wrap.classList.contains("ai-done")) return;
-    tickCb(cbMap[item.minutaField]);
+    doc.setDrawColor(...BD); doc.line(ml, y+11, W-mr, y+11); y += 12;
   });
 
-  function isDone(id) { var w = document.getElementById("ai-wrap-" + id); return w && w.classList.contains("ai-done"); }
-  function getVal(id) { var el = document.getElementById(id); return el ? el.value : ""; }
-  function getComment(id) { var el = document.getElementById("ai-com-" + id); return el ? el.value.trim() : ""; }
-
-  if (isDone("asesores")) tickCb("cb-retail");
-  if (isDone("pagos") || isDone("g_pagos_ger")) {
-    tickCb("cb-edocta");
-    if (parseFloat(getVal("ai-pagos-pagos_monto")) > 0) tickCb("cb-ncredito");
+  const parts = [...document.querySelectorAll(".part-inp")].map(function(i) { return i.value; }).filter(Boolean);
+  if (parts.length) {
+    doc.setFontSize(8); doc.setFont("helvetica","bold"); doc.setTextColor(...GRAY);
+    doc.text("PARTICIPANTES:", ml+2, y+4);
+    doc.setFont("helvetica","normal"); doc.setTextColor(...DARK);
+    doc.text(parts.join(" · "), ml+32, y+4); y += 8;
   }
-  if (getVal("ai-g_pedidos-g_pedido_modelo") || getVal("ai-g_pedidos-g_pedido_unidades")) tickCb("cb-pedidos");
+  y += 3;
 
-  var proyMes = getVal("ai-proyeccion-proy_unidades");
-  var proyMod = getVal("ai-proyeccion-proy_modelo").trim().toUpperCase();
-  if (proyMod && proyMes) {
-    var ytdEl = document.querySelector(".ind-ytd[data-m='" + proyMod + "']");
-    if (ytdEl && !ytdEl.value) { ytdEl.value = proyMes; if (typeof calcPct === "function") calcPct(proyMod); }
-  }
-
-  var captype = document.getElementById("f-captype");
-  var captema = document.getElementById("f-captema");
-  var cappax  = document.getElementById("f-cappax");
-  if (isDone("roleplay") && captype && !captype.value) {
-    captype.value = "Comercial";
-    if (captema && !captema.value) captema.value = getVal("ai-roleplay-rp_tema") || "Role Play - argumentario de objeciones";
-    if (cappax && !cappax.value) cappax.value = getVal("ai-roleplay-rp_participantes");
-  } else if (isDone("fichas") && captype && !captype.value) {
-    captype.value = "Tecnica";
-    if (captema && !captema.value) captema.value = "Fichas tecnicas S3-S12";
+  const temas = [...document.querySelectorAll(".cb-item.checked .cb-label")].map(function(l) { return l.textContent; });
+  if (temas.length) {
+    y = secH("TEMAS REVISADOS", y);
+    doc.setFontSize(8); doc.setFont("helvetica","normal"); doc.setTextColor(...DARK);
+    const lines = doc.splitTextToSize(temas.join("  ·  "), cw-4);
+    lines.forEach(function(l) { doc.text(l, ml+2, y); y += 5; }); y += 3;
   }
 
-  var logrosField  = document.getElementById("f-logros");
-  var comentsField = document.getElementById("f-coments");
-  if (logrosField && !logrosField.value) {
-    var parts = [];
-    var planC  = getComment("plan_trabajo");
-    var proyC  = getComment("proyeccion");
-    var leadsN = getVal("ai-leads-leads_total");
-    var leadsC = getComment("leads");
-    var gAcC   = getComment("g_acuerdos_cierre");
-    if (planC)  parts.push("Plan Comercial: " + planC);
-    if (proyC)  parts.push("Proyeccion: " + proyC);
-    if (leadsN) parts.push("Leads activos: " + leadsN + (leadsC ? " - " + leadsC : ""));
-    else if (leadsC) parts.push("Leads: " + leadsC);
-    if (gAcC)   parts.push("Acuerdos gerencia: " + gAcC);
-    if (parts.length) logrosField.value = parts.join(". ");
-  }
-  if (comentsField && !comentsField.value) {
-    var notes = [];
-    allItems.forEach(function(item) {
-      if (!isDone(item.id)) return;
-      var c = getComment(item.id);
-      if (c) notes.push(item.title + ": " + c);
-    });
-    if (notes.length) comentsField.value = notes.join(". ");
+  y = secH("INDICADORES COMERCIALES", y);
+  const iCols = [22,28,28,24,28,28,18];
+  const iH = ["Modelo","BP 2026","Whole YTD","% Avance","Retail YTD","Inventario","B.O."];
+  doc.setFillColor(...B8); doc.rect(ml, y-0.5, iCols.reduce(function(a,b){return a+b;},0), 7, "F");
+  doc.setFontSize(8); doc.setFont("helvetica","bold"); doc.setTextColor(255,255,255);
+  let x = ml+2; iH.forEach(function(h,i) { doc.text(h, x, y+4.5); x += iCols[i]; }); y += 7;
+  document.querySelectorAll("#ind-body tr").forEach(function(tr, i) {
+    const cells = tr.querySelectorAll("td");
+    const modelo = cells[0].textContent;
+    const vals = [...cells].slice(1).map(function(td, ci) { return ci === 2 ? td.querySelector("div") ? td.querySelector("div").textContent : "" : td.querySelector("input") ? td.querySelector("input").value : ""; });
+    doc.setFillColor(i%2===0?255:248, i%2===0?255:248, i%2===0?255:250);
+    doc.rect(ml, y-0.5, cw, 7, "F");
+    doc.setFontSize(8); doc.setFont("helvetica","bold"); doc.setTextColor(...DARK); doc.text(modelo, ml+2, y+4.5);
+    doc.setFont("helvetica","normal"); let px = ml+2+iCols[0];
+    vals.forEach(function(v, ci) { doc.text(v||"0", px+iCols[ci+1]/2, y+4.5, {align:"center"}); px += iCols[ci+1]; });
+    y += 7;
+  }); y += 4;
+
+  const logros = document.getElementById("f-logros").value;
+  if (logros) {
+    if (y > 220) { doc.addPage(); y = 14; }
+    y = secH("LOGROS / ESTRATEGIA", y);
+    doc.setFontSize(8); doc.setFont("helvetica","normal"); doc.setTextColor(...DARK);
+    doc.splitTextToSize(logros, cw-4).forEach(function(l) { doc.text(l, ml+2, y); y += 4.5; }); y += 6;
   }
 
-  var gAcText = getComment("g_acuerdos_cierre");
-  if (gAcText) {
-    var lines = gAcText.split(/[;,]+/).map(function(s){ return s.trim(); }).filter(Boolean);
-    var acRows = document.querySelectorAll(".ac-texto");
-    var li = 0;
-    acRows.forEach(function(row) {
-      if (!row.value && li < lines.length) {
-        row.value = lines[li++];
-        var pr = row.closest(".acuerdo-row");
-        var rs = pr ? pr.querySelector(".ac-resp") : null;
-        if (rs) rs.value = "Israel Esperanza";
-      }
-    });
+  const acs = [...document.querySelectorAll(".ac-texto")].filter(function(i) { return i.value; });
+  if (acs.length) {
+    if (y > 220) { doc.addPage(); y = 14; }
+    y = secH("ACUERDOS", y);
+    document.querySelectorAll(".acuerdo-row").forEach(function(row, i) {
+      const t = row.querySelector(".ac-texto").value;
+      const resp = row.querySelector(".ac-resp").value;
+      const fechaAc = row.querySelector(".ac-fecha-input") ? row.querySelector(".ac-fecha-input").value : "";
+      if (!t) return;
+      doc.setFillColor(...B8); doc.roundedRect(ml, y, 3, 7, 1, 1, "F");
+      doc.setFontSize(8); doc.setFont("helvetica","normal"); doc.setTextColor(...DARK);
+      const lines = doc.splitTextToSize(t, cw-65); doc.text(lines, ml+6, y+4.5);
+      doc.setTextColor(...GRAY);
+      doc.text("Resp: " + (resp||"—"), W-mr-58, y+3);
+      doc.text("Fecha: " + (fechaAc||"—"), W-mr-58, y+7);
+      y += Math.max(7, lines.length*5) + 3;
+    }); y += 2;
   }
 
-  allItems.forEach(function(item) {
-    if (agendaPhotos[item.id]) {
-      agendaPhotos[item.id].forEach(function(src) { if (photos.length < 8) photos.push(src); });
+  const coments = document.getElementById("f-coments").value;
+  if (coments) {
+    if (y > 225) { doc.addPage(); y = 14; }
+    y = secH("COMENTARIOS ADICIONALES", y);
+    doc.setFontSize(8); doc.setFont("helvetica","normal"); doc.setTextColor(...DARK);
+    doc.splitTextToSize(coments, cw-4).forEach(function(l) { doc.text(l, ml+2, y); y += 4.5; }); y += 6;
+  }
+
+  if (photos.length > 0) {
+    doc.addPage(); y = 14;
+    y = secH("FOTOS / ANEXOS", y); y += 4;
+    const fw = (cw-8)/2, fh = fw*0.75;
+    for (let i = 0; i < photos.length; i++) {
+      const col = i%2, row2 = Math.floor(i/2);
+      const px = ml+(col*(fw+8)), py = y+(row2*(fh+6));
+      if (py+fh > 270) { doc.addPage(); y = 14; }
+      try { doc.addImage(photos[i], "JPEG", px, py, fw, fh); } catch(e) {}
     }
-  });
-
-  showToast("Datos pasados a la minuta");
-  setTimeout(function(){ goPage("minuta"); }, 600);
-}
-
-
-
-// ── INIT ──────────────────────────────────────────────────
-window.addEventListener("FotonAuthReady", function() {
-  const today=new Date();
-  document.getElementById("f-fecha").value=today.toISOString().split("T")[0];
-  document.getElementById("f-hora").value=today.toTimeString().slice(0,5);
-  buildIndTable();
-  for(let i=0;i<4;i++)addPipeRow();
-  for(let i=0;i<3;i++)addAcuerdo();
-  buildDealers();
-  buildAgendaItems();
-  initFirma();
-  // Show agenda warning if no dealer selected
-  var adcW = document.getElementById("adc-warning");
-  var adcCard = document.getElementById("agenda-dealer-card");
-  if (adcCard) adcCard.style.display = "block";
-  if (adcW) adcW.style.display = "flex";
-
-  // Pre-select dealer from URL param (?dealer=gcm etc.)
-  var urlDealer = new URLSearchParams(window.location.search).get('dealer');
-  if (urlDealer) {
-    var dSel = document.getElementById('dealer-select');
-    if (dSel) { dSel.value = urlDealer; onDealerChange(); }
   }
-});
 
-// ══════════════════════════════════════════════════════════
-// FORM TYPE SELECTOR
-// ══════════════════════════════════════════════════════════
-let currentFormType = 'distribuidor';
-function setFormType(type) {
-  currentFormType = type;
-  document.getElementById('btn-ft-dist')?.classList.toggle('active', type === 'distribuidor');
-  document.getElementById('btn-ft-cd')?.classList.toggle('active', type === 'cliente_directo');
-  document.getElementById('section-dist-general')?.style.setProperty('display', type === 'distribuidor' ? 'block' : 'none');
-  document.getElementById('section-cd-general')?.style.setProperty('display', type === 'cliente_directo' ? 'block' : 'none');
-  document.getElementById('btn-excel-dist')?.style.setProperty('display', type === 'distribuidor' ? 'block' : 'none');
-  document.getElementById('btn-excel-cd')?.style.setProperty('display', type === 'cliente_directo' ? 'block' : 'none');
+  if (firmaHasContent) {
+    const fCanvas = document.getElementById("firma-canvas");
+    if (y > 230) { doc.addPage(); y = 14; }
+    y = secH("FIRMA", y); y += 6;
+    doc.addImage(fCanvas.toDataURL("image/png"), "PNG", ml, y, 55, 20);
+    y += 22; doc.setDrawColor(...BD); doc.line(ml, y, ml+55, y);
+    doc.setFontSize(8); doc.setFont("helvetica","normal"); doc.setTextColor(...GRAY);
+    doc.text("Gte. Regional FOTON", ml, y+4); doc.text(estado.regionalNombre || "—", ml, y+8);
+  }
+
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let p = 1; p <= pageCount; p++) {
+    doc.setPage(p); doc.setFillColor(...B8); doc.rect(0, 271, W+10, 5, "F");
+    doc.setFontSize(7); doc.setFont("helvetica","normal"); doc.setTextColor(255,255,255);
+    doc.text("FOTON MÉXICO · LDR Solutions S.A. de C.V. · Confidencial — Uso interno", W/2, 274, {align:"center"});
+    doc.text("Pág. " + p + " / " + pageCount, W-mr, 274, {align:"right"});
+  }
+
+  const fname = "Minuta_" + (dist.replace(/\s+/g,"_")) + "_" + (fecha||"SinFecha") + ".pdf";
+  doc.save(fname);
+  showToast("PDF descargado");
 }
 
-// ── CD DYNAMIC ROWS ───────────────────────────────────────
-function addCdContacto() {
-  const list = document.getElementById('cd-contactos-list');
-  const row = document.createElement('div');
-  row.className = 'cd-contacto-row';
-  row.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px';
-  row.innerHTML = '<input type="text" class="cd-contacto-nombre" placeholder="Nombre" style="padding:9px 12px;border:1.5px solid var(--g100);border-radius:8px;font-size:13px"><input type="text" class="cd-contacto-puesto" placeholder="Puesto" style="padding:9px 12px;border:1.5px solid var(--g100);border-radius:8px;font-size:13px">';
-  list.appendChild(row);
+// ── TOAST ─────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(function() { t.classList.remove("show"); }, 2500);
 }
 
-function addCdFlota() {
-  const list = document.getElementById('cd-flota-list');
-  const row = document.createElement('div');
-  row.className = 'cd-flota-row';
-  row.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 80px;gap:8px;margin-bottom:8px';
-  row.innerHTML = '<input type="text" class="cd-fl-marca" placeholder="Marca" style="padding:9px 12px;border:1.5px solid var(--g100);border-radius:8px;font-size:13px"><input type="text" class="cd-fl-modelo" placeholder="Modelo" style="padding:9px 12px;border:1.5px solid var(--g100);border-radius:8px;font-size:13px"><input type="number" class="cd-fl-cant" placeholder="Cant." style="padding:9px 12px;border:1.5px solid var(--g100);border-radius:8px;font-size:13px">';
-  list.appendChild(row);
-}
-
-// ══════════════════════════════════════════════════════════
-// EXCEL — DISTRIBUIDOR
-// ══════════════════════════════════════════════════════════
+// ── EXCEL — DISTRIBUIDOR ──────────────────────────────────
 async function descargarExcelDistribuidor() {
   const btn = document.getElementById('btn-excel-dist');
   if (btn) { btn.disabled = true; btn.textContent = 'Preparando...'; }
@@ -2212,7 +1157,7 @@ async function descargarExcelDistribuidor() {
     const resp = await fetch('./assets/templates/visita-distribuidor.xlsb');
     if (!resp.ok) throw new Error('Template not found');
     const buf = await resp.arrayBuffer();
-    const wb = XLSX.read(new Uint8Array(buf), { type: 'array', cellStyles: true });
+    const wb = XLSX.read(new Uint8Array(buf), { type:'array', cellStyles:true });
     const ws = wb.Sheets[wb.SheetNames[0]];
 
     function sc(ref, val, type) {
@@ -2221,170 +1166,80 @@ async function descargarExcelDistribuidor() {
       ws[ref] = Object.assign(ws[ref] || {}, { t, v: val });
     }
 
-    // Info general
-    sc('E3', 'P&V');
-    sc('E4', document.getElementById('f-reg')?.value || '');
-    sc('P3', document.getElementById('f-dist')?.value || '');
-    sc('P4', document.getElementById('f-plaza')?.value || '');
-    sc('P5', document.getElementById('f-grupo')?.value || '');
-    const fecha = document.getElementById('f-fecha')?.value || '';
-    sc('E5', fecha);
-    sc('E6', fecha);
+    sc('E3', estado.regionalSegmentoId ? estado.regionalSegmentoId.toUpperCase() : '');
+    sc('E4', estado.regionalNombre || '');
+    sc('P3', estado.distribuidorNombre || '');
+    sc('P4', estado.distribuidorPlaza || '');
+    sc('P5', estado.distribuidorGrupo || '');
+    sc('E5', estado.fecha || '');
+    sc('E6', estado.fecha || '');
 
-    // Tipo visita checkboxes
-    const tipos = [...document.querySelectorAll('#tipo-wrap .tipo-btn.active')].map(b => b.textContent.trim());
-    sc('Y4', tipos.some(t => t.includes('Acompañamiento')), 'b');
-    sc('AD4', tipos.some(t => t === 'Operativa'), 'b');
-    sc('Y6', tipos.some(t => t === 'Capacitación'), 'b');
-    sc('AD5', tipos.some(t => t === 'Otro' || t === 'Inauguración'), 'b');
+    const tipos = [...document.querySelectorAll('#tipo-wrap .tipo-btn.active')].map(function(b) { return b.textContent.trim(); });
+    sc('Y4', tipos.some(function(t) { return t.includes('Acompañamiento'); }), 'b');
+    sc('AD4', tipos.some(function(t) { return t === 'Operativa'; }), 'b');
+    sc('Y6', tipos.some(function(t) { return t === 'Capacitación'; }), 'b');
+    sc('AD5', tipos.some(function(t) { return t === 'Otro' || t === 'Inauguración'; }), 'b');
 
-    // Temas agenda
-    const temas = [...document.querySelectorAll('.cb-item.checked .cb-label')].map(l => l.textContent.trim());
+    const temas = [...document.querySelectorAll('.cb-item.checked .cb-label')].map(function(l) { return l.textContent.trim(); });
     const TEMA_MAP = {
-      'Back Order': 'L11', 'Inventario Facturado': 'R11',
-      'Bonos': 'L12', 'Inventario Físico': 'R12',
-      'Estado de cuenta': 'L13', 'Notas de crédito': 'R13',
-      'Estrategia Marketing': 'L14', 'Pedidos nuevos': 'R14',
-      'Facturación': 'L15', 'Plan Comercial': 'R15',
-      'Fuerza de ventas': 'L16', 'Plan Piso': 'R16',
-      'Posventa': 'X11', 'Prog. de citas': 'X12',
-      'Prospección/Leads': 'X14', 'Retail': 'X16'
+      'Back Order':'L11', 'Inventario Físico':'R12', 'Bonos':'L12',
+      'Estado de cuenta':'L13', 'Estrategia Marketing':'L14', 'Pedidos nuevos':'R14',
+      'Facturación':'L15', 'Plan Comercial':'R15', 'Fuerza de ventas':'L16',
+      'Posventa':'X11', 'Prospección/Leads':'X14', 'Retail':'X16'
     };
-    Object.entries(TEMA_MAP).forEach(([label, cell]) => sc(cell, temas.includes(label), 'b'));
+    Object.entries(TEMA_MAP).forEach(function([label, cell]) { sc(cell, temas.includes(label), 'b'); });
 
-    // Participantes (rows 11-15)
-    const parts = [...document.querySelectorAll('.part-inp')].map(i => i.value.trim()).filter(Boolean);
-    ['B11','B12','B13','B14','B15'].forEach((cell, i) => { if (parts[i]) sc(cell, parts[i]); });
+    const parts = [...document.querySelectorAll('.part-inp')].map(function(i) { return i.value.trim(); }).filter(Boolean);
+    ['B11','B12','B13','B14','B15'].forEach(function(cell, i) { if (parts[i]) sc(cell, parts[i]); });
 
-    // Acuerdos (rows 42-52)
-    document.querySelectorAll('.acuerdo-row').forEach((row, i) => {
+    document.querySelectorAll('.acuerdo-row').forEach(function(row, i) {
       if (i >= 11) return;
       const rn = 42 + i;
-      sc(`B${rn}`, row.querySelector('.ac-texto')?.value || '');
-      sc(`V${rn}`, row.querySelector('.ac-resp')?.value || '');
-      sc(`AC${rn}`, row.querySelector('.ac-fecha')?.value || '');
+      sc('B' + rn, row.querySelector('.ac-texto') ? row.querySelector('.ac-texto').value : '');
+      sc('V' + rn, row.querySelector('.ac-resp') ? row.querySelector('.ac-resp').value : '');
+      sc('AC' + rn, row.querySelector('.ac-fecha-input') ? row.querySelector('.ac-fecha-input').value : '');
     });
 
-    // Logros y comentarios
-    const logros = document.getElementById('f-logros')?.value || '';
+    const logros = document.getElementById('f-logros') ? document.getElementById('f-logros').value : '';
     if (logros) sc('A55', logros);
-    const coments = document.getElementById('f-coments')?.value || '';
+    const coments = document.getElementById('f-coments') ? document.getElementById('f-coments').value : '';
     if (coments) sc('A75', coments);
 
-    const distName = (document.getElementById('f-dist')?.value || 'distribuidor').replace(/[^a-zA-Z0-9]/g, '-');
-    XLSX.writeFile(wb, `Visita-${distName}-${fecha || 'sin-fecha'}.xlsx`);
+    const distSafe = (estado.distribuidorNombre || 'distribuidor').replace(/[^a-zA-Z0-9]/g, '-');
+    XLSX.writeFile(wb, 'Visita-' + distSafe + '-' + (estado.fecha || 'sin-fecha') + '.xlsx');
     showToast('Excel descargado');
-  } catch (e) {
+  } catch(e) {
     console.error(e);
     showToast('Error al generar Excel');
   } finally {
-    if (btn) { btn.disabled = false; btn.textContent = '↓ Descargar Excel (Informe Oficial)'; }
+    if (btn) { btn.disabled = false; btn.textContent = 'Descargar Excel (Informe Oficial)'; }
   }
 }
 
-// ══════════════════════════════════════════════════════════
-// EXCEL — CLIENTE DIRECTO
-// ══════════════════════════════════════════════════════════
-async function descargarExcelCD() {
-  const btn = document.getElementById('btn-excel-cd');
-  if (btn) { btn.disabled = true; btn.textContent = 'Preparando...'; }
-  try {
-    const resp = await fetch('./assets/templates/visita-cliente-directo.xlsb');
-    if (!resp.ok) throw new Error('Template not found');
-    const buf = await resp.arrayBuffer();
-    const wb = XLSX.read(new Uint8Array(buf), { type: 'array', cellStyles: true });
-    const ws2 = wb.Sheets['Hoja1'] || wb.Sheets[wb.SheetNames[0]];
+// ── INIT ──────────────────────────────────────────────────
+function initSeleccion() {
+  // Fecha default = hoy
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('sel-fecha').value = today;
+  document.getElementById('sel-fecha').addEventListener('change', verificarBotonComenzar);
 
-    function sc(ref, val, type) {
-      if (val === null || val === undefined || val === '') return;
-      const t = type || (typeof val === 'boolean' ? 'b' : (typeof val === 'number' ? 'n' : 's'));
-      ws2[ref] = Object.assign(ws2[ref] || {}, { t, v: val });
-    }
+  // Cargar regionales según rol
+  cargarRegionales();
+}
 
-    sc('D2', 'P&V');
-    sc('P2', document.getElementById('cd-reg')?.value || '');
-    const fecha = document.getElementById('cd-fecha')?.value || '';
-    sc('Z2', fecha);
+document.addEventListener('DOMContentLoaded', function() {
+  buildIndTable();
+  for (let i = 0; i < 3; i++) addPipeRow();
+  for (let i = 0; i < 3; i++) addAcuerdo();
+});
 
-    // CD tipo visita buttons (only from cd-tipo-visita-group)
-    const cdTipos = [...document.querySelectorAll('.cd-tipo-visita-group .tipo-btn.active')].map(b => b.textContent.trim());
-    sc('A4', cdTipos.some(t => t.includes('Presentación')), 'b');
-    sc('H4', cdTipos.some(t => t.includes('Capacitación Operativa')), 'b');
-    sc('A5', cdTipos.some(t => t.includes('Capacitación Producto')), 'b');
-    sc('H5', cdTipos.some(t => t === 'Otro'), 'b');
+window.addEventListener("FotonAuthReady", function() {
+  initSeleccion();
+});
 
-    sc('S3', document.getElementById('cd-objetivo')?.value || '');
-    sc('B9', document.getElementById('cd-razon')?.value || '');
-    sc('B10', document.getElementById('cd-flota-size')?.value || '');
-    sc('H10', document.getElementById('cd-giro')?.value || '');
-    sc('B11', document.getElementById('cd-cobertura')?.value || '');
-    sc('H11', document.getElementById('cd-tipo-cliente')?.value || '');
-
-    // Contactos (up to 3)
-    const contactos = [...document.querySelectorAll('.cd-contacto-row')];
-    contactos.slice(0, 3).forEach((row, i) => {
-      const rn = 14 + i;
-      sc(`B${rn}`, row.querySelector('.cd-contacto-nombre')?.value || '');
-      sc(`N${rn}`, row.querySelector('.cd-contacto-puesto')?.value || '');
-    });
-
-    // Flota (up to 5)
-    const flotaRows = [...document.querySelectorAll('.cd-flota-row')];
-    flotaRows.slice(0, 5).forEach((row, i) => {
-      const rn = 20 + i;
-      sc(`B${rn}`, row.querySelector('.cd-fl-marca')?.value || '');
-      sc(`H${rn}`, row.querySelector('.cd-fl-modelo')?.value || '');
-      const cant = row.querySelector('.cd-fl-cant')?.value;
-      if (cant) sc(`R${rn}`, parseFloat(cant), 'n');
-    });
-
-    // Historial
-    const h24 = document.getElementById('cd-hist-2024')?.value;
-    const h25 = document.getElementById('cd-hist-2025')?.value;
-    const h26 = document.getElementById('cd-hist-2026')?.value;
-    if (h24) sc('E28', parseFloat(h24), 'n');
-    if (h25) sc('E29', parseFloat(h25), 'n');
-    if (h26) sc('E30', parseFloat(h26), 'n');
-
-    // Eventos asistidos (only from cd-eventos-group)
-    const eventoTextos = [...document.querySelectorAll('.cd-eventos-group .tipo-btn.active')].map(b => b.textContent.trim());
-    sc('K27', eventoTextos.includes('China'), 'b');
-    sc('K28', eventoTextos.includes('F1'), 'b');
-    sc('K29', eventoTextos.includes('Super Copa'), 'b');
-    sc('O27', eventoTextos.includes('Torneo Golf'), 'b');
-    sc('O28', eventoTextos.includes('Expo Transporte'), 'b');
-
-    // Requerimientos
-    sc('B33', document.getElementById('cd-modelo')?.value || '');
-    sc('B34', document.getElementById('cd-carroceria')?.value || '');
-    sc('B35', document.getElementById('cd-proyeccion')?.value || '');
-
-    // Acuerdos (rows 40-44)
-    document.querySelectorAll('.acuerdo-row').forEach((row, i) => {
-      if (i >= 5) return;
-      const rn = 40 + i;
-      sc(`B${rn}`, row.querySelector('.ac-texto')?.value || '');
-      sc(`V${rn}`, row.querySelector('.ac-resp')?.value || '');
-      sc(`AC${rn}`, row.querySelector('.ac-fecha')?.value || '');
-    });
-
-    // Logros
-    const logros = document.getElementById('f-logros')?.value || '';
-    if (logros) sc('A47', logros);
-
-    // Comentarios
-    const coments = document.getElementById('f-coments')?.value || '';
-    if (coments) sc('A54', coments);
-
-    const razon = (document.getElementById('cd-razon')?.value || 'cliente').replace(/[^a-zA-Z0-9]/g, '-');
-    XLSX.writeFile(wb, `VisitaCD-${razon}-${fecha || 'sin-fecha'}.xlsx`);
-    showToast('Excel descargado');
-  } catch (e) {
-    console.error(e);
-    showToast('Error al generar Excel');
-  } finally {
-    if (btn) { btn.disabled = false; btn.textContent = '↓ Descargar Excel Cliente Directo'; }
-  }
+// Fallback si FotonAuthReady ya disparó antes de que cargara este script
+if (window.FOTON_USER) {
+  initSeleccion();
 }
 </script>
 
