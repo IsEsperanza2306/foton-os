@@ -1024,16 +1024,13 @@ async function saveVisitaToSupabase(visitaData) {
     const { data, error } = await db.from('visitas').insert({
       distribuidor_id: visitaData.dealerId,
       fecha: visitaData.fecha,
-      hora: visitaData.hora || null,
-      tipo_visita: visitaData.tipos || [],
-      regional: 'Israel Esperanza',
-      participantes: visitaData.participantes || [],
+      tipo_visita: Array.isArray(visitaData.tipos) ? visitaData.tipos.join(', ') : (visitaData.tipos || ''),
+      objetivo: visitaData.objetivo || '',
       logros: visitaData.logros || '',
-      comentarios: visitaData.comentarios || '',
-      status: 'completada'
-    }).select().single();
+      comentarios: visitaData.comentarios || ''
+    }).select().limit(1);
     if (error) { console.error('[Foton OS] saveVisita error:', error.message); return null; }
-    return data.id;
+    return data && data[0] ? data[0].id : null;
   } catch(e) { console.error('[Foton OS] saveVisita exception:', e.message); return null; }
 }
 
@@ -1059,10 +1056,9 @@ async function saveAcuerdosToSupabase(visitaId, acuerdos) {
     await db.from('visita_acuerdos').insert(
       acuerdos.map((a, i) => ({
         visita_id: visitaId,
-        numero: i + 1,
-        texto: a.texto || a.text || String(a),
+        descripcion: a.descripcion || a.texto || a.text || String(a),
         responsable: a.responsable || '',
-        fecha_compromiso: a.fecha || a.fechaCompromiso || '',
+        fecha_compromiso: a.fecha_compromiso || a.fecha || a.fechaCompromiso || null,
         cumplido: false
       }))
     );
@@ -1405,22 +1401,24 @@ async function generarPDF(){
   (async () => {
     const _dealerId = (document.getElementById('dealer-select') || {}).value || null;
     const _fecha = document.getElementById('f-fecha')?.value || new Date().toISOString().slice(0,10);
-    const _hora  = document.getElementById('f-hora')?.value || null;
-    const _tipos = [...document.querySelectorAll('.tipo-btn.active')].map(b => b.textContent);
+    const _tipos = [...document.querySelectorAll('#tipo-wrap .tipo-btn.active')].map(b => b.textContent.trim());
     const _logros = document.getElementById('f-logros')?.value || '';
     const _coments = document.getElementById('f-coments')?.value || '';
-    const _parts  = [...document.querySelectorAll('.part-inp')].map(i => i.value).filter(v => v);
+    const _objetivo = document.getElementById('f-objetivo')?.value || '';
     const visitaId = await saveVisitaToSupabase({
       dealerId: _dealerId,
       fecha: _fecha,
-      hora: _hora,
       tipos: _tipos,
-      participantes: _parts,
+      objetivo: _objetivo,
       logros: _logros,
       comentarios: _coments
     });
     if (visitaId) {
-      const acuerdosItems = [...document.querySelectorAll('.ac-texto')].filter(i => i.value).map((i, n) => ({ texto: i.value, numero: n + 1 }));
+      const acuerdosItems = [...document.querySelectorAll('.acuerdo-row')].filter(row => row.querySelector('.ac-texto')?.value).map(row => ({
+        descripcion: row.querySelector('.ac-texto')?.value || '',
+        responsable: row.querySelector('.ac-resp')?.value || '',
+        fecha_compromiso: row.querySelector('.ac-fecha')?.value || null
+      }));
       await saveAcuerdosToSupabase(visitaId, acuerdosItems);
     }
   })();

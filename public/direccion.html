@@ -213,7 +213,11 @@
     }
 
     @media (min-width: 600px) {
-      .kpi-grid { grid-template-columns: repeat(4, 1fr); }
+      .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (min-width: 900px) {
+      .kpi-grid { grid-template-columns: repeat(6, 1fr); }
     }
 
     .kpi-card {
@@ -548,6 +552,38 @@
   font-size: 10px; font-weight: 700; color: var(--primary);
   letter-spacing: .3px;
 }
+
+/* FILTROS SEGMENTO */
+.filtro-seg-btn {
+  padding: 5px 12px; border-radius: 20px; border: 1.5px solid #D0D0E0;
+  font-size: 12px; font-weight: 600; font-family: 'Inter', sans-serif;
+  cursor: pointer; background: #fff; color: var(--text-secondary);
+  transition: all .15s;
+}
+.filtro-seg-btn:hover  { border-color: var(--primary); color: var(--primary); }
+.filtro-seg-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* MINUTAS GLOBAL TABLE */
+.mg-row {
+  background: var(--card-bg); border: 1px solid var(--card-border);
+  border-radius: 12px; padding: 14px 16px;
+  display: grid;
+  grid-template-columns: 90px 1fr 130px 80px 60px 100px;
+  gap: 8px; align-items: center;
+  margin-bottom: 8px; cursor: pointer;
+  transition: border-color .15s;
+}
+.mg-row:hover { border-color: #B5D4F4; }
+@media (max-width: 700px) {
+  .mg-row { grid-template-columns: 90px 1fr 80px; }
+  .mg-col-regional, .mg-col-tipo, .mg-col-acuerdos { display: none; }
+}
+.mg-date { font-size: 12px; font-weight: 600; color: var(--text-primary); }
+.mg-dealer { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+.mg-dealer-sub { font-size: 11px; color: var(--text-secondary); }
+.mg-col { font-size: 12px; color: var(--text-secondary); }
+.mg-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; }
+.mg-header { grid-template-columns: 90px 1fr 130px 80px 60px 100px; }
   </style>
 </head>
 <body>
@@ -615,6 +651,22 @@
       </div>
     </div>
 
+    <!-- MINUTAS GLOBALES -->
+    <div class="section-title">Minutas de Visitas</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;align-items:center">
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="filtro-seg-btn active" data-seg="" onclick="filtrarMinutas(this)">Todos</button>
+        <button class="filtro-seg-btn" data-seg="pv"  onclick="filtrarMinutas(this)">P&V</button>
+        <button class="filtro-seg-btn" data-seg="mdt" onclick="filtrarMinutas(this)">MDT/LDT</button>
+        <button class="filtro-seg-btn" data-seg="hdt" onclick="filtrarMinutas(this)">HDT</button>
+        <button class="filtro-seg-btn" data-seg="ev"  onclick="filtrarMinutas(this)">EV</button>
+      </div>
+      <select id="filtro-mes" onchange="cargarMinutasGlobales()" style="padding:6px 10px;border:1.5px solid #E0E0EC;border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;color:#1A1A2E;background:#fff;cursor:pointer"></select>
+    </div>
+    <div id="minutas-global-list">
+      <div class="loading-text">Cargando minutas...</div>
+    </div>
+
     <div class="logout-wrap">
       <button class="logout-btn" onclick="handleLogout()">Cerrar sesión</button>
     </div>
@@ -645,14 +697,28 @@ const { SUPABASE_URL, SUPABASE_ANON_KEY } = window.FOTON_CONFIG;
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const DEALERS_META = {
-  gcm:    { nombre: 'Grupo Carrocero Milenio',       plaza: 'Tula',            bp: 29  },
-  tang:   { nombre: 'Autos Y Camiones Asia Central',  plaza: 'San Luis Potosí', bp: 73  },
-  bavi:   { nombre: 'Burk Automotriz',               plaza: 'Uruapan',         bp: 40  },
-  astur:  { nombre: 'Autos Emcg / Asturcar',         plaza: 'Puebla',          bp: 40  },
-  orient: { nombre: 'Camiones Orientales de León',   plaza: 'León',            bp: 45  },
-  prem:   { nombre: 'Camiones Premium del Centro',   plaza: 'Querétaro',       bp: 134 },
-  pen:    { nombre: 'Veh. Comerciales Península',    plaza: 'Cancún/Mérida',   bp: 33  },
-  xian:   { nombre: 'Xian Motors',                  plaza: 'Guadalajara',     bp: 67  }
+  adacari:       { nombre: 'ADACARI',                        plaza: 'Guadalajara',     bp: 0  },
+  arg:           { nombre: 'ARG',                            plaza: 'Monterrey',       bp: 0  },
+  astrocamiones: { nombre: 'Astro Camiones',                 plaza: 'Chihuahua',       bp: 0  },
+  asturcar:      { nombre: 'Autos Emcg / Asturcar',          plaza: 'Puebla',          bp: 0  },
+  bavi:          { nombre: 'Burk Automotriz',                plaza: 'Uruapan',         bp: 0  },
+  bours:         { nombre: 'Bours',                          plaza: 'Hermosillo',      bp: 0  },
+  cmv:           { nombre: 'CMV',                            plaza: 'CDMX',            bp: 0  },
+  delsureste:    { nombre: 'Del Sureste',                    plaza: 'Cancún/Mérida',   bp: 0  },
+  deras:         { nombre: 'DERAS',                          plaza: 'Mexicali',        bp: 0  },
+  enerkom:       { nombre: 'Enerkom',                        plaza: 'Monterrey',       bp: 0  },
+  gcm:           { nombre: 'Grupo Carrocero Milenio',        plaza: 'Tula',            bp: 0  },
+  grumar:        { nombre: 'Grumar',                         plaza: 'Guadalajara',     bp: 0  },
+  jcmc:          { nombre: 'JCMC',                           plaza: 'CDMX',            bp: 0  },
+  jimenez:       { nombre: 'Jiménez',                        plaza: 'Torreón',         bp: 0  },
+  mh:            { nombre: 'MH',                             plaza: 'Culiacán',        bp: 0  },
+  motornation:   { nombre: 'Motor Nation',                   plaza: 'Tijuana',         bp: 0  },
+  plascencia:    { nombre: 'Plascencia',                     plaza: 'Guadalajara',     bp: 0  },
+  policon:       { nombre: 'Policon',                        plaza: 'Puebla',          bp: 0  },
+  prem:          { nombre: 'Camiones Premium del Centro',    plaza: 'Querétaro',       bp: 0  },
+  ruano:         { nombre: 'Ruano',                          plaza: 'CDMX',            bp: 0  },
+  tang:          { nombre: 'Autos y Camiones Asia Central',  plaza: 'San Luis Potosí', bp: 0  },
+  velcen:        { nombre: 'Velcen',                         plaza: 'Veracruz',        bp: 0  }
 };
 const BP_TOTAL_2026 = 461;
 
@@ -769,16 +835,28 @@ async function loadDashboard() {
   const avancePct = bpTotal > 0 ? Math.round(facTotal / bpTotal * 100) : 0;
   const porCerrar = Math.max(0, bpTotal - facTotal);
 
-  renderKPIs(bpTotal, facTotal, avancePct, porCerrar, mesActual);
+  // KPIs de visitas del mes actual
+  const mesStr = String(mesActual).padStart(2,'0');
+  const prefixMes = `${anio}-${mesStr}`;
+  const visitasMes = visRows.filter(r => r.fecha && r.fecha.startsWith(prefixMes));
+  const dealersVisitadosMes = new Set(visitasMes.map(r => r.distribuidor_id)).size;
+
+  renderKPIs(bpTotal, facTotal, avancePct, porCerrar, mesActual, visitasMes.length, dealersVisitadosMes);
   renderDealers(bpByDealer, facByDealer, lastVisit, mesActual);
   renderChart(facByMonth, bpTotal);
+  // Inicializar y cargar minutas globales
+  inicializarFiltroMes();
+  cargarMinutasGlobales();
 }
 
 // RENDER KPIs
-function renderKPIs(bpTotal, facTotal, avancePct, porCerrar, mesActual) {
+function renderKPIs(bpTotal, facTotal, avancePct, porCerrar, mesActual, visitasMes, dealersVisitados) {
   let colorClass = 'red';
   if (avancePct >= 80) colorClass = 'green';
   else if (avancePct >= 50) colorClass = 'amber';
+
+  const MONTHS_ES_FULL = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const mesNombre = MONTHS_ES_FULL[mesActual - 1] || '';
 
   const grid = document.getElementById('kpi-grid');
   grid.innerHTML = `
@@ -790,7 +868,7 @@ function renderKPIs(bpTotal, facTotal, avancePct, porCerrar, mesActual) {
     <div class="kpi-card">
       <div class="kpi-label">Facturado YTD</div>
       <div class="kpi-value">${facTotal}</div>
-      <div class="kpi-sub">hasta mes ${mesActual}</div>
+      <div class="kpi-sub">hasta ${mesNombre}</div>
     </div>
     <div class="kpi-card ${colorClass}">
       <div class="kpi-label">% Avance</div>
@@ -801,6 +879,16 @@ function renderKPIs(bpTotal, facTotal, avancePct, porCerrar, mesActual) {
       <div class="kpi-label">Por Cerrar</div>
       <div class="kpi-value">${porCerrar}</div>
       <div class="kpi-sub">unidades restantes</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Visitas en ${mesNombre}</div>
+      <div class="kpi-value">${visitasMes ?? '—'}</div>
+      <div class="kpi-sub">visitas registradas</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Dealers Visitados</div>
+      <div class="kpi-value">${dealersVisitados ?? '—'}</div>
+      <div class="kpi-sub">de 22 distribuidores</div>
     </div>
   `;
 }
@@ -872,6 +960,142 @@ function renderDealers(bpByDealer, facByDealer, lastVisit, mesActual) {
   grid.innerHTML = html;
 }
 
+// ══════════════════════════════════════════════════════════
+// MINUTAS GLOBALES — lista paginada de todas las visitas
+// ══════════════════════════════════════════════════════════
+
+// Estado de filtros
+let _filtroSeg = '';
+
+function inicializarFiltroMes() {
+  const sel = document.getElementById('filtro-mes');
+  if (!sel) return;
+  const now = new Date();
+  sel.innerHTML = '';
+  // Muestra los últimos 12 meses
+  for (let i = 0; i < 12; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2,'0')}`;
+    const label = d.toLocaleDateString('es-MX', { month: 'long', year: 'numeric' });
+    const opt = document.createElement('option');
+    opt.value = val;
+    opt.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+    if (i === 0) opt.selected = true;
+    sel.appendChild(opt);
+  }
+}
+
+function filtrarMinutas(btn) {
+  document.querySelectorAll('.filtro-seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  _filtroSeg = btn.dataset.seg || '';
+  cargarMinutasGlobales();
+}
+
+async function cargarMinutasGlobales() {
+  const contenedor = document.getElementById('minutas-global-list');
+  if (!contenedor) return;
+  contenedor.innerHTML = '<div class="loading-text">Cargando minutas...</div>';
+
+  const mesVal = document.getElementById('filtro-mes')?.value || '';
+  const [anio, mes] = mesVal ? mesVal.split('-') : [null, null];
+
+  let query = db
+    .from('visitas')
+    .select('id, distribuidor_id, fecha, tipo_visita, logros, comentarios, objetivo, regional_id')
+    .order('fecha', { ascending: false })
+    .limit(100);
+
+  if (anio && mes) {
+    const fechaIni = `${anio}-${mes}-01`;
+    const lastDay  = new Date(Number(anio), Number(mes), 0).getDate();
+    const fechaFin = `${anio}-${mes}-${String(lastDay).padStart(2,'0')}`;
+    query = query.gte('fecha', fechaIni).lte('fecha', fechaFin);
+  }
+
+  const { data: visitas, error } = await query;
+
+  if (error || !visitas || visitas.length === 0) {
+    contenedor.innerHTML = '<div class="loading-text">Sin visitas registradas para este periodo.</div>';
+    return;
+  }
+
+  // Obtener acuerdos pendientes de estas visitas
+  const visitaIds = visitas.map(v => v.id);
+  const { data: acuerdos } = await db
+    .from('visita_acuerdos')
+    .select('visita_id, cumplido')
+    .in('visita_id', visitaIds);
+
+  const acuerdosByVisita = {};
+  (acuerdos || []).forEach(a => {
+    if (!acuerdosByVisita[a.visita_id]) acuerdosByVisita[a.visita_id] = { total: 0, pendientes: 0 };
+    acuerdosByVisita[a.visita_id].total++;
+    if (!a.cumplido) acuerdosByVisita[a.visita_id].pendientes++;
+  });
+
+  // Obtener info de distribuidores (incluyendo segmento)
+  const dealerIds = [...new Set(visitas.map(v => v.distribuidor_id))];
+  const { data: distribuidores } = await db
+    .from('distribuidores')
+    .select('id, nombre, grupo, plaza, segmento')
+    .in('id', dealerIds);
+
+  const distMap = {};
+  (distribuidores || []).forEach(d => { distMap[d.id] = d; });
+
+  // Filtrar por segmento si aplica
+  const SEGMENTOS = {
+    pv:  { label: 'P&V',     color: '#7C3D1A', bg: '#F5EBE0' },
+    mdt: { label: 'MDT/LDT', color: '#185FA5', bg: '#E3EEF9' },
+    hdt: { label: 'HDT',     color: '#042C53', bg: '#D6E2EE' },
+    ev:  { label: 'EV',      color: '#1A7C4F', bg: '#E0F2EA' }
+  };
+
+  let visitasFiltradas = visitas;
+  if (_filtroSeg) {
+    visitasFiltradas = visitas.filter(v => {
+      const d = distMap[v.distribuidor_id];
+      return d && d.segmento === _filtroSeg;
+    });
+  }
+
+  if (visitasFiltradas.length === 0) {
+    contenedor.innerHTML = '<div class="loading-text">Sin visitas para el segmento seleccionado.</div>';
+    return;
+  }
+
+  const rows = visitasFiltradas.map(v => {
+    const dist  = distMap[v.distribuidor_id] || {};
+    const seg   = SEGMENTOS[dist.segmento] || {};
+    const acs   = acuerdosByVisita[v.id] || { total: 0, pendientes: 0 };
+    const fecha = v.fecha ? new Date(v.fecha + 'T12:00:00').toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+    const tipos = (v.tipo_visita || []).join(', ') || '—';
+    const segBadge = seg.label
+      ? `<span class="mg-badge" style="background:${seg.bg};color:${seg.color}">${seg.label}</span>`
+      : '';
+    const pendBadge = acs.pendientes > 0
+      ? `<span class="mg-badge" style="background:#FFF8E1;color:#B07A00">${acs.pendientes} pend.</span>`
+      : `<span class="mg-badge" style="background:#E6F5EE;color:#1A8C5B">${acs.total} ok</span>`;
+
+    return `<div class="mg-row" onclick="openMinutas('${v.distribuidor_id}', '${(dist.nombre || v.distribuidor_id).replace(/'/g,'&apos;')}')">
+      <div class="mg-date">${fecha}</div>
+      <div>
+        <div class="mg-dealer">${dist.nombre || v.distribuidor_id}</div>
+        <div class="mg-dealer-sub">${dist.plaza || ''} ${segBadge}</div>
+      </div>
+      <div class="mg-col mg-col-regional">${v.regional_id || '—'}</div>
+      <div class="mg-col mg-col-tipo" title="${tipos}" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${tipos}</div>
+      <div class="mg-col mg-col-acuerdos">${pendBadge}</div>
+      <div style="text-align:right">
+        <button onclick="event.stopPropagation();descargarExcelVisita('${v.id}','${v.distribuidor_id}')" style="padding:4px 10px;background:#1A7C4F;color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer">Excel</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  contenedor.innerHTML = rows;
+}
+
 // MINUTAS DRAWER
 async function openMinutas(dealerId, dealerName) {
   document.getElementById('mn-dealer-name').textContent = dealerName;
@@ -918,7 +1142,7 @@ async function openMinutas(dealerId, dealerName) {
           <div class="mn-acuerdo">
             <div class="mn-acuerdo-dot"></div>
             <div>
-              <div class="mn-acuerdo-text">${a.texto || a.acuerdo || ''}</div>
+              <div class="mn-acuerdo-text">${a.descripcion || ''}</div>
               ${a.responsable || a.fecha_compromiso ? `<div class="mn-acuerdo-meta">${[a.responsable, a.fecha_compromiso].filter(Boolean).join(' · ')}</div>` : ''}
             </div>
           </div>`).join('')
@@ -981,11 +1205,13 @@ function showToastDir(msg) {
 async function descargarExcelVisita(visitaId, distribuidorId) {
   showToastDir('Preparando Excel...');
   try {
-    const [{ data: visita }, { data: acuerdos }, { data: dist }] = await Promise.all([
-      db.from('visitas').select('*').eq('id', visitaId).single(),
-      db.from('visita_acuerdos').select('*').eq('visita_id', visitaId).order('numero'),
-      db.from('distribuidores').select('*').eq('id', distribuidorId).single()
+    const [{ data: visitaRows }, { data: acuerdos }, { data: distRows }] = await Promise.all([
+      db.from('visitas').select('*').eq('id', visitaId).limit(1),
+      db.from('visita_acuerdos').select('*').eq('visita_id', visitaId).order('created_at', { ascending: true }),
+      db.from('distribuidores').select('*').eq('id', distribuidorId).limit(1)
     ]);
+    const visita = visitaRows?.[0];
+    const dist   = distRows?.[0];
 
     const resp = await fetch('./assets/templates/visita-distribuidor.xlsb');
     if (!resp.ok) throw new Error('Template not found');
@@ -999,7 +1225,8 @@ async function descargarExcelVisita(visitaId, distribuidorId) {
       ws[ref] = Object.assign(ws[ref] || {}, { t, v: val });
     }
 
-    sc('E3', 'P&V');
+    // E3 = segmento del distribuidor (viene de dist.segmento)
+    sc('E3', dist?.segmento || '');
     sc('E4', visita?.regional || '');
     sc('P3', dist?.nombre || '');
     sc('P4', dist?.plaza || '');
@@ -1020,12 +1247,12 @@ async function descargarExcelVisita(visitaId, distribuidorId) {
     (acuerdos || []).forEach((ac, i) => {
       if (i >= 11) return;
       const rn = 42 + i;
-      if (ac.texto) sc(`B${rn}`, ac.texto);
-      if (ac.responsable) sc(`V${rn}`, ac.responsable);
+      if (ac.descripcion) sc(`B${rn}`, ac.descripcion);
+      if (ac.responsable)  sc(`V${rn}`, ac.responsable);
       if (ac.fecha_compromiso) sc(`AC${rn}`, ac.fecha_compromiso);
     });
 
-    if (visita?.logros) sc('A55', visita.logros);
+    if (visita?.logros)      sc('A55', visita.logros);
     if (visita?.comentarios) sc('A75', visita.comentarios);
 
     const name = (dist?.nombre || 'dealer').replace(/[^a-zA-Z0-9]/g, '-');

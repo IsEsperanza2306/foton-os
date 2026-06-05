@@ -244,7 +244,7 @@ thead.av-hd th{background:var(--g0);color:var(--g5);border-bottom:1px solid var(
     <div class="hdr-div"></div>
     <div>
       <div class="hdr-lbl">BP Tracker 2026</div>
-      <div class="hdr-sub">Business Plan &middot; MDT &amp; LDT</div>
+      <div class="hdr-sub">Business Plan &middot; Red Nacional 2026</div>
     </div>
   </div>
   <div class="hdr-r">
@@ -268,6 +268,14 @@ thead.av-hd th{background:var(--g0);color:var(--g5);border-bottom:1px solid var(
         <option value="3">Abril</option><option value="4" selected>Mayo</option><option value="5">Junio</option>
         <option value="6">Julio</option><option value="7">Agosto</option><option value="8">Septiembre</option>
         <option value="9">Octubre</option><option value="10">Noviembre</option><option value="11">Diciembre</option>
+      </select>
+      <span class="ctrl-lbl" id="seg-filter-lbl" style="display:none">Segmento</span>
+      <select class="ctrl-sel" id="seg-sel" style="display:none" onchange="setSegmento(this.value)">
+        <option value="">Todos</option>
+        <option value="P&V">P&amp;V</option>
+        <option value="MDT/LDT">MDT/LDT</option>
+        <option value="HDT">HDT</option>
+        <option value="EV">EV</option>
       </select>
       <button class="btn btn-outline" id="btn-edit" onclick="toggleEdit()">&#9998; Editar BP</button>
       <button class="btn btn-primary" onclick="openModal()">+ Capturar facturado</button>
@@ -399,397 +407,481 @@ thead.av-hd th{background:var(--g0);color:var(--g5);border-bottom:1px solid var(
 </div>
 
 <script>
-// ── Supabase integration ──────────────────────────────────────
-const { createClient } = supabase;
-const db = (window.FOTON_CONFIG)
-  ? createClient(window.FOTON_CONFIG.SUPABASE_URL, window.FOTON_CONFIG.SUPABASE_ANON_KEY)
-  : null;
+// ── Supabase + auth ───────────────────────────────────────────
+// Usa window.FOTON_DB inicializado por _nav.js; crea fallback solo si no existe
+const db = window.FOTON_DB || (() => {
+  const { createClient } = supabase;
+  return (window.FOTON_CONFIG)
+    ? createClient(window.FOTON_CONFIG.SUPABASE_URL, window.FOTON_CONFIG.SUPABASE_ANON_KEY)
+    : null;
+})();
 
-async function loadBPFromSupabase() {
-  if (!db) return;
+// IDs canónicos de los 22 distribuidores Foton México
+const CANONICAL_IDS = new Set([
+  'adacari','arg','astrocamiones','asturcar','bavi','bours','cmv',
+  'delsureste','deras','enerkom','gcm','grumar','jcmc','jimenez',
+  'mh','motornation','plascencia','policon','prem','ruano','tang','velcen'
+]);
+
+const MO = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+const MF = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+const ANIO = 2026;
+
+// Estado global
+let DISTS = [];         // [{id, nombre, grupo, ciudad, estado, segmento, bp:{1..12}, ytd, ytd_mes}]
+let filteredDists = []; // vista filtrada por segmento
+let di = 0;             // índice del distribuidor activo en filteredDists
+let cm = new Date().getMonth(); // mes activo (0-11)
+let segFiltro = '';     // filtro de segmento activo (solo direccion/admin)
+let editMode = false;
+let editBackup = null;
+
+// ── CARGA DE DISTRIBUIDORES DESDE SUPABASE ──────────────────────────────────
+async function loadDists() {
+  if (!db) { renderError('Sin conexión a base de datos'); return; }
+  const rol = window.FOTON_ROL || 'regional';
+  const userId = window.FOTON_USER && window.FOTON_USER.id;
+  let distribIds = [];
+
   try {
+    if (rol === 'direccion' || rol === 'admin') {
+      // Direccion ve todos los 22 canónicos
+      distribIds = [...CANONICAL_IDS];
+    } else {
+      // Regional/director: dealers vía asignaciones
+      if (!userId) { renderError('Usuario no autenticado'); return; }
+      const { data: asgn, error: asgnErr } = await db
+        .from('asignaciones')
+        .select('distribuidor_id')
+        .eq('usuario_id', userId)
+        .limit(100);
+      if (asgnErr) throw asgnErr;
+      distribIds = (asgn || [])
+        .map(r => r.distribuidor_id)
+        .filter(id => CANONICAL_IDS.has(id));
+    }
+
+    if (!distribIds.length) { renderError('Sin distribuidores asignados'); return; }
+
+    // Cargar datos de distribuidores
+    const { data: distRows, error: distErr } = await db
+      .from('distribuidores')
+      .select('id,nombre,grupo,plaza,ciudad,estado,segmento')
+      .in('id', distribIds)
+      .limit(50);
+    if (distErr) throw distErr;
+
+    // Cargar BP mensual del año actual
     const { data: bpRows, error: bpErr } = await db
-      .from('bp_anual')
-      .select('distribuidor_id,modelo,unidades_bp')
-      .eq('anio', 2026);
+      .from('bp')
+      .select('distribuidor_id,mes,objetivo,facturado_ytd')
+      .eq('anio', ANIO)
+      .in('distribuidor_id', distribIds)
+      .limit(500);
+    if (bpErr) throw bpErr;
 
-    const { data: facRows, error: facErr } = await db
-      .from('facturado_ytd')
-      .select('distribuidor_id,mes,modelo,unidades_facturadas')
-      .eq('anio', 2026);
-
-    if (bpErr || facErr) throw bpErr || facErr;
-
-    if (bpRows) {
-      bpRows.forEach(row => {
-        const d = typeof row.distribuidor_id === 'number' ? DISTS[row.distribuidor_id] : DISTS.find(x => x.id === row.distribuidor_id);
-        if (!d) return;
-        const model = d.models.find(m => m.n === row.modelo);
-        if (model && row.unidades_bp !== undefined) {
-          // Distribute BP evenly across months as a rough override
-          // (actual per-month distribution stays; only total is updated via Supabase)
-          // Store raw override for reference
-          if (!d._sbBP) d._sbBP = {};
-          d._sbBP[row.modelo] = row.unidades_bp;
+    // Construir mapa de BP por distribuidor
+    const bpMap = {};
+    (bpRows || []).forEach(r => {
+      if (!bpMap[r.distribuidor_id]) bpMap[r.distribuidor_id] = { bp: {}, ytd: 0, ytd_mes: null };
+      bpMap[r.distribuidor_id].bp[r.mes] = r.objetivo || 0;
+      // YTD = facturado_ytd del mes más reciente con datos
+      if (r.facturado_ytd != null) {
+        if (bpMap[r.distribuidor_id].ytd_mes === null || r.mes > bpMap[r.distribuidor_id].ytd_mes) {
+          bpMap[r.distribuidor_id].ytd = r.facturado_ytd;
+          bpMap[r.distribuidor_id].ytd_mes = r.mes;
         }
-      });
+      }
+    });
+
+    DISTS = (distRows || []).map(d => {
+      const info = bpMap[d.id] || { bp: {}, ytd: 0, ytd_mes: null };
+      const bpAnual = Object.values(info.bp).reduce((a, v) => a + v, 0);
+      return {
+        id: d.id,
+        nombre: d.nombre || d.id,
+        grupo: d.grupo || '',
+        ciudad: d.ciudad || d.plaza || '',
+        estado: d.estado || '',
+        segmento: d.segmento || '',
+        bp: info.bp,        // {1:obj, 2:obj, ... 12:obj}
+        bpAnual,
+        ytd: info.ytd,
+        ytd_mes: info.ytd_mes
+      };
+    }).sort((a, b) => a.nombre.localeCompare(b.nombre));
+
+    // Mostrar filtro de segmento solo para direccion/admin
+    if (rol === 'direccion' || rol === 'admin') {
+      document.getElementById('seg-filter-lbl').style.display = '';
+      document.getElementById('seg-sel').style.display = '';
     }
 
-    if (facRows) {
-      facRows.forEach(row => {
-        const d = typeof row.distribuidor_id === 'number' ? DISTS[row.distribuidor_id] : DISTS.find(x => x.id === row.distribuidor_id);
-        if (!d) return;
-        if (!d.fact[row.modelo]) d.fact[row.modelo] = new Array(12).fill(null);
-        const mesIdx = row.mes - 1;
-        if (mesIdx >= 0 && mesIdx < 12) {
-          d.fact[row.modelo][mesIdx] = row.unidades_facturadas;
-        }
-      });
-    }
-
-    console.log('[Foton OS] BP + facturado loaded from Supabase ✓');
-    render();
+    applySegFilter();
+    console.log(`[Foton BP] ${DISTS.length} distribuidores cargados`);
 
   } catch (e) {
-    console.warn('[Foton OS] Supabase load failed, using local data:', e.message);
+    console.error('[Foton BP] Error cargando distribuidores:', e.message);
+    renderError('Error cargando datos: ' + e.message);
   }
 }
 
-async function saveFacToSupabase(dealerIdx, modelo, mesIdx, unidades) {
-  if (!db) return;
-  const { error } = await db.from('facturado_ytd').upsert({
-    distribuidor_id: DISTS[dealerIdx].id || String(dealerIdx),
-    anio: 2026,
-    mes: mesIdx + 1,
-    modelo,
-    unidades_facturadas: Number(unidades),
-    updated_at: new Date().toISOString()
-  }, { onConflict: 'distribuidor_id,anio,mes,modelo' });
-  if (error) console.error('[Foton OS] Save facturado error:', error.message);
+function applySegFilter() {
+  if (!segFiltro) {
+    filteredDists = [...DISTS];
+  } else {
+    filteredDists = DISTS.filter(d => d.segmento === segFiltro);
+  }
+  di = 0;
+  buildTabs();
+  render();
 }
 
-const MO=["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
-const MF=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+function setSegmento(val) {
+  segFiltro = val;
+  applySegFilter();
+}
 
-// ── DATOS COMPLETOS (fusionados donde aplica) ──────────────────────────────
-const DISTS=[
-  {id:'xian',name:"Xian Motors",sub:"Foton Guadalajara",models:[
-    {n:"S3", u:[1,1,1,1,1,1,1,1,1,1,1,2], m:[.65,.65,.65,.65,.65,.65,.65,.65,.65,.65,.65,1.29]},
-    {n:"S5", u:[1,1,1,1,1,1,1,1,1,1,1,2], m:[.84,.84,.84,.84,.84,.84,.84,.84,.84,.84,.84,1.68]},
-    {n:"S6", u:[1,1,1,1,1,1,1,1,1,1,1,2], m:[.90,.90,.90,.90,.90,.90,.90,.90,.90,.90,.90,1.81]},
-    {n:"S8", u:[1,1,1,2,1,1,2,1,1,2,1,2], m:[1.19,1.19,1.19,2.38,1.19,1.19,2.38,1.19,1.19,2.38,1.19,2.38]},
-    {n:"S12",u:[7,9,8,8,8,9,9,10,6,7,9,10],m:[9.96,12.81,11.39,11.39,11.39,12.81,12.81,14.23,8.54,9.96,12.81,14.23]}
-  ],
-  fact:{S3:[null,null,null,null,13,null,null,null,null,null,null,null],S5:[null,null,null,null,2,null,null,null,null,null,null,null],S6:[null,null,null,null,3,null,null,null,null,null,null,null],S8:[null,null,null,null,null,null,null,null,null,null,null,null],S12:[null,null,null,null,36,null,null,null,null,null,null,null]}
-  },
-  {id:'metro_gr',name:"Camiones Metropolitanos GR",sub:"Foton Insurgentes Sur",models:[
-    {n:"S3", u:[1,2,2,1,2,2,2,2,1,2,2,2], m:[.65,1.29,1.29,.65,1.29,1.29,1.29,1.29,.65,1.29,1.29,1.29]},
-    {n:"S5", u:[1,1,2,1,2,1,2,1,1,2,1,2], m:[.84,.84,1.68,.84,1.68,.84,1.68,.84,.84,1.68,.84,1.68]},
-    {n:"S6", u:[0,1,1,1,1,1,1,1,1,1,1,1], m:[0,.90,.90,.90,.90,.90,.90,.90,.90,.90,.90,.90]},
-    {n:"S8", u:[0,0,1,0,1,0,1,0,1,0,1,0], m:[0,0,1.19,0,1.19,0,1.19,0,1.19,0,1.19,0]},
-    {n:"S12",u:[2,2,2,2,3,2,3,2,2,2,2,3], m:[2.85,2.85,2.85,2.85,4.27,2.85,4.27,2.85,2.85,2.85,2.85,4.27]}
-  ],
-  fact:{S3:[null,null,null,null,null,null,null,null,null,null,null,null],S5:[null,null,null,null,null,null,null,null,null,null,null,null],S6:[null,null,null,null,null,null,null,null,null,null,null,null],S8:[null,null,null,null,null,null,null,null,null,null,null,null],S12:[null,null,null,null,1,null,null,null,null,null,null,null]}
-  },
-  {id:'tang',name:"Autos y Camiones Asia Central",sub:"Foton San Luis Potosi",models:[
-    {n:"S3", u:[0,1,1,1,0,1,1,1,1,0,1,1], m:[0,.65,.65,.65,0,.65,.65,.65,.65,0,.65,.65]},
-    {n:"S5", u:[0,1,0,1,1,0,1,1,0,1,1,0], m:[0,.84,0,.84,.84,0,.84,.84,0,.84,.84,0]},
-    {n:"S6", u:[0,0,1,0,1,0,1,0,0,1,0,1], m:[0,0,.90,0,.90,0,.90,0,0,.90,0,.90]},
-    {n:"S8", u:[0,0,0,0,1,0,0,0,0,1,0,0], m:[0,0,0,0,1.19,0,0,0,0,1.19,0,0]},
-    {n:"S12",u:[0,1,2,1,1,1,1,1,1,1,1,1], m:[0,1.42,2.85,1.42,1.42,1.42,1.42,1.42,1.42,1.42,1.42,1.42]}
-  ],
-  fact:{S3:[null,null,null,null,3,null,null,null,null,null,null,null],S5:[null,null,null,null,3,null,null,null,null,null,null,null],S6:[null,null,null,null,1,null,null,null,null,null,null,null],S8:[null,null,null,null,2,null,null,null,null,null,null,null],S12:[null,null,null,null,1,null,null,null,null,null,null,null]}
-  },
-  {id:'orient',name:"Camiones Orientales de Leon",sub:"Foton Leon",models:[
-    {n:"S3", u:[1,1,2,1,1,2,1,2,1,2,1,2], m:[.65,.65,1.29,.65,.65,1.29,.65,1.29,.65,1.29,.65,1.29]},
-    {n:"S5", u:[1,1,1,1,1,1,2,1,1,1,1,2], m:[.84,.84,.84,.84,.84,.84,1.68,.84,.84,.84,.84,1.68]},
-    {n:"S6", u:[0,1,1,1,0,1,1,1,0,1,1,1], m:[0,.90,.90,.90,0,.90,.90,.90,0,.90,.90,.90]},
-    {n:"S8", u:[0,0,1,0,0,1,1,1,0,0,1,0], m:[0,0,1.19,0,0,1.19,1.19,1.19,0,0,1.19,0]},
-    {n:"S12",u:[1,2,2,2,2,1,2,3,1,2,1,3], m:[1.42,2.85,2.85,2.85,2.85,1.42,2.85,4.27,1.42,2.85,1.42,4.27]}
-  ],
-  fact:{S3:[null,null,null,null,3,null,null,null,null,null,null,null],S5:[null,null,null,null,2,null,null,null,null,null,null,null],S6:[null,null,null,null,1,null,null,null,null,null,null,null],S8:[null,null,null,null,null,null,null,null,null,null,null,null],S12:[null,null,null,null,null,null,null,null,null,null,null,null]}
-  },
-  // PREMIUM DEL CENTRO: Constituyentes + Queretaro fusionados (suma de BPs)
-  {id:'prem',name:"Camiones Premium del Centro",sub:"Constituyentes + Queretaro",models:[
-    {n:"S3", u:[0,0,2,4,3,4,3,4,3,4,3,5], m:[0,0,1.29,2.59,1.94,2.59,1.94,2.59,1.94,2.59,1.94,3.23]},
-    {n:"S5", u:[0,0,2,2,3,2,2,3,2,3,2,3], m:[0,0,1.68,1.68,2.52,1.68,1.68,2.52,1.68,2.52,1.68,2.52]},
-    {n:"S6", u:[0,0,0,4,3,3,3,4,3,3,4,3], m:[0,0,0,3.61,2.71,2.71,2.71,3.61,2.71,2.71,3.61,2.71]},
-    {n:"S8", u:[0,0,0,3,3,3,3,4,3,0,0,0], m:[0,0,0,3.58,3.58,3.58,3.58,4.77,3.58,0,0,0]},
-    {n:"S12",u:[0,2,0,3,3,2,3,3,2,3,3,2], m:[0,2.84,0,4.27,4.27,2.85,4.27,4.27,2.85,4.27,4.27,2.85]}
-  ],
-  fact:{S3:[null,null,null,null,2,null,null,null,null,null,null,null],S5:[null,null,null,null,2,null,null,null,null,null,null,null],S6:[null,null,null,null,3,null,null,null,null,null,null,null],S8:[null,null,null,null,null,null,null,null,null,null,null,null],S12:[null,null,null,null,2,null,null,null,null,null,null,null]}
-  },
-  {id:'gcm',name:"Grupo Carrocero Milenio",sub:"Foton Tula",models:[
-    {n:"S3", u:[0,1,0,1,0,1,1,0,1,0,1,1], m:[0,.65,0,.65,0,.65,.65,0,.65,0,.65,.65]},
-    {n:"S5", u:[0,0,1,0,1,0,1,0,1,0,1,0], m:[0,0,.84,0,.84,0,.84,0,.84,0,.84,0]},
-    {n:"S6", u:[0,0,0,1,0,0,1,0,0,1,0,0], m:[0,0,0,.90,0,0,.90,0,0,.90,0,0]},
-    {n:"S8", u:[0,0,0,0,1,1,0,1,0,1,0,1], m:[0,0,0,0,1.19,1.19,0,1.19,0,1.19,0,1.19]},
-    {n:"S12",u:[0,1,1,1,0,1,1,1,0,1,1,1], m:[0,1.42,1.42,1.42,0,1.42,1.42,1.42,0,1.42,1.42,1.42]}
-  ],
-  fact:{S3:[null,null,null,null,1,null,null,null,null,null,null,null],S5:[null,null,null,null,2,null,null,null,null,null,null,null],S6:[null,null,null,null,2,null,null,null,null,null,null,null],S8:[null,null,null,null,null,null,null,null,null,null,null,null],S12:[null,null,null,null,null,null,null,null,null,null,null,null]}
-  },
-  // PENINSULA: Cancun + Merida fusionados
-  {id:'pen',name:"Vehiculos Comerciales Peninsula",sub:"Cancun + Merida",models:[
-    {n:"S3", u:[0,1,0,2,0,1,2,1,0,1,1,0], m:[0,.65,0,1.29,0,.65,1.29,.65,0,.65,.65,0]},
-    {n:"S5", u:[0,0,1,0,2,0,1,1,1,0,0,1], m:[0,0,.84,0,1.68,0,.84,.84,.84,0,0,.84]},
-    {n:"S6", u:[0,0,0,1,0,0,2,0,0,0,1,0], m:[0,0,0,.90,0,0,1.79,0,0,0,.90,0]},
-    {n:"S8", u:[0,0,0,0,0,0,1,0,0,0,0,0], m:[0,0,0,0,0,0,1.19,0,0,0,0,0]},
-    {n:"S12",u:[0,1,2,0,1,2,0,2,1,0,2,1], m:[0,1.42,2.84,0,1.42,2.84,0,2.84,1.42,0,2.84,1.42]}
-  ],
-  fact:{S3:[null,null,null,null,null,null,null,null,null,null,null,null],S5:[null,null,null,null,null,null,null,null,null,null,null,null],S6:[null,null,null,null,null,null,null,null,null,null,null,null],S8:[null,null,null,null,null,null,null,null,null,null,null,null],S12:[null,null,null,null,null,null,null,null,null,null,null,null]}
-  },
-  {id:'jim_gg',name:"Jiménez Autocamiones González Gallo",sub:"Foton Guadalajara GG",models:[
-    {n:"S3", u:[0,1,0,1,0,1,1,0,1,1,0,1], m:[0,.65,0,.65,0,.65,.65,0,.65,.65,0,.65]},
-    {n:"S5", u:[0,0,1,0,1,0,1,0,1,0,1,1], m:[0,0,.84,0,.84,0,.84,0,.84,0,.84,.84]},
-    {n:"S6", u:[0,0,0,1,0,1,0,1,0,1,0,1], m:[0,0,0,.90,0,.90,0,.90,0,.90,0,.90]},
-    {n:"S8", u:[0,0,1,0,1,0,1,0,1,0,1,0], m:[0,0,1.19,0,1.19,0,1.19,0,1.19,0,1.19,0]},
-    {n:"S12",u:[1,2,2,2,2,2,2,2,2,2,2,3], m:[1.42,2.85,2.85,2.85,2.85,2.85,2.85,2.85,2.85,2.85,2.85,4.27]}
-  ],fact:{S3:[null,null,null,null,null,null,null,null,null,null,null,null],S5:[null,null,null,null,null,null,null,null,null,null,null,null],S6:[null,null,null,null,null,null,null,null,null,null,null,null],S8:[null,null,null,null,null,null,null,null,null,null,null,null],S12:[null,null,null,null,null,null,null,null,null,null,null,null]}},
-  {id:'jim_zap',name:"Jiménez Autocamiones Zapopan",sub:"Foton Zapopan",models:[
-    {n:"S3", u:[0,1,0,1,0,1,1,0,1,0,1,0], m:[0,.65,0,.65,0,.65,.65,0,.65,0,.65,0]},
-    {n:"S5", u:[0,0,1,0,1,0,1,0,0,1,0,1], m:[0,0,.84,0,.84,0,.84,0,0,.84,0,.84]},
-    {n:"S6", u:[0,0,0,1,0,0,1,0,0,1,0,0], m:[0,0,0,.90,0,0,.90,0,0,.90,0,0]},
-    {n:"S8", u:[0,0,0,0,1,0,0,1,0,0,1,0], m:[0,0,0,0,1.19,0,0,1.19,0,0,1.19,0]},
-    {n:"S12",u:[1,2,1,2,2,1,2,2,1,2,2,2], m:[1.42,2.85,1.42,2.85,2.85,1.42,2.85,2.85,1.42,2.85,2.85,2.85]}
-  ],fact:{S3:[null,null,null,null,null,null,null,null,null,null,null,null],S5:[null,null,null,null,null,null,null,null,null,null,null,null],S6:[null,null,null,null,null,null,null,null,null,null,null,null],S8:[null,null,null,null,null,null,null,null,null,null,null,null],S12:[null,null,null,null,null,null,null,null,null,null,null,null]}}
-];
+// ── UPSERT BP MENSUAL ────────────────────────────────────────────────────────
+async function saveBPMes(distribuidorId, mes, objetivo) {
+  if (!db) return;
+  const { error } = await db.from('bp').upsert({
+    distribuidor_id: distribuidorId,
+    anio: ANIO,
+    mes,
+    objetivo: Number(objetivo)
+  }, { onConflict: 'distribuidor_id,anio,mes' });
+  if (error) console.error('[Foton BP] upsert error:', error.message);
+  else {
+    // Actualizar local
+    const d = DISTS.find(x => x.id === distribuidorId);
+    if (d) {
+      d.bp[mes] = Number(objetivo);
+      d.bpAnual = Object.values(d.bp).reduce((a, v) => a + v, 0);
+    }
+  }
+}
 
-// Asegurar fact inicializado
-DISTS.forEach(d=>d.models.forEach(m=>{if(!d.fact[m.n])d.fact[m.n]=new Array(12).fill(null);}));
-
-let di=0,cm=4,view="units",editMode=false,editBackup=null;
-let hiddenDists = JSON.parse(localStorage.getItem('foton_hidden_dists') || '[]');
+function renderError(msg) {
+  document.getElementById('dist-nav').innerHTML = `<div style="padding:12px 16px;color:var(--red);font-size:12px">${msg}</div>`;
+  document.getElementById('dist-title').textContent = msg;
+}
 
 function init(){
-  const dl=new Date().toLocaleDateString("es-MX",{day:"2-digit",month:"short",year:"numeric"}).toUpperCase();
-  document.getElementById("today-lbl").textContent=dl;
-  document.getElementById("footer-dt").textContent="Actualizado: "+dl;
-  buildTabs();
-  // Populate print selects
-  const ppSel=document.getElementById("pp-dist-sel");
-  DISTS.forEach((d,i)=>ppSel.innerHTML+=`<option value="${i}">${d.name} &ndash; ${d.sub}</option>`);
-  document.getElementById("pp-month-sel").value=cm;
-  render();
-  loadBPFromSupabase();
+  const dl = new Date().toLocaleDateString("es-MX",{day:"2-digit",month:"short",year:"numeric"}).toUpperCase();
+  document.getElementById("today-lbl").textContent = dl;
+  document.getElementById("footer-dt").textContent = "Actualizado: " + dl;
+  document.getElementById("month-sel").value = cm;
+  loadDists();
 }
 
 function buildTabs(){
-  document.getElementById("dist-nav").innerHTML=DISTS.map((d,i)=>{
-    if(hiddenDists.includes(d.id||String(i))) return '';
-    const tot=d.models.reduce((a,m)=>a+sum(m.u),0);
-    return`<div class="dtab${i===di?" active":""}" onclick="selectDist(${i})">${d.name}<span class="tc">${tot}u</span></div>`;
+  if (!filteredDists.length) {
+    document.getElementById("dist-nav").innerHTML = '<div style="padding:12px 16px;color:var(--g5);font-size:12px">Sin distribuidores</div>';
+    return;
+  }
+  document.getElementById("dist-nav").innerHTML = filteredDists.map((d, i) => {
+    const bpAnual = d.bpAnual || 0;
+    return `<div class="dtab${i === di ? " active" : ""}" onclick="selectDist(${i})">${d.nombre}<span class="tc">${bpAnual}u</span></div>`;
   }).join("");
+  // Actualizar select del panel de impresión
+  const ppSel = document.getElementById("pp-dist-sel");
+  ppSel.innerHTML = '<option value="-1">Todos los distribuidores</option>' +
+    filteredDists.map((d, i) => `<option value="${i}">${d.nombre} &ndash; ${d.ciudad}</option>`).join("");
 }
 
-function selectDist(i){if(editMode)cancelEdit();di=i;document.querySelectorAll(".dtab").forEach((t,j)=>t.classList.toggle("active",j===i));render();}
-function setMonth(v){cm=parseInt(v);render();}
-function setView(v){view=v;["u","m","b"].forEach(b=>document.getElementById("tb-"+b).classList.remove("active"));document.getElementById("tb-"+(v==="units"?"u":v==="mxn"?"m":"b")).classList.add("active");renderBPTable();renderAvance();}
+function selectDist(i){
+  if (editMode) cancelEdit();
+  di = i;
+  document.querySelectorAll(".dtab").forEach((t, j) => t.classList.toggle("active", j === i));
+  render();
+}
+function setMonth(v){ cm = parseInt(v); render(); }
+function setView(v){
+  const view = v;
+  ["u","m","b"].forEach(b => document.getElementById("tb-"+b).classList.remove("active"));
+  document.getElementById("tb-"+(v==="units"?"u":v==="mxn"?"m":"b")).classList.add("active");
+  renderBPTable(view);
+  renderAvance();
+}
 
 // ── EDIT MODE ──────────────────────────────────────────────────────────────
 function toggleEdit(){
-  if(editMode){cancelEdit();return;}
-  editMode=true;
-  editBackup=DISTS[di].models.map(m=>({n:m.n,u:[...m.u]}));
+  if (editMode){ cancelEdit(); return; }
+  editMode = true;
+  const d = filteredDists[di];
+  editBackup = d ? JSON.parse(JSON.stringify(d.bp)) : {};
   document.getElementById("btn-edit").classList.add("on");
-  document.getElementById("btn-edit").textContent="x Editar BP";
+  document.getElementById("btn-edit").textContent = "x Editar BP";
   document.getElementById("edit-bar").classList.add("show");
   renderBPTable();
 }
 function cancelEdit(){
-  if(editBackup)editBackup.forEach((bk,i)=>{DISTS[di].models[i].u=[...bk.u];});
-  editMode=false;editBackup=null;
+  const d = filteredDists[di];
+  if (d && editBackup) d.bp = JSON.parse(JSON.stringify(editBackup));
+  editMode = false; editBackup = null;
   document.getElementById("btn-edit").classList.remove("on");
-  document.getElementById("btn-edit").textContent="&#9998; Editar BP";
+  document.getElementById("btn-edit").textContent = "&#9998; Editar BP";
   document.getElementById("edit-bar").classList.remove("show");
   render();
 }
-function saveEdit(){
-  DISTS[di].models.forEach(m=>{for(let i=0;i<12;i++){const el=document.getElementById("ei_"+m.n+"_"+i);if(el){const v=parseInt(el.value);if(!isNaN(v)&&v>=0)m.u[i]=v;}}});
-  editMode=false;editBackup=null;
+async function saveEdit(){
+  const d = filteredDists[di];
+  if (!d) return;
+  const saves = [];
+  for (let mes = 1; mes <= 12; mes++) {
+    const el = document.getElementById("ei_mes_" + mes);
+    if (el) {
+      const v = parseInt(el.value);
+      if (!isNaN(v) && v >= 0) {
+        d.bp[mes] = v;
+        saves.push(saveBPMes(d.id, mes, v));
+      }
+    }
+  }
+  await Promise.all(saves);
+  d.bpAnual = Object.values(d.bp).reduce((a, v) => a + v, 0);
+  editMode = false; editBackup = null;
   document.getElementById("btn-edit").classList.remove("on");
-  document.getElementById("btn-edit").textContent="&#9998; Editar BP";
+  document.getElementById("btn-edit").textContent = "&#9998; Editar BP";
   document.getElementById("edit-bar").classList.remove("show");
-  buildTabs();render();
+  buildTabs();
+  render();
 }
 
 // ── HELPERS ──────────────────────────────────────────────────────────────
-function sum(a){return a.reduce((x,y)=>x+y,0);}
-function accum(a,to){return a.slice(0,to+1).reduce((x,y)=>x+y,0);}
-function fA(d,n,to){const a=d.fact[n]||[];let s=0;for(let i=0;i<=to;i++)if(a[i]!=null)s+=a[i];return s;}
-function pct(v,t){if(!t)return 0;return Math.round(v/t*100);}
-function sc(p){if(p>=100)return"g";if(p>=75)return"y";if(p>=50)return"o";return"r";}
-function sco(p){return{g:"var(--green)",y:"var(--yel)",o:"var(--ora)",r:"var(--red)"}[sc(p)]||"var(--g3)";}
-function sl(p){if(p===null)return["gr","Sin datos"];if(p>=100)return["g","En linea"];if(p>=75)return["y","Leve retraso"];if(p>=50)return["o","Retraso"];return["r","Critico"];}
+function pct(v, t){ if (!t) return 0; return Math.round(v / t * 100); }
+function sc(p){ if (p >= 80) return "g"; if (p >= 50) return "y"; return "r"; }
+function sco(p){ return {g:"var(--green)", y:"var(--yel)", r:"var(--red)"}[sc(p)] || "var(--g3)"; }
+function sl(p){ if (p === null) return ["gr","Sin datos"]; if (p >= 80) return ["g","En linea"]; if (p >= 50) return ["y","Leve retraso"]; return ["r","Critico"]; }
 
 // ── MAIN RENDER ──────────────────────────────────────────────────────────
-function render(){renderKPI();renderBPTable();renderAvance();renderInsights();}
-
-function renderKPI(){
-  const d=DISTS[di],tU=d.models.reduce((a,m)=>a+sum(m.u),0),bpA=d.models.reduce((a,m)=>a+accum(m.u,cm),0);
-  const fAcc=d.models.reduce((a,m)=>a+fA(d,m.n,cm),0),tM=d.models.reduce((a,m)=>a+sum(m.m),0);
-  const mxnA=d.models.reduce((a,m)=>a+accum(m.m,cm),0),avp=fAcc?pct(fAcc,bpA):null;
-  const mL=11-cm,pend=tU-fAcc,ritmo=mL>0?Math.ceil(pend/mL):pend,cls=avp===null?"":"kl-"+sc(avp);
-  document.getElementById("dist-title").innerHTML=DISTS[di].name+'<span>'+DISTS[di].sub+'</span>';
-  document.getElementById("kpi-row").innerHTML=
-    `<div class="kpi"><div class="kpi-lbl">BP Anual</div><div class="kpi-val">${tU}<span style="font-size:14px;font-weight:500;color:var(--g5)"> u</span></div><div class="kpi-hint">${tM.toFixed(1)} M MXN</div></div>
-     <div class="kpi"><div class="kpi-lbl">BP Acumulado ${MO[cm]}</div><div class="kpi-val">${bpA}<span style="font-size:14px;font-weight:500;color:var(--g5)"> u</span></div><div class="kpi-hint">${mxnA.toFixed(2)} M MXN</div></div>
-     <div class="kpi ${cls}"><div class="kpi-lbl">Facturado acumulado</div><div class="kpi-val">${fAcc||"&mdash;"}<span style="font-size:14px;font-weight:500;color:var(--g5)">${fAcc?" u":""}</span></div><div class="kpi-hint">${avp!==null?avp+"% del objetivo":"Sin datos capturados"}</div></div>
-     <div class="kpi ${pend>15?"kl-o":"kl-g"}"><div class="kpi-lbl">Pendiente a&ntilde;o</div><div class="kpi-val">${pend}<span style="font-size:14px;font-weight:500;color:var(--g5)"> u</span></div><div class="kpi-hint">${mL>0?"~"+ritmo+" u/mes necesario":"Ultimo mes"}</div></div>`;
+function render(){
+  if (!filteredDists.length) return;
+  renderKPI();
+  renderBPTable();
+  renderAvance();
+  renderInsights();
 }
 
-function renderBPTable(){
-  const d=DISTS[di],v=view;
-  let mTu=new Array(12).fill(0),mTm=new Array(12).fill(0);
-  d.models.forEach(m=>{m.u.forEach((u,i)=>{mTu[i]+=u;mTm[i]+=m.m[i];});});
-  const qN=["Q1","Q2","Q3","Q4"];
-  document.getElementById("th1").innerHTML=`<tr><th class="th-m" rowspan="2">Modelo</th>${qN.map(q=>`<th colspan="3" class="th-qh th-q">${q}</th>`).join("")}<th class="th-tot" rowspan="2">Total</th></tr><tr>${MO.map((mo,i)=>`<th class="${i%3===0?"th-q":""}${i===cm?" th-act":""}">${mo}</th>`).join("")}</tr>`;
-  let b="";
-  d.models.forEach(m=>{
-    const tu=sum(m.u),tm=sum(m.m);
-    if(v==="units"){
-      b+=`<tr><td class="td-m">${m.n}</td>${m.u.map((u,i)=>{
-        const c=(i===cm?"td-act":i<cm?"td-past":"")+(i%3===0?" td-q":"");
-        if(editMode)return`<td class="${c}"><input class="edit-inp" id="ei_${m.n}_${i}" type="number" min="0" value="${u}"></td>`;
-        return`<td class="${c}">${u||"&mdash;"}</td>`;
-      }).join("")}<td class="td-tot">${tu}</td></tr>`;
-    } else if(v==="mxn"){
-      b+=`<tr><td class="td-m">${m.n}</td>${m.m.map((mv,i)=>`<td class="${i===cm?"td-act":i<cm?"td-past":""}${i%3===0?" td-q":""}">${mv>0?mv.toFixed(2):"&mdash;"}</td>`).join("")}<td class="td-tot">${tm.toFixed(2)}</td></tr>`;
+function renderKPI(){
+  const d = filteredDists[di];
+  if (!d) return;
+  const bpAnual = d.bpAnual || 0;
+  const bpAcum = Object.entries(d.bp).filter(([m]) => parseInt(m) <= cm+1).reduce((a,[,v]) => a+v, 0);
+  const ytd = d.ytd || 0;
+  const avp = bpAcum ? pct(ytd, bpAcum) : null;
+  const pend = bpAnual - ytd;
+  const mL = 11 - cm;
+  const ritmo = mL > 0 ? Math.ceil(pend / mL) : pend;
+  const cls = avp === null ? "" : "kl-" + sc(avp);
+  const mesYTD = d.ytd_mes ? MO[d.ytd_mes - 1] : "—";
+  document.getElementById("dist-title").innerHTML = d.nombre + '<span>' + [d.grupo, d.ciudad, d.estado].filter(Boolean).join(" · ") + '</span>';
+  document.getElementById("kpi-row").innerHTML =
+    `<div class="kpi"><div class="kpi-lbl">BP Anual</div><div class="kpi-val">${bpAnual}<span style="font-size:14px;font-weight:500;color:var(--g5)"> u</span></div><div class="kpi-hint">Suma objetivos 12 meses</div></div>
+     <div class="kpi"><div class="kpi-lbl">BP Acumulado ${MO[cm]}</div><div class="kpi-val">${bpAcum}<span style="font-size:14px;font-weight:500;color:var(--g5)"> u</span></div><div class="kpi-hint">Objetivo ene &ndash; ${MO[cm]}</div></div>
+     <div class="kpi ${cls}"><div class="kpi-lbl">YTD Facturado</div><div class="kpi-val">${ytd||"&mdash;"}<span style="font-size:14px;font-weight:500;color:var(--g5)">${ytd?" u":""}</span></div><div class="kpi-hint">${avp!==null?avp+"% del objetivo &middot; corte "+mesYTD:"Sin datos capturados"}</div></div>
+     <div class="kpi ${pend>20?"kl-o":"kl-g"}"><div class="kpi-lbl">Pendiente a&ntilde;o</div><div class="kpi-val">${pend}<span style="font-size:14px;font-weight:500;color:var(--g5)"> u</span></div><div class="kpi-hint">${mL>0?"~"+ritmo+" u/mes necesario":"Ultimo mes"}</div></div>`;
+}
+
+function renderBPTable(view){
+  if (typeof view === 'undefined') {
+    const activeBtn = document.querySelector('.tgl-btn.active');
+    if (activeBtn) {
+      const id = activeBtn.id;
+      view = id === 'tb-u' ? 'units' : id === 'tb-m' ? 'mxn' : 'both';
+    } else view = 'units';
+  }
+  const d = filteredDists[di];
+  if (!d) return;
+  const qN = ["Q1","Q2","Q3","Q4"];
+  document.getElementById("th1").innerHTML = `<tr><th class="th-m" rowspan="2">Mes</th><th class="th-tot" rowspan="2">Objetivo (u)</th>${cm >= 0 ? '<th class="th-act" rowspan="2">YTD Fact.</th>' : ''}<th class="th-tot" rowspan="2">% Avance</th></tr><tr></tr>`;
+
+  // Tabla sencilla: una fila por mes (sin modelo dimension en nueva estructura)
+  let b = "";
+  let totBP = 0, totYTD = 0;
+  for (let mes = 1; mes <= 12; mes++) {
+    const obj = d.bp[mes] || 0;
+    totBP += obj;
+    const mIdx = mes - 1;
+    const esCm = mIdx === cm;
+    const esPast = mIdx < cm;
+    const cls = esCm ? "td-act" : esPast ? "td-past" : "";
+    // Solo mostrar ytd en el mes más reciente con datos
+    const ytdCell = (mes === d.ytd_mes) ? `<td class="${cls}" style="font-weight:600;color:var(--b7)">${d.ytd}</td>` : `<td class="${cls}" style="color:var(--g3)">&mdash;</td>`;
+    const avp = (mes === d.ytd_mes && d.ytd && obj) ? pct(d.ytd, obj) : null;
+    const col = avp !== null ? sco(avp) : "var(--g3)";
+    const progCell = avp !== null
+      ? `<td class="${cls}"><div class="prog-w"><div class="prog-bg"><div class="prog-f" style="width:${Math.min(avp,100)}%;background:${col}"></div></div><span class="prog-p" style="color:${col}">${avp}%</span></div></td>`
+      : `<td class="${cls}" style="color:var(--g3)">&mdash;</td>`;
+
+    if (editMode) {
+      b += `<tr><td class="td-m">${MF[mIdx]}</td><td class="${cls}"><input class="edit-inp" id="ei_mes_${mes}" type="number" min="0" value="${obj}" onblur="inlineUpsert('${d.id}',${mes},this.value)" onkeydown="if(event.key==='Enter')this.blur()"></td>${ytdCell}${progCell}</tr>`;
     } else {
-      b+=`<tr><td class="td-m">${m.n}</td>${m.u.map((u,i)=>`<td class="${i===cm?"td-act":i<cm?"td-past":""}${i%3===0?" td-q":""}" style="line-height:1.8"><div>${u||"&mdash;"}</div><div style="font-size:10px;color:var(--g5)">${m.m[i]>0?m.m[i].toFixed(1)+"M":"&mdash;"}</div></td>`).join("")}<td class="td-tot" style="line-height:1.8"><div>${tu}u</div><div style="font-size:10px;color:var(--b6)">${tm.toFixed(1)}M</div></td></tr>`;
+      b += `<tr><td class="td-m">${MF[mIdx]}</td><td class="${cls}" style="font-weight:600">${obj||"&mdash;"}</td>${ytdCell}${progCell}</tr>`;
     }
-  });
-  if(v==="units") b+=`<tr class="tr-tot"><td class="td-m">Total</td>${mTu.map((t,i)=>`<td class="${i===cm?"td-act":""}${i%3===0?" td-q":""}">${t}</td>`).join("")}<td class="td-tot">${sum(mTu)}</td></tr>`;
-  else if(v==="mxn") b+=`<tr class="tr-tot"><td class="td-m">Total</td>${mTm.map((t,i)=>`<td class="${i===cm?"td-act":""}${i%3===0?" td-q":""}">${t.toFixed(2)}</td>`).join("")}<td class="td-tot">${sum(mTm).toFixed(2)}</td></tr>`;
-  else b+=`<tr class="tr-tot"><td class="td-m">Total</td>${mTu.map((t,i)=>`<td class="${i===cm?"td-act":""}${i%3===0?" td-q":""}" style="line-height:1.8"><div>${t}</div><div style="font-size:10px">${mTm[i].toFixed(1)}M</div></td>`).join("")}<td class="td-tot">${sum(mTu)}u</td></tr>`;
-  document.getElementById("tb1").innerHTML=b;
+  }
+  const tp = totBP && d.ytd ? pct(d.ytd, totBP) : null;
+  const tc = tp !== null ? sco(tp) : "var(--g3)";
+  b += `<tr class="tr-tot"><td class="td-m">Total / YTD</td><td>${totBP}</td><td style="color:${tc};font-weight:700">${d.ytd||"&mdash;"}</td><td>${tp!==null?tp+"%":"&mdash;"}</td></tr>`;
+  document.getElementById("th1").innerHTML = `<tr><th class="th-m">Mes</th><th class="th-tot">Objetivo BP (u)</th><th class="th-act">YTD Facturado</th><th class="th-tot">% Avance</th></tr>`;
+  document.getElementById("tb1").innerHTML = b;
+}
+
+async function inlineUpsert(distribuidorId, mes, rawVal) {
+  const v = parseInt(rawVal);
+  if (isNaN(v) || v < 0) return;
+  await saveBPMes(distribuidorId, mes, v);
+  const d = DISTS.find(x => x.id === distribuidorId);
+  if (d) { d.bp[mes] = v; d.bpAnual = Object.values(d.bp).reduce((a,x)=>a+x,0); }
 }
 
 function renderAvance(){
-  const d=DISTS[di];
-  document.getElementById("th2").innerHTML=`<tr><th class="th-m">Modelo</th><th>BP acum.</th><th>Facturado</th><th>Diferencia</th><th style="min-width:150px">Avance</th><th>Status</th><th>Pendiente a&ntilde;o</th></tr>`;
-  let b="",tBP=0,tF=0,tA=0;
-  d.models.forEach(m=>{
-    const bp=accum(m.u,cm),fa=fA(d,m.n,cm),diff=fa-bp,p=fa?pct(fa,bp):null;
-    const[scc,sll]=sl(p),col=p!==null?sco(p):"var(--g3)",pA=sum(m.u),pend=pA-fa;
-    tBP+=bp;tF+=fa;tA+=pA;
-    b+=`<tr><td class="td-m">${m.n}</td><td>${bp}</td><td style="font-weight:600;color:${col}">${fa||"&mdash;"}</td><td style="font-weight:600;color:${diff>=0?"var(--green)":"var(--red)"}">${fa?(diff>=0?"+":"")+diff:"&mdash;"}</td><td>${p!==null?`<div class="prog-w"><div class="prog-bg"><div class="prog-f" style="width:${Math.min(p,100)}%;background:${col}"></div></div><span class="prog-p" style="color:${col}">${p}%</span></div>`:"<span style='font-size:11px;color:var(--g3)'>Sin capturar</span>"}</td><td><span class="chip chip-${scc}">${sll}</span></td><td style="color:var(--g5)">${pend}</td></tr>`;
-  });
-  const tp=tF?pct(tF,tBP):null,tc=tp!==null?sco(tp):"var(--g3)";
-  b+=`<tr class="tr-tot"><td class="td-m">Total</td><td>${tBP}</td><td style="color:${tc}">${tF||"&mdash;"}</td><td style="color:${(tF-tBP)>=0?"var(--green)":"var(--red)"}">${tF?(tF-tBP>=0?"+":"")+(tF-tBP):"&mdash;"}</td><td>${tp!==null?`<div class="prog-w"><div class="prog-bg"><div class="prog-f" style="width:${Math.min(tp,100)}%;background:${tc}"></div></div><span class="prog-p" style="color:${tc}">${tp}%</span></div>`:"&mdash;"}</td><td></td><td style="color:var(--g5)">${tA-tF}</td></tr>`;
-  document.getElementById("tb2").innerHTML=b;
+  const d = filteredDists[di];
+  if (!d) return;
+  const bpAnual = d.bpAnual || 0;
+  const ytd = d.ytd || 0;
+  const avp = bpAnual ? pct(ytd, bpAnual) : null;
+  const [scc, sll] = sl(avp);
+  const col = avp !== null ? sco(avp) : "var(--g3)";
+  const pend = bpAnual - ytd;
+  const mL = 11 - cm;
+  const ritmo = mL > 0 ? Math.ceil(pend / mL) : pend;
+  document.getElementById("th2").innerHTML = `<tr><th class="th-m">Distribuidor</th><th>BP Anual</th><th>YTD Facturado</th><th>Diferencia</th><th style="min-width:150px">Avance</th><th>Status</th><th>Pendiente a&ntilde;o</th></tr>`;
+  const diff = ytd - bpAnual;
+  document.getElementById("tb2").innerHTML = `<tr>
+    <td class="td-m">${d.nombre}</td>
+    <td>${bpAnual}</td>
+    <td style="font-weight:600;color:${col}">${ytd||"&mdash;"}</td>
+    <td style="font-weight:600;color:${diff>=0?"var(--green)":"var(--red)"}">${ytd?(diff>=0?"+":"")+diff:"&mdash;"}</td>
+    <td>${avp!==null?`<div class="prog-w"><div class="prog-bg"><div class="prog-f" style="width:${Math.min(avp,100)}%;background:${col}"></div></div><span class="prog-p" style="color:${col}">${avp}%</span></div>`:"<span style='font-size:11px;color:var(--g3)'>Sin capturar</span>"}</td>
+    <td><span class="chip chip-${scc}">${sll}</span></td>
+    <td style="color:var(--g5)">${pend} u${mL>0?" (~"+ritmo+" u/mes)":""}</td>
+  </tr>`;
 }
 
 function renderInsights(){
-  const d=DISTS[di],mL=11-cm;
-  let risks=[],acts=[];
-  d.models.forEach(m=>{
-    const bp=accum(m.u,cm),fa=fA(d,m.n,cm),p=fa?pct(fa,bp):null,pA=sum(m.u),pend=pA-fa,col=p!==null?sco(p):"var(--g3)";
-    if(p===null||p<75) risks.push(`<div class="ins-item"><span class="ins-mod"><span class="dot" style="background:${col}"></span>${m.n}</span><span class="chip chip-${p===null?"gr":sc(p)}">${p===null?"Sin datos":p+"% &middot; &minus;"+(bp-fa)+"u"}</span></div>`);
-    if(!fa||p<50){const r=mL>0?Math.ceil(pend/mL):pend;acts.push(`<div class="ins-item"><span class="ins-mod"><span class="dot" style="background:var(--red)"></span>${m.n}</span><span class="chip chip-r">Pedir ~${r}u/mes</span></div>`);}
-    else if(p<75) acts.push(`<div class="ins-item"><span class="ins-mod"><span class="dot" style="background:var(--ora)"></span>${m.n}</span><span class="chip chip-o">Reforzar prospeccion</span></div>`);
-    else if(p<100) acts.push(`<div class="ins-item"><span class="ins-mod"><span class="dot" style="background:var(--yel)"></span>${m.n}</span><span class="chip chip-y">Cerrar ${bp-fa}u pendientes</span></div>`);
-  });
-  document.getElementById("risks").innerHTML=risks.length?risks.join(""):`<div style="color:var(--green);font-size:13px;padding:8px 0;font-weight:500">&#10003; Todos los modelos en linea</div>`;
-  document.getElementById("actions").innerHTML=acts.length?acts.join(""):`<div style="color:var(--green);font-size:13px;padding:8px 0;font-weight:500">&#10003; Sin acciones urgentes</div>`;
+  const d = filteredDists[di];
+  if (!d) return;
+  const bpAnual = d.bpAnual || 0;
+  const ytd = d.ytd || 0;
+  const avp = bpAnual ? pct(ytd, bpAnual) : null;
+  const pend = bpAnual - ytd;
+  const mL = 11 - cm;
+  const ritmo = mL > 0 ? Math.ceil(pend / mL) : pend;
+  const col = avp !== null ? sco(avp) : "var(--g3)";
+
+  let risks = [], acts = [];
+  if (avp === null || avp < 80) {
+    risks.push(`<div class="ins-item"><span class="ins-mod"><span class="dot" style="background:${col}"></span>${d.nombre}</span><span class="chip chip-${avp===null?"gr":sc(avp)}">${avp===null?"Sin datos":avp+"% del BP"}</span></div>`);
+  }
+  if (!ytd || (avp !== null && avp < 50)) {
+    acts.push(`<div class="ins-item"><span class="ins-mod"><span class="dot" style="background:var(--red)"></span>${d.nombre}</span><span class="chip chip-r">Pedir ~${ritmo}u/mes</span></div>`);
+  } else if (avp !== null && avp < 80) {
+    acts.push(`<div class="ins-item"><span class="ins-mod"><span class="dot" style="background:var(--ora)"></span>${d.nombre}</span><span class="chip chip-o">Reforzar prospeccion</span></div>`);
+  } else if (avp !== null && avp < 100) {
+    acts.push(`<div class="ins-item"><span class="ins-mod"><span class="dot" style="background:var(--yel)"></span>${d.nombre}</span><span class="chip chip-y">Cerrar ${bpAnual-ytd}u pendientes</span></div>`);
+  }
+  document.getElementById("risks").innerHTML = risks.length ? risks.join("") : `<div style="color:var(--green);font-size:13px;padding:8px 0;font-weight:500">&#10003; En linea con el BP</div>`;
+  document.getElementById("actions").innerHTML = acts.length ? acts.join("") : `<div style="color:var(--green);font-size:13px;padding:8px 0;font-weight:500">&#10003; Sin acciones urgentes</div>`;
 }
 
-// ── MODAL ──────────────────────────────────────────────────────────────────
+// ── MODAL FACTURADO (simplificado: abre edición inline BP del mes activo) ──
 function openModal(){
-  const d=DISTS[di];
-  document.getElementById("modal-sub").textContent="Unidades facturadas acumuladas al mes de "+MF[cm];
-  document.getElementById("modal-body").innerHTML=d.models.map(m=>{const fa=fA(d,m.n,cm),bp=accum(m.u,cm);return`<div class="modal-row"><span class="modal-mod">${m.n}</span><span class="modal-bp">BP: ${bp}u</span><input class="modal-inp" type="number" min="0" id="mi-${m.n}" placeholder="0" value="${fa||""}"></div>`;}).join("");
+  // El facturado_ytd viene de la tabla bp; la edición inline del objetivo
+  // se hace directamente en la tabla. Este modal informa al usuario.
+  const d = filteredDists[di];
+  if (!d) return;
+  document.getElementById("modal-sub").textContent = "Datos de " + d.nombre + " — corte " + MF[cm];
+  document.getElementById("modal-body").innerHTML = `
+    <div style="padding:12px;background:var(--b0);border-radius:8px;font-size:13px;color:var(--b8)">
+      <strong>BP Anual:</strong> ${d.bpAnual||0} u<br>
+      <strong>YTD Facturado:</strong> ${d.ytd||0} u ${d.ytd_mes?'(corte '+MO[d.ytd_mes-1]+')':''}<br>
+      <strong>% Avance:</strong> ${d.bpAnual?pct(d.ytd,d.bpAnual)+'%':'Sin datos'}
+    </div>
+    <p style="font-size:11px;color:var(--g5);margin-top:12px">Para editar el objetivo mensual usa el bot&oacute;n "Editar BP" en la tabla.</p>`;
   document.getElementById("modal").classList.add("open");
 }
-function closeModal(){document.getElementById("modal").classList.remove("open");}
-function saveFacturado(){
-  const d=DISTS[di];
-  d.models.forEach(m=>{const el=document.getElementById("mi-"+m.n);if(!el)return;const val=parseInt(el.value);if(!isNaN(val)&&val>=0){const prev=d.fact[m.n].slice(0,cm).reduce((a,b)=>a+(b||0),0);d.fact[m.n][cm]=Math.max(0,val-prev);saveFacToSupabase(di,m.n,cm,d.fact[m.n][cm]);}});
-  closeModal();render();
-}
-document.getElementById("modal").addEventListener("click",function(e){if(e.target===this)closeModal();});
+function closeModal(){ document.getElementById("modal").classList.remove("open"); }
+document.getElementById("modal").addEventListener("click", function(e){ if(e.target===this) closeModal(); });
 
 // ── PRINT PANEL ──────────────────────────────────────────────────────────
 function openPrintPanel(){
-  document.getElementById("pp-month-sel").value=cm;
+  document.getElementById("pp-month-sel").value = cm;
   buildPrintCard();
-  document.getElementById("print-panel").style.display="block";
+  document.getElementById("print-panel").style.display = "block";
   window.scrollTo(0,0);
 }
-function closePrintPanel(){document.getElementById("print-panel").style.display="none";}
+function closePrintPanel(){ document.getElementById("print-panel").style.display = "none"; }
 
 function buildPrintCard(){
-  const selDist=parseInt(document.getElementById("pp-dist-sel").value);
-  const selMonth=parseInt(document.getElementById("pp-month-sel").value);
-  const targets=selDist===-1?DISTS:[DISTS[selDist]];
-  const now=new Date().toLocaleDateString("es-MX",{day:"2-digit",month:"long",year:"numeric"});
-  
-  document.getElementById("print-cards").innerHTML=targets.map(d=>buildOneCard(d,selMonth,now)).join("");
+  const selDist = parseInt(document.getElementById("pp-dist-sel").value);
+  const selMonth = parseInt(document.getElementById("pp-month-sel").value);
+  const targets = selDist === -1 ? filteredDists : [filteredDists[selDist]].filter(Boolean);
+  const now = new Date().toLocaleDateString("es-MX",{day:"2-digit",month:"long",year:"numeric"});
+  document.getElementById("print-cards").innerHTML = targets.map(d => buildOneCard(d, selMonth, now)).join("");
 }
 
-function buildOneCard(d,mo,dateStr){
-  const tU=d.models.reduce((a,m)=>a+sum(m.u),0);
-  const bpA=d.models.reduce((a,m)=>a+accum(m.u,mo),0);
-  const fAcc=d.models.reduce((a,m)=>a+fA(d,m.n,mo),0);
-  const tM=d.models.reduce((a,m)=>a+sum(m.m),0);
-  const avp=fAcc?pct(fAcc,bpA):null;
-  const mL=11-mo,pend=tU-fAcc,ritmo=mL>0?Math.ceil(pend/mL):pend;
-  const cls=avp===null?"":"kl-"+sc(avp);
+function buildOneCard(d, mo, dateStr){
+  const bpAnual = d.bpAnual || 0;
+  const bpAcum = Object.entries(d.bp).filter(([m]) => parseInt(m) <= mo+1).reduce((a,[,v]) => a+v, 0);
+  const ytd = d.ytd || 0;
+  const avp = bpAcum ? pct(ytd, bpAcum) : null;
+  const pend = bpAnual - ytd;
+  const mL = 11 - mo;
+  const ritmo = mL > 0 ? Math.ceil(pend / mL) : pend;
+  const col = avp !== null ? sco(avp) : "var(--b5)";
 
-  // KPIs row
-  const kpiHtml=`
-    <div class="pc-kpi"><div class="pc-kpi-lbl">BP Anual</div><div class="pc-kpi-val">${tU} <span style="font-size:13px;color:var(--g5)">u</span></div><div class="pc-kpi-hint">${tM.toFixed(1)} M MXN</div></div>
-    <div class="pc-kpi"><div class="pc-kpi-lbl">BP Acumulado ${MO[mo]}</div><div class="pc-kpi-val">${bpA} <span style="font-size:13px;color:var(--g5)">u</span></div></div>
-    <div class="pc-kpi" style="border-left:3px solid ${avp!==null?sco(avp):"var(--b5)"}"><div class="pc-kpi-lbl">Facturado acumulado</div><div class="pc-kpi-val" style="color:${avp!==null?sco(avp):"var(--b9)"}">${fAcc||"—"} <span style="font-size:13px;color:var(--g5)">${fAcc?"u":""}</span></div><div class="pc-kpi-hint">${avp!==null?avp+"% del objetivo":"Sin datos"}</div></div>
-    <div class="pc-kpi" style="border-left:3px solid ${pend>15?"var(--ora)":"var(--green)"}"><div class="pc-kpi-lbl">Pendiente año</div><div class="pc-kpi-val">${pend} <span style="font-size:13px;color:var(--g5)">u</span></div><div class="pc-kpi-hint">${mL>0?"~"+ritmo+" u/mes":""}</div></div>`;
+  const kpiHtml = `
+    <div class="pc-kpi"><div class="pc-kpi-lbl">BP Anual</div><div class="pc-kpi-val">${bpAnual} <span style="font-size:13px;color:var(--g5)">u</span></div></div>
+    <div class="pc-kpi"><div class="pc-kpi-lbl">BP Acumulado ${MO[mo]}</div><div class="pc-kpi-val">${bpAcum} <span style="font-size:13px;color:var(--g5)">u</span></div></div>
+    <div class="pc-kpi" style="border-left:3px solid ${col}"><div class="pc-kpi-lbl">YTD Facturado</div><div class="pc-kpi-val" style="color:${col}">${ytd||"—"} <span style="font-size:13px;color:var(--g5)">${ytd?"u":""}</span></div><div class="pc-kpi-hint">${avp!==null?avp+"% del objetivo":"Sin datos"}</div></div>
+    <div class="pc-kpi" style="border-left:3px solid ${pend>15?"var(--ora)":"var(--green)"}"><div class="pc-kpi-lbl">Pendiente a&ntilde;o</div><div class="pc-kpi-val">${pend} <span style="font-size:13px;color:var(--g5)">u</span></div><div class="pc-kpi-hint">${mL>0?"~"+ritmo+" u/mes":""}</div></div>`;
 
-  // BP table
-  let bpRows=d.models.map(m=>{
-    const tu=sum(m.u);
-    return`<tr><td class="pc-td-m">${m.n}</td>${m.u.map((u,i)=>`<td class="${i%3===0?"pc-td-q":""}${i===mo?" pc-td-act":i<mo?" pc-td-past":""}">${u||"—"}</td>`).join("")}<td class="pc-td-tot">${tu}</td></tr>`;
-  }).join("");
-  const mTu=new Array(12).fill(0);
-  d.models.forEach(m=>m.u.forEach((u,i)=>mTu[i]+=u));
-  bpRows+=`<tr class="pc-tr-tot"><td class="pc-td-m" style="text-transform:uppercase;font-size:10px;letter-spacing:.5px;">Total</td>${mTu.map((t,i)=>`<td class="${i%3===0?"pc-td-q":""}${i===mo?"pc-td-act":""}">${t}</td>`).join("")}<td class="pc-td-tot">${sum(mTu)}</td></tr>`;
+  // Tabla BP mensual
+  let bpRows = "";
+  for (let mes = 1; mes <= 12; mes++) {
+    const obj = d.bp[mes] || 0;
+    const mIdx = mes - 1;
+    const cls = mIdx === mo ? "pc-td-act" : mIdx < mo ? "pc-td-past" : "";
+    const qCls = mIdx % 3 === 0 ? " pc-td-q" : "";
+    bpRows += `<tr><td class="pc-td-m">${MO[mIdx]}</td><td class="${cls}${qCls}">${obj||"—"}</td></tr>`;
+  }
 
-  const bpTableHtml=`<div class="pc-table-wrap"><table class="pc-table">
-    <thead><tr><th class="pc-th-m" rowspan="2">Modelo</th>${["Q1","Q2","Q3","Q4"].map(q=>`<th colspan="3" class="pc-th-q" style="font-size:10px;letter-spacing:2px;color:var(--b7)">${q}</th>`).join("")}<th class="pc-th-tot">Total</th></tr>
-    <tr>${MO.map((mo2,i)=>`<th class="${i%3===0?"pc-th-q":""}${i===mo?" pc-th-act":""}">${mo2}</th>`).join("")}</tr></thead>
-    <tbody>${bpRows}</tbody></table></div>`;
+  const bpTableHtml = `<div class="pc-table-wrap"><table class="pc-table">
+    <thead><tr><th class="pc-th-m">Mes</th><th class="pc-th-tot">Objetivo BP (u)</th></tr></thead>
+    <tbody>${bpRows}<tr class="pc-tr-tot"><td class="pc-td-m">Total</td><td>${bpAnual}</td></tr></tbody>
+  </table></div>`;
 
-  // Avance por modelo
-  const avItems=d.models.map(m=>{
-    const bp=accum(m.u,mo),fa=fA(d,m.n,mo),p=fa?pct(fa,bp):null;
-    const col=p!==null?sco(p):"var(--g3)";
-    const[scc,sll]=sl(p);
-    return`<div class="pc-av-item">
-      <div class="pc-av-model">${m.n}</div>
-      <div class="pc-av-pct" style="color:${col}">${p!==null?p+"%":"—"}</div>
-      <div class="pc-av-prog-bg"><div class="pc-av-prog-f" style="width:${p!==null?Math.min(p,100):0}%;background:${col}"></div></div>
-      <div><span class="chip chip-${scc}" style="font-size:9px">${sll}</span></div>
-      <div class="pc-av-detail">${fa||"0"}/${bp} u</div>
-    </div>`;
-  }).join("");
-
-  return`<div class="print-card">
+  const [scc, sll] = sl(avp);
+  return `<div class="print-card">
     <div class="pc-header">
-      <img src="./foton-icon-trans.png" class="pc-logo" alt="Foton">
+      <img src="./assets/logo-icon.png" class="pc-logo" alt="Foton">
       <div class="pc-hdr-right">
-        <div class="pc-doc-title">Reporte de Avance BP 2026</div>
-        <div class="pc-doc-sub">Business Plan MDT &amp; LDT &mdash; Enero &ndash; Diciembre</div>
+        <div class="pc-doc-title">Reporte de Avance BP ${ANIO}</div>
+        <div class="pc-doc-sub">Red Nacional Foton M&eacute;xico &mdash; Enero &ndash; Diciembre</div>
       </div>
     </div>
     <div class="pc-dist-band">
       <div>
-        <div class="pc-dist-name">${d.name}</div>
-        <div class="pc-dist-sub">${d.sub}</div>
+        <div class="pc-dist-name">${d.nombre}</div>
+        <div class="pc-dist-sub">${[d.grupo,d.ciudad,d.estado].filter(Boolean).join(" · ")} &middot; ${d.segmento||""}</div>
       </div>
-      <div class="pc-date-badge">Corte: ${MF[mo]} 2026</div>
+      <div class="pc-date-badge">Corte: ${MF[mo]} ${ANIO}</div>
     </div>
     <div class="pc-kpis">${kpiHtml}</div>
-    <div class="pc-section-ttl">Plan de negocio &mdash; Unidades por modelo</div>
+    <div class="pc-section-ttl">Plan de negocio &mdash; Objetivos mensuales</div>
     ${bpTableHtml}
-    <div class="pc-section-ttl" style="border-top:1px solid var(--g1)">Avance acumulado por modelo al ${MF[mo]}</div>
-    <div class="pc-avance-wrap">${avItems}</div>
+    <div class="pc-section-ttl" style="border-top:1px solid var(--g1)">Avance YTD al ${MF[mo]}</div>
+    <div class="pc-avance-wrap">
+      <div class="pc-av-item">
+        <div class="pc-av-model">${d.nombre}</div>
+        <div class="pc-av-pct" style="color:${sco(avp||0)}">${avp!==null?avp+"%":"—"}</div>
+        <div class="pc-av-prog-bg"><div class="pc-av-prog-f" style="width:${avp!==null?Math.min(avp,100):0}%;background:${sco(avp||0)}"></div></div>
+        <div><span class="chip chip-${scc}" style="font-size:9px">${sll}</span></div>
+        <div class="pc-av-detail">${ytd}/${bpAcum} u acum.</div>
+      </div>
+    </div>
     <div class="pc-footer">
       <span class="pc-footer-l">Foton M&eacute;xico &middot; LDR Solutions S.A. de C.V.</span>
       <span class="pc-footer-r">Generado: ${dateStr} &middot; Confidencial</span>
@@ -799,11 +891,9 @@ function buildOneCard(d,mo,dateStr){
 
 window.addEventListener('FotonAuthReady', init);
 
-// ── GESTIÓN DE DISTRIBUIDORES ─────────────────────────────
-
+// ── GESTIÓN DE DISTRIBUIDORES (simplificada: solo muestra info de la red) ──
 function openGestion() {
   buildGestionList();
-  loadAvailableDistsForGestion();
   document.getElementById('modal-gestion').classList.add('open');
 }
 function closeGestion() {
@@ -813,94 +903,25 @@ document.getElementById('modal-gestion').addEventListener('click', function(e) {
 
 function buildGestionList() {
   const list = document.getElementById('gestion-list');
-  list.innerHTML = DISTS.map((d, i) => {
-    const hidden = hiddenDists.includes(d.id || String(i));
-    const total = d.models.reduce((a, m) => a + m.u.reduce((x,y)=>x+y,0), 0);
-    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border:1px solid var(--g1);border-radius:8px;margin-bottom:6px;background:${hidden?'var(--g0)':'var(--wh)'}">
+  if (!filteredDists.length) {
+    list.innerHTML = '<div style="font-size:12px;color:var(--g5);padding:8px">Sin distribuidores cargados</div>';
+    return;
+  }
+  list.innerHTML = filteredDists.map((d, i) => {
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border:1px solid var(--g1);border-radius:8px;margin-bottom:6px;background:var(--wh)">
       <div>
-        <div style="font-size:13px;font-weight:600;color:${hidden?'var(--g5)':'var(--g9)'};">${d.name}</div>
-        <div style="font-size:11px;color:var(--g5)">${d.sub} &middot; ${total}u BP</div>
+        <div style="font-size:13px;font-weight:600;color:var(--g9)">${d.nombre}</div>
+        <div style="font-size:11px;color:var(--g5)">${[d.ciudad,d.estado,d.segmento].filter(Boolean).join(" · ")} &middot; ${d.bpAnual||0}u BP</div>
       </div>
-      <button onclick="toggleDistVisibility(${i})" style="padding:5px 12px;border-radius:6px;border:1px solid ${hidden?'var(--g3)':'var(--red)'};background:${hidden?'var(--b7)':'var(--rbg)'};color:${hidden?'#fff':'var(--red)'};font-family:'Inter',sans-serif;font-size:11px;font-weight:600;cursor:pointer">
-        ${hidden ? '+ Activar' : '&#215; Ocultar'}
-      </button>
+      <button onclick="selectDist(${i});closeGestion();" style="padding:5px 12px;border-radius:6px;border:1px solid var(--b4);background:var(--b0);color:var(--b8);font-family:'Inter',sans-serif;font-size:11px;font-weight:600;cursor:pointer">Ver</button>
     </div>`;
   }).join('');
 }
 
-function toggleDistVisibility(i) {
-  const key = DISTS[i].id || String(i);
-  const idx = hiddenDists.indexOf(key);
-  if (idx === -1) hiddenDists.push(key);
-  else hiddenDists.splice(idx, 1);
-  localStorage.setItem('foton_hidden_dists', JSON.stringify(hiddenDists));
-  buildGestionList();
-  buildTabs();
-  render();
-}
-
-async function loadAvailableDistsForGestion() {
-  if (!db) return;
-  const sel = document.getElementById('g-new-dist');
-  sel.innerHTML = '<option value="">Seleccionar...</option>';
-  try {
-    const { data } = await db.from('distribuidores').select('id,nombre,plaza').order('nombre');
-    if (!data) return;
-    const existing = DISTS.map(d => d.id).filter(Boolean);
-    data.filter(r => !existing.includes(r.id)).forEach(r => {
-      sel.innerHTML += `<option value="${r.id}" data-name="${r.nombre}" data-plaza="${r.plaza}">${r.nombre} &mdash; ${r.plaza}</option>`;
-    });
-  } catch(e) {}
-}
-
-async function addDistFromGestion() {
-  const sel = document.getElementById('g-new-dist');
-  const selOpt = sel.options[sel.selectedIndex];
-  const distId = sel.value;
-  if (!distId) { alert('Selecciona un distribuidor'); return; }
-  const distName = selOpt.dataset.name || distId;
-  const distPlaza = selOpt.dataset.plaza || '';
-  const sub = document.getElementById('g-new-sub').value || distPlaza;
-  const MODELS = ['S3','S5','S6','S8','S12'];
-  const bpTotals = {};
-  MODELS.forEach(m => { bpTotals[m] = parseInt(document.getElementById('gbp-'+m).value) || 0; });
-
-  function distrib(total) {
-    const base = Math.floor(total / 12);
-    const u = new Array(12).fill(base);
-    let rem = total - base * 12;
-    for (let i = 11; i >= 0 && rem > 0; i--, rem--) u[i]++;
-    return u;
-  }
-  const PRICE = {S3:.65, S5:.84, S6:.90, S8:1.19, S12:1.42};
-  const models = MODELS.map(n => ({
-    n,
-    u: distrib(bpTotals[n]),
-    m: distrib(bpTotals[n]).map(v => +(v * (PRICE[n]||1)).toFixed(2))
-  }));
-  const fact = {};
-  MODELS.forEach(m => { fact[m] = new Array(12).fill(null); });
-  const newDist = { id: distId, name: distName, sub, models, fact };
-  DISTS.push(newDist);
-
-  if (db && bpTotals) {
-    for (const [modelo, total] of Object.entries(bpTotals)) {
-      if (total > 0) {
-        await db.from('bp_anual').upsert({
-          distribuidor_id: distId,
-          anio: 2026,
-          modelo,
-          unidades_bp: total
-        }, { onConflict: 'distribuidor_id,anio,modelo' }).catch(()=>{});
-      }
-    }
-  }
-
-  buildGestionList();
-  buildTabs();
-  selectDist(DISTS.length - 1);
-  closeGestion();
-}
+// Stubs para compatibilidad HTML existente
+function toggleDistVisibility(){}
+async function loadAvailableDistsForGestion(){}
+async function addDistFromGestion(){ alert('Para agregar distribuidores usa el panel de administración de Supabase.'); }
 </script>
 
 <script>window.NAV_ACTIVE_TAB = 'tracker';</script>
