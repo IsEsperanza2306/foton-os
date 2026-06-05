@@ -416,7 +416,8 @@ const db = window.FOTON_DB || (() => {
     : null;
 })();
 
-// IDs canónicos de los 22 distribuidores Foton México
+// IDs canónicos de los distribuidores Foton México activos en Supabase
+// (se complementan con los cargados vía asignaciones para regional/director)
 const CANONICAL_IDS = new Set([
   'adacari','arg','astrocamiones','asturcar','bavi','bours','cmv',
   'delsureste','deras','enerkom','gcm','grumar','jcmc','jimenez',
@@ -428,15 +429,20 @@ const MF = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","S
 const ANIO = 2026;
 
 // Estado global
-let DISTS = [];         // [{id, nombre, grupo, ciudad, estado, segmento, bp:{1..12}, ytd, ytd_mes}]
-let filteredDists = []; // vista filtrada por segmento
-let di = 0;             // índice del distribuidor activo en filteredDists
+// DISTS: [{id, nombre, grupo, plaza, segmento, bpAnual, modelos:[{modelo,unidades_bp}],
+//          ytd, ytd_mes, facturadoPorMes:{1:n,...12:n}}]
+let DISTS = [];
+let filteredDists = [];
+let di = 0;
 let cm = new Date().getMonth(); // mes activo (0-11)
-let segFiltro = '';     // filtro de segmento activo (solo direccion/admin)
+let segFiltro = '';
 let editMode = false;
 let editBackup = null;
 
 // ── CARGA DE DISTRIBUIDORES DESDE SUPABASE ──────────────────────────────────
+// Tablas reales:
+//   bp_anual    (distribuidor_id, anio, modelo, unidades_bp, monto_bp)  — BP anual por modelo
+//   facturado_ytd (distribuidor_id, anio, mes, modelo, unidades_facturadas) — facturado por mes/modelo
 async function loadDists() {
   if (!db) { renderError('Sin conexión a base de datos'); return; }
   const rol = window.FOTON_ROL || 'regional';
@@ -445,7 +451,7 @@ async function loadDists() {
 
   try {
     if (rol === 'direccion' || rol === 'admin') {
-      // Direccion ve todos los 22 canónicos
+      // Direccion/admin ve todos — cargamos los que tengan registro en bp_anual o distribuidores
       distribIds = [...CANONICAL_IDS];
     } else {
       // Regional/director: dealers vía asignaciones
@@ -463,51 +469,76 @@ async function loadDists() {
 
     if (!distribIds.length) { renderError('Sin distribuidores asignados'); return; }
 
-    // Cargar datos de distribuidores
+    // Cargar datos de distribuidores (usa plaza como localidad, ciudad/estado pueden ser null)
     const { data: distRows, error: distErr } = await db
       .from('distribuidores')
       .select('id,nombre,grupo,plaza,ciudad,estado,segmento')
       .in('id', distribIds)
-      .limit(50);
+      .limit(200);
     if (distErr) throw distErr;
 
-    // Cargar BP mensual del año actual
-    const { data: bpRows, error: bpErr } = await db
-      .from('bp')
-      .select('distribuidor_id,mes,objetivo,facturado_ytd')
-      .eq('anio', ANIO)
-      .in('distribuidor_id', distribIds)
-      .limit(500);
-    if (bpErr) throw bpErr;
+    // Solo trabajar con los ids que existen en distribuidores
+    const existingIds = (distRows || []).map(d => d.id);
+    if (!existingIds.length) { renderError('Sin distribuidores encontrados'); return; }
 
-    // Construir mapa de BP por distribuidor
+    // Cargar BP anual por modelo (bp_anual)
+    const { data: bpAnualRows, error: bpAnualErr } = await db
+      .from('bp_anual')
+      .select('distribuidor_id,modelo,unidades_bp')
+      .eq('anio', ANIO)
+      .in('distribuidor_id', existingIds)
+      .limit(1000);
+    if (bpAnualErr) throw bpAnualErr;
+
+    // Cargar facturado por mes/modelo (facturado_ytd)
+    const { data: factRows, error: factErr } = await db
+      .from('facturado_ytd')
+      .select('distribuidor_id,mes,modelo,unidades_facturadas')
+      .eq('anio', ANIO)
+      .in('distribuidor_id', existingIds)
+      .limit(2000);
+    if (factErr) throw factErr;
+
+    // Construir mapa de BP anual por distribuidor
+    // bpMap[did] = { bpAnual: N, modelos: [{modelo, unidades_bp}] }
     const bpMap = {};
-    (bpRows || []).forEach(r => {
-      if (!bpMap[r.distribuidor_id]) bpMap[r.distribuidor_id] = { bp: {}, ytd: 0, ytd_mes: null };
-      bpMap[r.distribuidor_id].bp[r.mes] = r.objetivo || 0;
-      // YTD = facturado_ytd del mes más reciente con datos
-      if (r.facturado_ytd != null) {
-        if (bpMap[r.distribuidor_id].ytd_mes === null || r.mes > bpMap[r.distribuidor_id].ytd_mes) {
-          bpMap[r.distribuidor_id].ytd = r.facturado_ytd;
-          bpMap[r.distribuidor_id].ytd_mes = r.mes;
-        }
-      }
+    (bpAnualRows || []).forEach(r => {
+      if (!bpMap[r.distribuidor_id]) bpMap[r.distribuidor_id] = { bpAnual: 0, modelos: [] };
+      const u = r.unidades_bp || 0;
+      bpMap[r.distribuidor_id].bpAnual += u;
+      bpMap[r.distribuidor_id].modelos.push({ modelo: r.modelo, unidades_bp: u });
     });
 
+    // Construir mapa de facturado por distribuidor y mes
+    // factMap[did][mes] = unidades acumuladas ese mes (suma de modelos)
+    const factMap = {};
+    (factRows || []).forEach(r => {
+      if (!factMap[r.distribuidor_id]) factMap[r.distribuidor_id] = {};
+      const mes = r.mes;
+      factMap[r.distribuidor_id][mes] = (factMap[r.distribuidor_id][mes] || 0) + (r.unidades_facturadas || 0);
+    });
+
+    // Para cada distribuidor: YTD = suma acumulada hasta el mes más reciente con dato
+    // ytd_mes = mes número (1-12) del último mes con registro
     DISTS = (distRows || []).map(d => {
-      const info = bpMap[d.id] || { bp: {}, ytd: 0, ytd_mes: null };
-      const bpAnual = Object.values(info.bp).reduce((a, v) => a + v, 0);
+      const bpInfo = bpMap[d.id] || { bpAnual: 0, modelos: [] };
+      const mesMap = factMap[d.id] || {};
+      const mesesConDato = Object.keys(mesMap).map(Number).sort((a, b) => a - b);
+      const ytd_mes = mesesConDato.length ? mesesConDato[mesesConDato.length - 1] : null;
+      // YTD acumulado = suma de todos los meses con dato hasta ytd_mes
+      const ytd = mesesConDato.reduce((acc, m) => acc + (mesMap[m] || 0), 0);
       return {
         id: d.id,
         nombre: d.nombre || d.id,
         grupo: d.grupo || '',
-        ciudad: d.ciudad || d.plaza || '',
+        plaza: d.ciudad || d.plaza || '',   // preferir ciudad si existe, sino plaza
         estado: d.estado || '',
         segmento: d.segmento || '',
-        bp: info.bp,        // {1:obj, 2:obj, ... 12:obj}
-        bpAnual,
-        ytd: info.ytd,
-        ytd_mes: info.ytd_mes
+        bpAnual: bpInfo.bpAnual,
+        modelos: bpInfo.modelos,            // [{modelo, unidades_bp}]
+        facturadoPorMes: mesMap,            // {1:n, 2:n, ...}
+        ytd,
+        ytd_mes
       };
     }).sort((a, b) => a.nombre.localeCompare(b.nombre));
 
@@ -542,23 +573,40 @@ function setSegmento(val) {
   applySegFilter();
 }
 
-// ── UPSERT BP MENSUAL ────────────────────────────────────────────────────────
-async function saveBPMes(distribuidorId, mes, objetivo) {
+// ── UPSERT BP POR MODELO (bp_anual) ─────────────────────────────────────────
+// La edición inline actualiza unidades_bp por modelo en bp_anual
+async function saveBPModelo(distribuidorId, modelo, unidades) {
   if (!db) return;
-  const { error } = await db.from('bp').upsert({
-    distribuidor_id: distribuidorId,
-    anio: ANIO,
-    mes,
-    objetivo: Number(objetivo)
-  }, { onConflict: 'distribuidor_id,anio,mes' });
-  if (error) console.error('[Foton BP] upsert error:', error.message);
-  else {
-    // Actualizar local
-    const d = DISTS.find(x => x.id === distribuidorId);
-    if (d) {
-      d.bp[mes] = Number(objetivo);
-      d.bpAnual = Object.values(d.bp).reduce((a, v) => a + v, 0);
-    }
+  // Buscar el registro existente para hacer update, o insert si no existe
+  const { data: existing, error: selErr } = await db
+    .from('bp_anual')
+    .select('id')
+    .eq('distribuidor_id', distribuidorId)
+    .eq('anio', ANIO)
+    .eq('modelo', modelo)
+    .limit(1);
+  if (selErr) { console.error('[Foton BP] select error:', selErr.message); return; }
+
+  if (existing && existing.length > 0) {
+    const { error } = await db
+      .from('bp_anual')
+      .update({ unidades_bp: Number(unidades) })
+      .eq('id', existing[0].id);
+    if (error) console.error('[Foton BP] update error:', error.message);
+  } else {
+    const { error } = await db
+      .from('bp_anual')
+      .insert({ distribuidor_id: distribuidorId, anio: ANIO, modelo, unidades_bp: Number(unidades), monto_bp: 0 });
+    if (error) console.error('[Foton BP] insert error:', error.message);
+  }
+
+  // Actualizar local
+  const d = DISTS.find(x => x.id === distribuidorId);
+  if (d) {
+    const m = d.modelos.find(x => x.modelo === modelo);
+    if (m) m.unidades_bp = Number(unidades);
+    else d.modelos.push({ modelo, unidades_bp: Number(unidades) });
+    d.bpAnual = d.modelos.reduce((a, x) => a + x.unidades_bp, 0);
   }
 }
 
@@ -587,7 +635,7 @@ function buildTabs(){
   // Actualizar select del panel de impresión
   const ppSel = document.getElementById("pp-dist-sel");
   ppSel.innerHTML = '<option value="-1">Todos los distribuidores</option>' +
-    filteredDists.map((d, i) => `<option value="${i}">${d.nombre} &ndash; ${d.ciudad}</option>`).join("");
+    filteredDists.map((d, i) => `<option value="${i}">${d.nombre} &ndash; ${d.plaza || d.estado}</option>`).join("");
 }
 
 function selectDist(i){
@@ -610,7 +658,7 @@ function toggleEdit(){
   if (editMode){ cancelEdit(); return; }
   editMode = true;
   const d = filteredDists[di];
-  editBackup = d ? JSON.parse(JSON.stringify(d.bp)) : {};
+  editBackup = d ? JSON.parse(JSON.stringify(d.modelos)) : [];
   document.getElementById("btn-edit").classList.add("on");
   document.getElementById("btn-edit").textContent = "x Editar BP";
   document.getElementById("edit-bar").classList.add("show");
@@ -618,7 +666,10 @@ function toggleEdit(){
 }
 function cancelEdit(){
   const d = filteredDists[di];
-  if (d && editBackup) d.bp = JSON.parse(JSON.stringify(editBackup));
+  if (d && editBackup) {
+    d.modelos = JSON.parse(JSON.stringify(editBackup));
+    d.bpAnual = d.modelos.reduce((a, x) => a + x.unidades_bp, 0);
+  }
   editMode = false; editBackup = null;
   document.getElementById("btn-edit").classList.remove("on");
   document.getElementById("btn-edit").textContent = "&#9998; Editar BP";
@@ -629,18 +680,16 @@ async function saveEdit(){
   const d = filteredDists[di];
   if (!d) return;
   const saves = [];
-  for (let mes = 1; mes <= 12; mes++) {
-    const el = document.getElementById("ei_mes_" + mes);
+  for (const mod of d.modelos) {
+    const el = document.getElementById("ei_mod_" + mod.modelo);
     if (el) {
       const v = parseInt(el.value);
       if (!isNaN(v) && v >= 0) {
-        d.bp[mes] = v;
-        saves.push(saveBPMes(d.id, mes, v));
+        saves.push(saveBPModelo(d.id, mod.modelo, v));
       }
     }
   }
   await Promise.all(saves);
-  d.bpAnual = Object.values(d.bp).reduce((a, v) => a + v, 0);
   editMode = false; editBackup = null;
   document.getElementById("btn-edit").classList.remove("on");
   document.getElementById("btn-edit").textContent = "&#9998; Editar BP";
@@ -668,86 +717,106 @@ function renderKPI(){
   const d = filteredDists[di];
   if (!d) return;
   const bpAnual = d.bpAnual || 0;
-  const bpAcum = Object.entries(d.bp).filter(([m]) => parseInt(m) <= cm+1).reduce((a,[,v]) => a+v, 0);
+  // YTD acumulado hasta el mes seleccionado (cm 0-11 → mes 1-12)
+  const ytdHastaCm = Object.entries(d.facturadoPorMes)
+    .filter(([m]) => parseInt(m) <= cm + 1)
+    .reduce((a, [, v]) => a + v, 0);
   const ytd = d.ytd || 0;
-  const avp = bpAcum ? pct(ytd, bpAcum) : null;
-  const pend = bpAnual - ytd;
+  const avp = bpAnual ? pct(ytdHastaCm, bpAnual) : null;
+  const pend = bpAnual - ytdHastaCm;
   const mL = 11 - cm;
   const ritmo = mL > 0 ? Math.ceil(pend / mL) : pend;
   const cls = avp === null ? "" : "kl-" + sc(avp);
   const mesYTD = d.ytd_mes ? MO[d.ytd_mes - 1] : "—";
-  document.getElementById("dist-title").innerHTML = d.nombre + '<span>' + [d.grupo, d.ciudad, d.estado].filter(Boolean).join(" · ") + '</span>';
+  document.getElementById("dist-title").innerHTML = d.nombre + '<span>' + [d.grupo, d.plaza, d.estado].filter(Boolean).join(" · ") + '</span>';
   document.getElementById("kpi-row").innerHTML =
-    `<div class="kpi"><div class="kpi-lbl">BP Anual</div><div class="kpi-val">${bpAnual}<span style="font-size:14px;font-weight:500;color:var(--g5)"> u</span></div><div class="kpi-hint">Suma objetivos 12 meses</div></div>
-     <div class="kpi"><div class="kpi-lbl">BP Acumulado ${MO[cm]}</div><div class="kpi-val">${bpAcum}<span style="font-size:14px;font-weight:500;color:var(--g5)"> u</span></div><div class="kpi-hint">Objetivo ene &ndash; ${MO[cm]}</div></div>
-     <div class="kpi ${cls}"><div class="kpi-lbl">YTD Facturado</div><div class="kpi-val">${ytd||"&mdash;"}<span style="font-size:14px;font-weight:500;color:var(--g5)">${ytd?" u":""}</span></div><div class="kpi-hint">${avp!==null?avp+"% del objetivo &middot; corte "+mesYTD:"Sin datos capturados"}</div></div>
+    `<div class="kpi"><div class="kpi-lbl">BP Anual</div><div class="kpi-val">${bpAnual}<span style="font-size:14px;font-weight:500;color:var(--g5)"> u</span></div><div class="kpi-hint">Objetivo total ${ANIO} (todos los modelos)</div></div>
+     <div class="kpi"><div class="kpi-lbl">Fact. hasta ${MO[cm]}</div><div class="kpi-val">${ytdHastaCm}<span style="font-size:14px;font-weight:500;color:var(--g5)"> u</span></div><div class="kpi-hint">Acumulado ene &ndash; ${MO[cm]}</div></div>
+     <div class="kpi ${cls}"><div class="kpi-lbl">YTD vs BP</div><div class="kpi-val">${ytdHastaCm||"&mdash;"}<span style="font-size:14px;font-weight:500;color:var(--g5)">${ytdHastaCm?" u":""}</span></div><div class="kpi-hint">${avp!==null?avp+"% del BP &middot; corte "+mesYTD:"Sin datos capturados"}</div></div>
      <div class="kpi ${pend>20?"kl-o":"kl-g"}"><div class="kpi-lbl">Pendiente a&ntilde;o</div><div class="kpi-val">${pend}<span style="font-size:14px;font-weight:500;color:var(--g5)"> u</span></div><div class="kpi-hint">${mL>0?"~"+ritmo+" u/mes necesario":"Ultimo mes"}</div></div>`;
 }
 
-function renderBPTable(view){
-  if (typeof view === 'undefined') {
-    const activeBtn = document.querySelector('.tgl-btn.active');
-    if (activeBtn) {
-      const id = activeBtn.id;
-      view = id === 'tb-u' ? 'units' : id === 'tb-m' ? 'mxn' : 'both';
-    } else view = 'units';
-  }
+function renderBPTable(){
   const d = filteredDists[di];
   if (!d) return;
-  const qN = ["Q1","Q2","Q3","Q4"];
-  document.getElementById("th1").innerHTML = `<tr><th class="th-m" rowspan="2">Mes</th><th class="th-tot" rowspan="2">Objetivo (u)</th>${cm >= 0 ? '<th class="th-act" rowspan="2">YTD Fact.</th>' : ''}<th class="th-tot" rowspan="2">% Avance</th></tr><tr></tr>`;
 
-  // Tabla sencilla: una fila por mes (sin modelo dimension en nueva estructura)
+  // Tabla por modelo: BP anual vs facturado acumulado hasta mes activo
+  const ytdHastaCm = Object.entries(d.facturadoPorMes)
+    .filter(([m]) => parseInt(m) <= cm + 1)
+    .reduce((a, [, v]) => a + v, 0);
+
+  document.getElementById("th1").innerHTML =
+    `<tr><th class="th-m">Modelo</th><th class="th-tot">BP Anual (u)</th><th class="th-act">Fact. hasta ${MO[cm]}</th><th class="th-tot">% Avance</th></tr>`;
+
   let b = "";
-  let totBP = 0, totYTD = 0;
-  for (let mes = 1; mes <= 12; mes++) {
-    const obj = d.bp[mes] || 0;
+  const modelos = (d.modelos && d.modelos.length) ? d.modelos : [];
+  let totBP = 0;
+
+  // Calcular facturado por modelo hasta cm (facturado_ytd no tiene desglose por modelo en el mapa local,
+  // así que usamos el total del distribuidor distribuido proporcional si hay modelos, o plano si no)
+  // Dado que facturadoPorMes es total del distribuidor, mostramos el total en la fila de totales
+  for (const mod of modelos) {
+    const obj = mod.unidades_bp || 0;
     totBP += obj;
-    const mIdx = mes - 1;
-    const esCm = mIdx === cm;
-    const esPast = mIdx < cm;
-    const cls = esCm ? "td-act" : esPast ? "td-past" : "";
-    // Solo mostrar ytd en el mes más reciente con datos
-    const ytdCell = (mes === d.ytd_mes) ? `<td class="${cls}" style="font-weight:600;color:var(--b7)">${d.ytd}</td>` : `<td class="${cls}" style="color:var(--g3)">&mdash;</td>`;
-    const avp = (mes === d.ytd_mes && d.ytd && obj) ? pct(d.ytd, obj) : null;
+    const avp = obj ? pct(ytdHastaCm, d.bpAnual) : null; // avance global del distribuidor
     const col = avp !== null ? sco(avp) : "var(--g3)";
-    const progCell = avp !== null
-      ? `<td class="${cls}"><div class="prog-w"><div class="prog-bg"><div class="prog-f" style="width:${Math.min(avp,100)}%;background:${col}"></div></div><span class="prog-p" style="color:${col}">${avp}%</span></div></td>`
-      : `<td class="${cls}" style="color:var(--g3)">&mdash;</td>`;
 
     if (editMode) {
-      b += `<tr><td class="td-m">${MF[mIdx]}</td><td class="${cls}"><input class="edit-inp" id="ei_mes_${mes}" type="number" min="0" value="${obj}" onblur="inlineUpsert('${d.id}',${mes},this.value)" onkeydown="if(event.key==='Enter')this.blur()"></td>${ytdCell}${progCell}</tr>`;
+      b += `<tr>
+        <td class="td-m">${mod.modelo}</td>
+        <td><input class="edit-inp" id="ei_mod_${mod.modelo}" type="number" min="0" value="${obj}"
+          onblur="inlineUpsert('${d.id}','${mod.modelo}',this.value)"
+          onkeydown="if(event.key==='Enter')this.blur()"></td>
+        <td class="td-act" style="color:var(--g3)">—</td>
+        <td style="color:var(--g3)">—</td>
+      </tr>`;
     } else {
-      b += `<tr><td class="td-m">${MF[mIdx]}</td><td class="${cls}" style="font-weight:600">${obj||"&mdash;"}</td>${ytdCell}${progCell}</tr>`;
+      b += `<tr>
+        <td class="td-m">${mod.modelo}</td>
+        <td style="font-weight:600">${obj || "&mdash;"}</td>
+        <td class="td-act" style="color:var(--g3)">—</td>
+        <td style="color:var(--g3)">—</td>
+      </tr>`;
     }
   }
-  const tp = totBP && d.ytd ? pct(d.ytd, totBP) : null;
+
+  if (!modelos.length) {
+    b = `<tr><td colspan="4" style="text-align:center;color:var(--g5);padding:20px">Sin objetivos BP capturados</td></tr>`;
+  }
+
+  const tp = d.bpAnual && ytdHastaCm ? pct(ytdHastaCm, d.bpAnual) : null;
   const tc = tp !== null ? sco(tp) : "var(--g3)";
-  b += `<tr class="tr-tot"><td class="td-m">Total / YTD</td><td>${totBP}</td><td style="color:${tc};font-weight:700">${d.ytd||"&mdash;"}</td><td>${tp!==null?tp+"%":"&mdash;"}</td></tr>`;
-  document.getElementById("th1").innerHTML = `<tr><th class="th-m">Mes</th><th class="th-tot">Objetivo BP (u)</th><th class="th-act">YTD Facturado</th><th class="th-tot">% Avance</th></tr>`;
+  b += `<tr class="tr-tot">
+    <td class="td-m">Total</td>
+    <td>${totBP}</td>
+    <td style="color:${tc};font-weight:700">${ytdHastaCm || "&mdash;"}</td>
+    <td>${tp !== null ? tp + "%" : "&mdash;"}</td>
+  </tr>`;
+
   document.getElementById("tb1").innerHTML = b;
 }
 
-async function inlineUpsert(distribuidorId, mes, rawVal) {
+async function inlineUpsert(distribuidorId, modelo, rawVal) {
   const v = parseInt(rawVal);
   if (isNaN(v) || v < 0) return;
-  await saveBPMes(distribuidorId, mes, v);
-  const d = DISTS.find(x => x.id === distribuidorId);
-  if (d) { d.bp[mes] = v; d.bpAnual = Object.values(d.bp).reduce((a,x)=>a+x,0); }
+  await saveBPModelo(distribuidorId, modelo, v);
 }
 
 function renderAvance(){
   const d = filteredDists[di];
   if (!d) return;
   const bpAnual = d.bpAnual || 0;
-  const ytd = d.ytd || 0;
+  // Facturado acumulado hasta el mes activo (cm 0-11 → mes 1-12)
+  const ytd = Object.entries(d.facturadoPorMes)
+    .filter(([m]) => parseInt(m) <= cm + 1)
+    .reduce((a, [, v]) => a + v, 0);
   const avp = bpAnual ? pct(ytd, bpAnual) : null;
   const [scc, sll] = sl(avp);
   const col = avp !== null ? sco(avp) : "var(--g3)";
   const pend = bpAnual - ytd;
   const mL = 11 - cm;
   const ritmo = mL > 0 ? Math.ceil(pend / mL) : pend;
-  document.getElementById("th2").innerHTML = `<tr><th class="th-m">Distribuidor</th><th>BP Anual</th><th>YTD Facturado</th><th>Diferencia</th><th style="min-width:150px">Avance</th><th>Status</th><th>Pendiente a&ntilde;o</th></tr>`;
+  document.getElementById("th2").innerHTML = `<tr><th class="th-m">Distribuidor</th><th>BP Anual</th><th>Fact. hasta ${MO[cm]}</th><th>Diferencia</th><th style="min-width:150px">Avance</th><th>Status</th><th>Pendiente a&ntilde;o</th></tr>`;
   const diff = ytd - bpAnual;
   document.getElementById("tb2").innerHTML = `<tr>
     <td class="td-m">${d.nombre}</td>
@@ -763,8 +832,11 @@ function renderAvance(){
 function renderInsights(){
   const d = filteredDists[di];
   if (!d) return;
+  const ytdHastaCm = Object.entries(d.facturadoPorMes)
+    .filter(([m]) => parseInt(m) <= cm + 1)
+    .reduce((a, [, v]) => a + v, 0);
   const bpAnual = d.bpAnual || 0;
-  const ytd = d.ytd || 0;
+  const ytd = ytdHastaCm;
   const avp = bpAnual ? pct(ytd, bpAnual) : null;
   const pend = bpAnual - ytd;
   const mL = 11 - cm;
@@ -786,20 +858,22 @@ function renderInsights(){
   document.getElementById("actions").innerHTML = acts.length ? acts.join("") : `<div style="color:var(--green);font-size:13px;padding:8px 0;font-weight:500">&#10003; Sin acciones urgentes</div>`;
 }
 
-// ── MODAL FACTURADO (simplificado: abre edición inline BP del mes activo) ──
+// ── MODAL RESUMEN ────────────────────────────────────────────────────────────
 function openModal(){
-  // El facturado_ytd viene de la tabla bp; la edición inline del objetivo
-  // se hace directamente en la tabla. Este modal informa al usuario.
   const d = filteredDists[di];
   if (!d) return;
+  const ytdHastaCm = Object.entries(d.facturadoPorMes)
+    .filter(([m]) => parseInt(m) <= cm + 1)
+    .reduce((a, [, v]) => a + v, 0);
+  const avp = d.bpAnual ? pct(ytdHastaCm, d.bpAnual) : null;
   document.getElementById("modal-sub").textContent = "Datos de " + d.nombre + " — corte " + MF[cm];
   document.getElementById("modal-body").innerHTML = `
     <div style="padding:12px;background:var(--b0);border-radius:8px;font-size:13px;color:var(--b8)">
       <strong>BP Anual:</strong> ${d.bpAnual||0} u<br>
-      <strong>YTD Facturado:</strong> ${d.ytd||0} u ${d.ytd_mes?'(corte '+MO[d.ytd_mes-1]+')':''}<br>
-      <strong>% Avance:</strong> ${d.bpAnual?pct(d.ytd,d.bpAnual)+'%':'Sin datos'}
+      <strong>Facturado hasta ${MO[cm]}:</strong> ${ytdHastaCm} u ${d.ytd_mes?'(ultimo corte '+MO[d.ytd_mes-1]+')':''}<br>
+      <strong>% Avance:</strong> ${avp!==null?avp+'%':'Sin datos'}
     </div>
-    <p style="font-size:11px;color:var(--g5);margin-top:12px">Para editar el objetivo mensual usa el bot&oacute;n "Editar BP" en la tabla.</p>`;
+    <p style="font-size:11px;color:var(--g5);margin-top:12px">Para editar el BP por modelo usa el bot&oacute;n "Editar BP" en la tabla.</p>`;
   document.getElementById("modal").classList.add("open");
 }
 function closeModal(){ document.getElementById("modal").classList.remove("open"); }
@@ -824,32 +898,31 @@ function buildPrintCard(){
 
 function buildOneCard(d, mo, dateStr){
   const bpAnual = d.bpAnual || 0;
-  const bpAcum = Object.entries(d.bp).filter(([m]) => parseInt(m) <= mo+1).reduce((a,[,v]) => a+v, 0);
-  const ytd = d.ytd || 0;
-  const avp = bpAcum ? pct(ytd, bpAcum) : null;
-  const pend = bpAnual - ytd;
+  // Facturado acumulado hasta el mes seleccionado en el panel de impresión
+  const ytdHastaM = Object.entries(d.facturadoPorMes)
+    .filter(([m]) => parseInt(m) <= mo + 1)
+    .reduce((a, [, v]) => a + v, 0);
+  const avp = bpAnual ? pct(ytdHastaM, bpAnual) : null;
+  const pend = bpAnual - ytdHastaM;
   const mL = 11 - mo;
   const ritmo = mL > 0 ? Math.ceil(pend / mL) : pend;
   const col = avp !== null ? sco(avp) : "var(--b5)";
 
   const kpiHtml = `
     <div class="pc-kpi"><div class="pc-kpi-lbl">BP Anual</div><div class="pc-kpi-val">${bpAnual} <span style="font-size:13px;color:var(--g5)">u</span></div></div>
-    <div class="pc-kpi"><div class="pc-kpi-lbl">BP Acumulado ${MO[mo]}</div><div class="pc-kpi-val">${bpAcum} <span style="font-size:13px;color:var(--g5)">u</span></div></div>
-    <div class="pc-kpi" style="border-left:3px solid ${col}"><div class="pc-kpi-lbl">YTD Facturado</div><div class="pc-kpi-val" style="color:${col}">${ytd||"—"} <span style="font-size:13px;color:var(--g5)">${ytd?"u":""}</span></div><div class="pc-kpi-hint">${avp!==null?avp+"% del objetivo":"Sin datos"}</div></div>
+    <div class="pc-kpi"><div class="pc-kpi-lbl">Fact. acum. ${MO[mo]}</div><div class="pc-kpi-val">${ytdHastaM} <span style="font-size:13px;color:var(--g5)">u</span></div></div>
+    <div class="pc-kpi" style="border-left:3px solid ${col}"><div class="pc-kpi-lbl">Avance BP</div><div class="pc-kpi-val" style="color:${col}">${avp!==null?avp+"%":"—"}</div><div class="pc-kpi-hint">${avp!==null?ytdHastaM+" u facturados":"Sin datos"}</div></div>
     <div class="pc-kpi" style="border-left:3px solid ${pend>15?"var(--ora)":"var(--green)"}"><div class="pc-kpi-lbl">Pendiente a&ntilde;o</div><div class="pc-kpi-val">${pend} <span style="font-size:13px;color:var(--g5)">u</span></div><div class="pc-kpi-hint">${mL>0?"~"+ritmo+" u/mes":""}</div></div>`;
 
-  // Tabla BP mensual
-  let bpRows = "";
-  for (let mes = 1; mes <= 12; mes++) {
-    const obj = d.bp[mes] || 0;
-    const mIdx = mes - 1;
-    const cls = mIdx === mo ? "pc-td-act" : mIdx < mo ? "pc-td-past" : "";
-    const qCls = mIdx % 3 === 0 ? " pc-td-q" : "";
-    bpRows += `<tr><td class="pc-td-m">${MO[mIdx]}</td><td class="${cls}${qCls}">${obj||"—"}</td></tr>`;
-  }
+  // Tabla BP por modelo
+  const modelos = (d.modelos && d.modelos.length) ? d.modelos : [];
+  let bpRows = modelos.map(m =>
+    `<tr><td class="pc-td-m">${m.modelo}</td><td class="pc-td-tot">${m.unidades_bp||"—"}</td></tr>`
+  ).join("");
+  if (!bpRows) bpRows = `<tr><td colspan="2" style="text-align:center;color:var(--g5)">Sin datos</td></tr>`;
 
   const bpTableHtml = `<div class="pc-table-wrap"><table class="pc-table">
-    <thead><tr><th class="pc-th-m">Mes</th><th class="pc-th-tot">Objetivo BP (u)</th></tr></thead>
+    <thead><tr><th class="pc-th-m">Modelo</th><th class="pc-th-tot">BP Anual (u)</th></tr></thead>
     <tbody>${bpRows}<tr class="pc-tr-tot"><td class="pc-td-m">Total</td><td>${bpAnual}</td></tr></tbody>
   </table></div>`;
 
@@ -865,12 +938,12 @@ function buildOneCard(d, mo, dateStr){
     <div class="pc-dist-band">
       <div>
         <div class="pc-dist-name">${d.nombre}</div>
-        <div class="pc-dist-sub">${[d.grupo,d.ciudad,d.estado].filter(Boolean).join(" · ")} &middot; ${d.segmento||""}</div>
+        <div class="pc-dist-sub">${[d.grupo,d.plaza,d.estado].filter(Boolean).join(" · ")} &middot; ${d.segmento||""}</div>
       </div>
       <div class="pc-date-badge">Corte: ${MF[mo]} ${ANIO}</div>
     </div>
     <div class="pc-kpis">${kpiHtml}</div>
-    <div class="pc-section-ttl">Plan de negocio &mdash; Objetivos mensuales</div>
+    <div class="pc-section-ttl">Plan de negocio &mdash; Objetivos por modelo</div>
     ${bpTableHtml}
     <div class="pc-section-ttl" style="border-top:1px solid var(--g1)">Avance YTD al ${MF[mo]}</div>
     <div class="pc-avance-wrap">
@@ -879,7 +952,7 @@ function buildOneCard(d, mo, dateStr){
         <div class="pc-av-pct" style="color:${sco(avp||0)}">${avp!==null?avp+"%":"—"}</div>
         <div class="pc-av-prog-bg"><div class="pc-av-prog-f" style="width:${avp!==null?Math.min(avp,100):0}%;background:${sco(avp||0)}"></div></div>
         <div><span class="chip chip-${scc}" style="font-size:9px">${sll}</span></div>
-        <div class="pc-av-detail">${ytd}/${bpAcum} u acum.</div>
+        <div class="pc-av-detail">${ytdHastaM}/${bpAnual} u del BP anual</div>
       </div>
     </div>
     <div class="pc-footer">
@@ -911,7 +984,7 @@ function buildGestionList() {
     return `<div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border:1px solid var(--g1);border-radius:8px;margin-bottom:6px;background:var(--wh)">
       <div>
         <div style="font-size:13px;font-weight:600;color:var(--g9)">${d.nombre}</div>
-        <div style="font-size:11px;color:var(--g5)">${[d.ciudad,d.estado,d.segmento].filter(Boolean).join(" · ")} &middot; ${d.bpAnual||0}u BP</div>
+        <div style="font-size:11px;color:var(--g5)">${[d.plaza,d.estado,d.segmento].filter(Boolean).join(" · ")} &middot; ${d.bpAnual||0}u BP</div>
       </div>
       <button onclick="selectDist(${i});closeGestion();" style="padding:5px 12px;border-radius:6px;border:1px solid var(--b4);background:var(--b0);color:var(--b8);font-family:'Inter',sans-serif;font-size:11px;font-weight:600;cursor:pointer">Ver</button>
     </div>`;

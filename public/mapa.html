@@ -316,7 +316,14 @@
     <div id="suc-info"></div>
   </div>
   <div class="pcta">
-    <a href="#" class="btn-visita" id="btn-visita">
+    <button id="btn-iniciar-visita" onclick="iniciarVisita()" style="
+      width:100%; padding:14px; margin-bottom:8px;
+      background:#185FA5; color:#fff; border:none; border-radius:10px;
+      font-size:15px; font-weight:600; cursor:pointer; display:none;
+    ">
+      📋 Iniciar Visita
+    </button>
+    <a href="#" class="btn-visita" id="btn-visita" style="display:none">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
       Ver en Google Maps
     </a>
@@ -368,12 +375,38 @@ function mkIcon(s) {
 
 async function load() {
   try {
-    const { data, error } = await window.FOTON_DB
-      .from('sucursales')
-      .select('*, distribuidores(nombre, grupo, segmento)')
-      .eq('activo', true)
-      .order('estado');
+    const rol = window.FOTON_ROL || '';
 
+    let q = window.FOTON_DB
+      .from('sucursales')
+      .select('*, distribuidores(nombre, grupo, segmento, plaza)')
+      .eq('activo', true);
+
+    // Roles regionales/director: filtrar solo sus distribuidores asignados
+    if (rol === 'regional' || rol === 'director') {
+      const { data: asigs, error: asigErr } = await window.FOTON_DB
+        .from('asignaciones')
+        .select('distribuidor_id')
+        .eq('usuario_id', window.FOTON_USER.id);
+
+      if (asigErr) throw asigErr;
+
+      const misIds = [...new Set((asigs || []).map(a => a.distribuidor_id))];
+      if (misIds.length) {
+        q = q.in('distribuidor_id', misIds);
+      } else {
+        // Sin asignaciones: no mostrar ninguna sucursal
+        sucursales = [];
+        const user = window.FOTON_USER || (await window.FOTON_DB.auth.getUser()).data?.user;
+        if (user) document.getElementById('hdr-user').textContent = user.email;
+        renderAll();
+        setTimeout(() => map.invalidateSize(), 200);
+        return;
+      }
+    }
+    // Roles direccion/admin: sin filtro adicional, ven todo
+
+    const { data, error } = await q.order('estado');
     if (error) throw error;
     sucursales = data || [];
 
@@ -468,7 +501,12 @@ function sel(id) {
   document.getElementById('pn').textContent = grupo;
   document.getElementById('pl').textContent = ciudad;
 
-  // Botón CTA principal
+  // Botón Iniciar Visita
+  const btnIniciar = document.getElementById('btn-iniciar-visita');
+  btnIniciar.dataset.distribuidorId = s.distribuidor_id || '';
+  btnIniciar.style.display = 'block';
+
+  // Botón CTA Maps (secundario)
   const btnVisita = document.getElementById('btn-visita');
   if (mapsUrl) {
     btnVisita.href = mapsUrl;
@@ -504,6 +542,7 @@ function cerrar() {
   document.getElementById('panel').classList.remove('open');
   document.getElementById('overlay').style.display = 'none';
   document.getElementById('mob-strip').style.visibility = 'visible';
+  document.getElementById('btn-iniciar-visita').style.display = 'none';
   selId = null;
   document.querySelectorAll('.dist-card').forEach(el => el.classList.remove('selected'));
   document.querySelectorAll('.msc').forEach(el => el.classList.remove('sel'));
@@ -524,6 +563,15 @@ function filtrar(cat, btn) {
   document.querySelectorAll('.fb').forEach(b => { b.className = 'fb'; });
   if (btn) btn.classList.add(FCLS[cat] || 'fa');
   renderAll();
+}
+
+function iniciarVisita() {
+  const btn = document.getElementById('btn-iniciar-visita');
+  const distribuidorId = btn ? btn.dataset.distribuidorId : '';
+  if (distribuidorId) {
+    sessionStorage.setItem('visita_distribuidor_id', distribuidorId);
+  }
+  window.location.href = './field-app.html';
 }
 
 window.addEventListener('FotonAuthReady', load);
