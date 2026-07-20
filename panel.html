@@ -62,22 +62,33 @@ header{background:linear-gradient(120deg,var(--navy),#1056A0);padding:0 28px;dis
 .dcob-toggle.open{transform:rotate(180deg)}
 .dcob-units{border-top:1px solid var(--line);display:none}
 .dcob-units.open{display:block}
-.unit-row{display:grid;grid-template-columns:54px 1fr 70px auto;gap:12px;padding:14px 20px;border-bottom:1px solid var(--line);align-items:center}
-.unit-row:last-child{border-bottom:none}
-.unit-row.critico{background:#FFFAF9}.unit-row.urgente{background:#FFFDF8}.unit-row.anticipo{background:#FDFAFF}
-.u-fam{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800}
-.u-fam.critico{color:var(--red)}.u-fam.urgente{color:var(--orange)}.u-fam.anticipo{color:var(--purple)}
-.u-folio{font-size:13px;font-weight:700;color:var(--navy)}
-.u-vin{font-family:monospace;font-size:11px;color:var(--mut);margin-top:1px}
-.u-dates{font-size:11.5px;color:var(--mut);margin-top:2px}
-.u-dias{text-align:center}
-.u-dias-n{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800}
-.u-dias-n.red{color:var(--red)}.u-dias-n.orange{color:var(--orange)}.u-dias-n.purple{color:var(--purple)}
-.u-dias-l{font-size:10px;color:var(--mut);font-weight:600}
 .chip{display:inline-flex;align-items:center;padding:5px 12px;border-radius:20px;font-size:11.5px;font-weight:700;white-space:nowrap}
 .chip.red{background:var(--red-bg);color:var(--red)}.chip.orange{background:var(--orange-bg);color:var(--orange)}
 .chip.purple{background:var(--purple-bg);color:var(--purple)}.chip.green{background:var(--green-bg);color:var(--green)}
 .chip.gray{background:var(--gray-bg);color:var(--mut)}
+/* ── COBRANZA UNIT ROW NEW ── */
+.unit-row{display:flex;align-items:center;gap:0;padding:0;border-bottom:1px solid var(--line)}
+.unit-row:last-child{border-bottom:none}
+.unit-row.critico{background:#FFFAF9}.unit-row.urgente{background:#FFFDF8}.unit-row.anticipo{background:#FDFAFF}
+.u-dias-block{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 16px;min-width:80px;border-right:1px solid var(--line)}
+.u-dias-n{font-family:'Barlow Condensed',sans-serif;font-size:38px;font-weight:800;line-height:1}
+.u-dias-n.red{color:var(--red)}.u-dias-n.orange{color:var(--orange)}.u-dias-n.purple{color:var(--purple)}
+.u-dias-l{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mut);margin-top:1px;text-align:center}
+.u-body{flex:1;padding:12px 16px;display:flex;flex-direction:column;gap:4px}
+.u-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.u-fam{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800}
+.u-fam.critico{color:var(--red)}.u-fam.urgente{color:var(--orange)}.u-fam.anticipo{color:var(--purple)}
+.u-estado-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700}
+.u-estado-pill.critico{background:var(--red-bg);color:var(--red)}
+.u-estado-pill.urgente{background:var(--orange-bg);color:var(--orange)}
+.u-estado-pill.anticipo{background:var(--purple-bg);color:var(--purple)}
+.u-timeline{display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px}
+.u-titem{display:flex;flex-direction:column;gap:1px}
+.u-titem-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--mut);font-weight:600}
+.u-titem-val{font-weight:700;color:var(--ink)}
+.u-titem-val.highlight{color:var(--navy)}
+.u-folio-line{font-size:11px;color:var(--mut)}
+.u-folio-line span{font-family:monospace}
 .summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin-bottom:24px}
 .scard{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:16px 18px}
 .scard.red{border-left:5px solid var(--red)}.scard.orange{border-left:5px solid var(--orange)}.scard.green{border-left:5px solid var(--green)}
@@ -296,9 +307,21 @@ function renderCob(){
   const alertas=[...criticos,...urgentes,...anticipos];
 
   document.getElementById('cob-strips').innerHTML=
-    `<div class="astrip red"><div class="astrip-num">${criticos.length}</div><div class="astrip-lbl">🔴 CRÍTICO</div><div class="astrip-sub">Entregado sin ningún pago</div></div>
-     <div class="astrip orange"><div class="astrip-num">${urgentes.length}</div><div class="astrip-lbl">🟠 URGENTE</div><div class="astrip-sub">Liberado de planta sin cobrar</div></div>
-     <div class="astrip purple"><div class="astrip-num">${anticipos.length}</div><div class="astrip-lbl">🟣 ANTICIPO</div><div class="astrip-sub">Pago parcial, falta el saldo</div></div>`;
+    `<div class="astrip red">
+      <div class="astrip-num">${criticos.length}</div>
+      <div class="astrip-lbl">🔴 ENTREGADO SIN PAGO</div>
+      <div class="astrip-sub">Distribuidor ya recibió la unidad</div>
+    </div>
+    <div class="astrip orange">
+      <div class="astrip-num">${urgentes.length}</div>
+      <div class="astrip-lbl">🟠 LIBERADO SIN PAGO</div>
+      <div class="astrip-sub">Planta liberó, pendiente de cobrar</div>
+    </div>
+    <div class="astrip purple">
+      <div class="astrip-num">${anticipos.length}</div>
+      <div class="astrip-lbl">🟣 ANTICIPO PENDIENTE</div>
+      <div class="astrip-sub">Pago parcial, falta el saldo</div>
+    </div>`;
 
   const byDealer={};
   alertas.forEach(r=>{
@@ -306,45 +329,88 @@ function renderCob(){
     byDealer[r.distribuidor_id][r.estado].push(r);
   });
 
-  const order=Object.entries(byDealer).sort(([,a],[,b])=>b.critico.length-a.critico.length||b.urgente.length-a.urgente.length||b.anticipo.length-a.anticipo.length);
+  const order=Object.entries(byDealer).sort(([,a],[,b])=>
+    b.critico.length-a.critico.length||b.urgente.length-a.urgente.length||b.anticipo.length-a.anticipo.length
+  );
 
   let html='';
   if(!alertas.length){
     html='<div style="text-align:center;padding:60px;color:var(--green);font-size:16px;font-weight:700">✅ Sin alertas de cobranza</div>';
   } else {
-    html=`<div class="section-lbl">Resumen por distribuidor <span class="cnt">${order.length} distribuidores · ${alertas.length} unidades</span></div>`;
+    html=`<div class="section-lbl">Cobros pendientes por distribuidor <span class="cnt">${order.length} distribuidores · ${alertas.length} unidades</span></div>`;
     order.forEach(([did,g])=>{
-      const all=[...g.critico,...g.urgente,...g.anticipo].sort((a,b)=>b.dias_alerta-a.dias_alerta);
+      // Sort: critico first, then by dias desc
+      const all=[...g.critico,...g.urgente,...g.anticipo].sort((a,b)=>{
+        const ep={'critico':0,'urgente':1,'anticipo':2};
+        if(ep[a.estado]!==ep[b.estado]) return ep[a.estado]-ep[b.estado];
+        return b.dias_alerta-a.dias_alerta;
+      });
       const tc=g.critico.length?'has-critico':g.urgente.length?'has-urgente':'has-anticipo';
+      const maxDias=Math.max(...all.map(r=>r.dias_alerta));
+      const dcHead=maxDias>=30?'red':maxDias>=15?'orange':'purple';
+
       html+=`<div class="dcob-card ${tc}">
         <div class="dcob-head" onclick="toggleDcob(this)">
           <div class="dcob-name">${DL[did]||did}</div>
           <div class="dcob-badges">
-            ${g.critico.length?`<div class="dbadge red"><div class="dbadge-n">${g.critico.length}</div><div class="dbadge-l">Crítico</div></div>`:''}
-            ${g.urgente.length?`<div class="dbadge orange"><div class="dbadge-n">${g.urgente.length}</div><div class="dbadge-l">Urgente</div></div>`:''}
+            ${g.critico.length?`<div class="dbadge red"><div class="dbadge-n">${g.critico.length}</div><div class="dbadge-l">Entregado</div></div>`:''}
+            ${g.urgente.length?`<div class="dbadge orange"><div class="dbadge-n">${g.urgente.length}</div><div class="dbadge-l">Liberado</div></div>`:''}
             ${g.anticipo.length?`<div class="dbadge purple"><div class="dbadge-n">${g.anticipo.length}</div><div class="dbadge-l">Anticipo</div></div>`:''}
+            <div class="dbadge" style="background:#F4F7FB">
+              <div class="dbadge-n" style="color:var(--${dcHead});font-size:20px">${maxDias}d</div>
+              <div class="dbadge-l">max sin pago</div>
+            </div>
           </div>
           <div class="dcob-toggle">▾</div>
         </div>
         <div class="dcob-units">
           ${all.map(r=>{
             const cls={critico:'red',urgente:'orange',anticipo:'purple'}[r.estado];
-            const chipLbl={critico:'🔴 Entregado sin pago',urgente:'🟠 Liberado sin pago',anticipo:'🟣 Anticipo'}[r.estado];
-            const dc=diasColor(r.dias_alerta);
-            const src=r.dias_src==='lib'?'desde liberación':'desde facturación';
-            const dateLine=r.f_liberacion?`Fact: ${r.f_factura} · Lib: ${r.f_liberacion}`:`Fact: ${r.f_factura}`;
+            const dc=r.dias_alerta>=30?'red':r.dias_alerta>=15?'orange':'purple';
+            // Key date: entrega if critico, liberacion if urgente, factura if anticipo
+            const esEntregada = r.f_entrega && r.f_entrega!=='';
+            const esLiberada  = r.f_liberacion && r.f_liberacion!=='';
+            const estadoLbl = r.estado==='critico'
+              ? '🔴 Entregado sin pago'
+              : r.estado==='urgente'
+              ? (esEntregada ? '🟠 Entregado sin pago' : '🟠 Liberado — en camino')
+              : '🟣 Anticipo pendiente';
+            const fechaRef = r.estado==='critico'
+              ? (r.f_entrega||r.f_liberacion||r.f_factura)
+              : r.estado==='urgente'
+              ? (r.f_liberacion||r.f_factura)
+              : r.f_factura;
+            const diasLabel = r.estado==='critico'
+              ? (r.f_entrega ? 'días desde entrega' : 'días desde liberación')
+              : r.estado==='urgente'
+              ? (esLiberada ? 'días desde liberación' : 'días desde factura')
+              : 'días desde factura';
             return`<div class="unit-row ${r.estado}">
-              <div class="u-fam ${cls}">${fam(r.modelo)}</div>
-              <div>
-                <div class="u-folio">${r.folio}</div>
-                <div class="u-vin">${r.vin}</div>
-                <div class="u-dates">${dateLine}</div>
-              </div>
-              <div class="u-dias">
+              <div class="u-dias-block">
                 <div class="u-dias-n ${dc}">${r.dias_alerta}</div>
-                <div class="u-dias-l">días (${src})</div>
+                <div class="u-dias-l">${diasLabel}</div>
               </div>
-              <span class="chip ${cls}">${chipLbl}</span>
+              <div class="u-body">
+                <div class="u-top">
+                  <div class="u-fam ${cls}">${fam(r.modelo)}</div>
+                  <div class="u-estado-pill ${cls}">${estadoLbl}</div>
+                </div>
+                <div class="u-timeline">
+                  <div class="u-titem">
+                    <div class="u-titem-lbl">Facturado</div>
+                    <div class="u-titem-val">${r.f_factura||'—'}</div>
+                  </div>
+                  ${esLiberada?`<div class="u-titem">
+                    <div class="u-titem-lbl">Liberado planta</div>
+                    <div class="u-titem-val highlight">${r.f_liberacion}</div>
+                  </div>`:''}
+                  ${esEntregada?`<div class="u-titem">
+                    <div class="u-titem-lbl">Entregado</div>
+                    <div class="u-titem-val highlight" style="color:var(--${cls})">${r.f_entrega}</div>
+                  </div>`:''}
+                </div>
+                <div class="u-folio-line">Folio <span>${r.folio}</span> · <span>${r.vin}</span></div>
+              </div>
             </div>`;
           }).join('')}
         </div>
@@ -352,7 +418,6 @@ function renderCob(){
     });
   }
   document.getElementById('cob-main').innerHTML=html;
-  // Auto-expand if 1 dealer
   setTimeout(()=>{ const c=document.querySelectorAll('.dcob-head'); if(c.length===1) toggleDcob(c[0]); },100);
 }
 
