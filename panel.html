@@ -264,14 +264,48 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--mut)}
 <footer>Fuente: LDR Solutions · Solo modelos S3-S12 · Región Centro-Sur · Los datos se actualizan automáticamente cada día a las 8am</footer>
 
 <script>
-const SB = 'https://gblwoaaitnqbgorxaydv.supabase.co/rest/v1';
+const SB  = 'https://gblwoaaitnqbgorxaydv.supabase.co/rest/v1';
 const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdibHdvYWFpdG5xYmdvcnhheWR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxOTQ3NTMsImV4cCI6MjA5NTc3MDc1M30.o7zYCCfH2rHEs69o4U7Zc9dM4IvQi8GsXRlZFW_2kso';
-const H = { apikey: KEY, Authorization: 'Bearer ' + KEY };
+const H   = { apikey:KEY, Authorization:'Bearer '+KEY };
 
-const DL = {astur:"Autos EMCG",tang:"Asia Central",bavi:"Burk Automotriz",ruano:"Metropolitanos GR",orient:"Camiones Orientales",prem:"Premium del Centro",gcm:"GC Milenio",jimenez:"Jiménez Autocamiones",pen:"Vehículos Península",xian:"Xian Motors"};
-const MODS = ["S3","S5","S6","S8","S12"];
-let COB=[], PROG=[], progDealer="all";
+// ── DEALERS POR REGIÓN ──────────────────────────────────────────────────────
+const DL_ISRAEL = {
+  astur:"Autos EMCG", tang:"Asia Central", bavi:"Burk Automotriz",
+  ruano:"Metropolitanos GR", orient:"Camiones Orientales", prem:"Premium del Centro",
+  gcm:"GC Milenio", jimenez:"Jiménez Autocamiones", pen:"Vehículos Península",
+  xian:"Xian Motors"
+};
+const DL_MARCO = {
+  velcen:"Velcen Motors", camson:"Cam. y Tract. de Sonora",
+  proser:"Profesional Serv. y Diag.", metval:"Cam. Metro. del Valle",
+  built2:"Built 2 Work Motors", hermt:"Camiones Hermt",
+  innopac:"Cam. Innovadores del Pacífico", ecotrk:"Eco Trucks",
+  gadveh:"GAD Vehículos Comerciales", argbro:"ARG Broker",
+  policars:"Policars", autoser:"Auto Serv. del Sureste"
+};
 
+let DL              = DL_ISRAEL;
+let CURRENT_REGION  = 'israel';
+const MODS          = ["S3","S5","S6","S8","S12"];
+let COB = [], PROG = [], progDealer = "all";
+
+// ── REGION SWITCHER ─────────────────────────────────────────────────────────
+function setRegion(r) {
+  CURRENT_REGION = r;
+  DL = r==='marco' ? DL_MARCO : r==='all' ? Object.assign({},DL_ISRAEL,DL_MARCO) : DL_ISRAEL;
+  document.querySelectorAll('.rbtn').forEach(b => b.classList.toggle('on', b.dataset.r===r));
+  const labels = {
+    israel: 'REGIÓN CENTRO-SUR · Israel Esperanza',
+    marco:  'REGIÓN NOROESTE/PACÍFICO · Marco Chagoya',
+    all:    'VISTA GENERAL · Daniel Alcántara'
+  };
+  document.getElementById('region-label').textContent =
+    'LÍNEA S3 · S5 · S6 · S8 · S12 — ' + (labels[r]||r);
+  progDealer = 'all';
+  cargarDatos();
+}
+
+// ── SUPABASE ────────────────────────────────────────────────────────────────
 async function q(path) {
   const r = await fetch(SB + path, {headers: H});
   if (!r.ok) throw new Error(r.status + ' ' + path);
@@ -286,70 +320,92 @@ function toast(msg, err=false) {
 }
 
 async function cargarDatos() {
-  const [cob, prog, bp, fac] = await Promise.all([
-    (CURRENT_REGION==="all"?q('/cobranza_2026?anio=eq.2026&select=*&order=dias_alerta.desc'):q('/cobranza_2026?anio=eq.2026&region=eq.'+CURRENT_REGION+'&select=*&order=dias_alerta.desc')),
+  // Fetch cobranza filtered by region
+  const cobPath = CURRENT_REGION === 'all'
+    ? '/cobranza_2026?anio=eq.2026&select=*&order=dias_alerta.desc'
+    : '/cobranza_2026?anio=eq.2026&region=eq.'+CURRENT_REGION+'&select=*&order=dias_alerta.desc';
+
+  const [cob, bo, bp, fac] = await Promise.all([
+    q(cobPath),
     q('/back_order?select=*'),
     q('/bp_anual?anio=eq.2026&select=distribuidor_id,modelo,unidades_bp'),
     q('/facturado_ytd?anio=eq.2026&select=distribuidor_id,modelo,unidades_facturadas')
   ]);
+
   COB = cob;
 
-  // Build prog matrix
+  // Filter BP and FAC by current DL keys
+  const dlKeys = Object.keys(DL);
   const bpMap={}, facMap={}, boMap={};
-  bp.forEach(r=>{ const k=r.distribuidor_id+'|'+r.modelo; bpMap[k]=(bpMap[k]||0)+r.unidades_bp; });
-  fac.forEach(r=>{ const fm=r.modelo.replace(/ (MT|AMT)$/,''); const k=r.distribuidor_id+'|'+fm; facMap[k]=(facMap[k]||0)+r.unidades_facturadas; });
-  prog.forEach(r=>{
+
+  bp.filter(r => dlKeys.includes(r.distribuidor_id)).forEach(r => {
+    const k=r.distribuidor_id+'|'+r.modelo;
+    bpMap[k]=(bpMap[k]||0)+r.unidades_bp;
+  });
+  fac.filter(r => dlKeys.includes(r.distribuidor_id)).forEach(r => {
+    const fm=r.modelo.replace(/ (MT|AMT)$/,'');
+    const k=r.distribuidor_id+'|'+fm;
+    facMap[k]=(facMap[k]||0)+r.unidades_facturadas;
+  });
+  bo.filter(r => dlKeys.includes(r.distribuidor_id)).forEach(r => {
     const fm = (['S3','S5','S6','S8','S12'].find(m=>r.modelo.startsWith(m+' '))||r.modelo.split(' ')[0]);
     const k=r.distribuidor_id+'|'+fm;
     if(!boMap[k]) boMap[k]={conf:0,pv:0,folios:[]};
     if(r.status==='confirmado') boMap[k].conf+=r.unidades; else boMap[k].pv+=r.unidades;
-    boMap[k].folios.push({folio:r.notas?.split('|')[0]?.replace('Folio ','').trim()||'',u:r.unidades,status:r.status,fecha:r.created_at?.slice(0,10)||'',modelo:r.modelo,obs:r.notas?.includes('OBS:')?r.notas.split('OBS:')[1]?.split('|')[0]?.trim():''});
+    boMap[k].folios.push({
+      folio: r.notas?.split('|')[0]?.replace('Folio ','').trim()||'',
+      u:r.unidades, status:r.status,
+      fecha:r.created_at?.slice(0,10)||'',
+      modelo:r.modelo,
+      obs:r.notas?.includes('OBS:')?r.notas.split('OBS:')[1]?.split('|')[0]?.trim():''
+    });
   });
 
   PROG = [];
-  Object.keys(DL).forEach(did=>{
-    MODS.forEach(m=>{
+  dlKeys.forEach(did => {
+    MODS.forEach(m => {
       const bk=did+'|'+m, fk=did+'|'+m;
       const bp_v=bpMap[bk]||0, fac_v=facMap[fk]||0;
-      const bo=boMap[bk]||{conf:0,pv:0,folios:[]};
-      const gap=Math.max(0,bp_v-fac_v-bo.conf-bo.pv);
+      const boo=boMap[bk]||{conf:0,pv:0,folios:[]};
+      const gap=Math.max(0,bp_v-fac_v-boo.conf-boo.pv);
       let sem='sinbp';
       if(bp_v>0){
         if(fac_v>=bp_v) sem='cumplido';
         else if(gap===0) sem='cubierto';
-        else if(bo.conf+bo.pv>0) sem='parcial';
+        else if(boo.conf+boo.pv>0) sem='parcial';
         else sem='urgente';
       }
-      PROG.push({did,modelo:m,bp:bp_v,fac:fac_v,conf:bo.conf,pv:bo.pv,gap,sem,folios:bo.folios});
+      PROG.push({did,modelo:m,bp:bp_v,fac:fac_v,conf:boo.conf,pv:boo.pv,gap,sem,folios:boo.folios});
     });
   });
 
-  // Update corte date
-  const maxDate = cob.reduce((mx,r)=>{ const d=r.f_factura||''; return d>mx?d:mx; },'');
-  document.getElementById('corte-lbl').textContent = 'Corte ' + (maxDate||'—');
+  // Update corte
+  const maxDate=cob.reduce((mx,r)=>{const d=r.f_factura||'';return d>mx?d:mx;},'');
+  document.getElementById('corte-lbl').textContent='Corte '+( maxDate||'—');
 
   renderCob();
-  renderProgSummary();
-  renderProgMain();
+  renderProgSummary(progDealer);
+  document.getElementById('prog-main').innerHTML=
+    progDealer==='all'?renderProgRegional():renderProgDealer(progDealer);
   updateBadges();
 }
 
 async function actualizarDatos() {
-  const btn = document.getElementById('btn-update');
+  const btn=document.getElementById('btn-update');
   document.getElementById('overlay').classList.add('on');
   btn.classList.add('loading');
   try {
     await cargarDatos();
     toast('Datos actualizados correctamente');
   } catch(e) {
-    toast('Error al actualizar: ' + e.message, true);
+    toast('Error al actualizar: '+e.message, true);
   } finally {
     document.getElementById('overlay').classList.remove('on');
     btn.classList.remove('loading');
   }
 }
 
-// TABS
+// ── TABS ─────────────────────────────────────────────────────────────────────
 document.querySelectorAll('.tab').forEach(t=>{
   t.onclick=()=>{
     document.querySelectorAll('.tab,.pane').forEach(x=>x.classList.remove('on'));
@@ -365,9 +421,10 @@ function updateBadges(){
   document.getElementById('tab-prog').innerHTML='📦 Back Order & Programación <span class="tbadge">'+urgP+' sin BO</span>';
 }
 
-function diasColor(n){ if(n>=30) return 'red'; if(n>=15) return 'orange'; return 'purple'; }
-function fam(m){ return (['S12','S8','S6','S5','S3'].find(k=>m.includes(k)))||m.split(' ')[0]; }
+function diasColor(n){ if(n>=30)return'red'; if(n>=15)return'orange'; return'purple'; }
+function fam(m){ return(['S12','S8','S6','S5','S3'].find(k=>m.includes(k)))||m.split(' ')[0]; }
 
+// ── COBRANZA ─────────────────────────────────────────────────────────────────
 function renderCob(){
   const criticos=COB.filter(r=>r.estado==='critico');
   const urgentes=COB.filter(r=>r.estado==='urgente');
@@ -375,28 +432,15 @@ function renderCob(){
   const alertas=[...criticos,...urgentes,...anticipos];
 
   document.getElementById('cob-strips').innerHTML=
-    `<div class="astrip red">
-      <div class="astrip-num">${criticos.length}</div>
-      <div class="astrip-lbl">🔴 ENTREGADO SIN PAGO</div>
-      <div class="astrip-sub">Distribuidor ya recibió la unidad</div>
-    </div>
-    <div class="astrip orange">
-      <div class="astrip-num">${urgentes.length}</div>
-      <div class="astrip-lbl">🟠 LIBERADO SIN PAGO</div>
-      <div class="astrip-sub">Planta liberó, pendiente de cobrar</div>
-    </div>
-    <div class="astrip purple">
-      <div class="astrip-num">${anticipos.length}</div>
-      <div class="astrip-lbl">🟣 ANTICIPO PENDIENTE</div>
-      <div class="astrip-sub">Pago parcial, falta el saldo</div>
-    </div>`;
+    `<div class="astrip red"><div class="astrip-num">${criticos.length}</div><div class="astrip-lbl">🔴 ENTREGADO SIN PAGO</div><div class="astrip-sub">Distribuidor ya tiene la unidad</div></div>
+     <div class="astrip orange"><div class="astrip-num">${urgentes.length}</div><div class="astrip-lbl">🟠 LIBERADO SIN PAGO</div><div class="astrip-sub">Planta liberó, pendiente de cobrar</div></div>
+     <div class="astrip purple"><div class="astrip-num">${anticipos.length}</div><div class="astrip-lbl">🟣 ANTICIPO PENDIENTE</div><div class="astrip-sub">Pago parcial, falta el saldo</div></div>`;
 
   const byDealer={};
   alertas.forEach(r=>{
     if(!byDealer[r.distribuidor_id]) byDealer[r.distribuidor_id]={critico:[],urgente:[],anticipo:[]};
     byDealer[r.distribuidor_id][r.estado].push(r);
   });
-
   const order=Object.entries(byDealer).sort(([,a],[,b])=>
     b.critico.length-a.critico.length||b.urgente.length-a.urgente.length||b.anticipo.length-a.anticipo.length
   );
@@ -405,18 +449,15 @@ function renderCob(){
   if(!alertas.length){
     html='<div style="text-align:center;padding:60px;color:var(--green);font-size:16px;font-weight:700">✅ Sin alertas de cobranza</div>';
   } else {
-    html=`<div class="section-lbl">Cobros pendientes por distribuidor <span class="cnt">${order.length} distribuidores · ${alertas.length} unidades</span></div>`;
+    html=`<div class="section-lbl">Cobros pendientes <span class="cnt">${order.length} distribuidores · ${alertas.length} unidades</span></div>`;
     order.forEach(([did,g])=>{
-      // Sort: critico first, then by dias desc
       const all=[...g.critico,...g.urgente,...g.anticipo].sort((a,b)=>{
-        const ep={'critico':0,'urgente':1,'anticipo':2};
-        if(ep[a.estado]!==ep[b.estado]) return ep[a.estado]-ep[b.estado];
-        return b.dias_alerta-a.dias_alerta;
+        const ep={critico:0,urgente:1,anticipo:2};
+        return ep[a.estado]-ep[b.estado]||b.dias_alerta-a.dias_alerta;
       });
       const tc=g.critico.length?'has-critico':g.urgente.length?'has-urgente':'has-anticipo';
       const maxDias=Math.max(...all.map(r=>r.dias_alerta));
-      const dcHead=maxDias>=30?'red':maxDias>=15?'orange':'purple';
-
+      const dcH=maxDias>=30?'red':maxDias>=15?'orange':'purple';
       html+=`<div class="dcob-card ${tc}">
         <div class="dcob-head" onclick="toggleDcob(this)">
           <div class="dcob-name">${DL[did]||did}</div>
@@ -425,7 +466,7 @@ function renderCob(){
             ${g.urgente.length?`<div class="dbadge orange"><div class="dbadge-n">${g.urgente.length}</div><div class="dbadge-l">Liberado</div></div>`:''}
             ${g.anticipo.length?`<div class="dbadge purple"><div class="dbadge-n">${g.anticipo.length}</div><div class="dbadge-l">Anticipo</div></div>`:''}
             <div class="dbadge" style="background:#F4F7FB">
-              <div class="dbadge-n" style="color:var(--${dcHead});font-size:20px">${maxDias}d</div>
+              <div class="dbadge-n" style="color:var(--${dcH});font-size:20px">${maxDias}d</div>
               <div class="dbadge-l">max sin pago</div>
             </div>
           </div>
@@ -434,25 +475,14 @@ function renderCob(){
         <div class="dcob-units">
           ${all.map(r=>{
             const cls={critico:'red',urgente:'orange',anticipo:'purple'}[r.estado];
-            const dc=r.dias_alerta>=30?'red':r.dias_alerta>=15?'orange':'purple';
-            // Key date: entrega if critico, liberacion if urgente, factura if anticipo
-            const esEntregada = r.f_entrega && r.f_entrega!=='';
-            const esLiberada  = r.f_liberacion && r.f_liberacion!=='';
-            const estadoLbl = r.estado==='critico'
-              ? '🔴 Entregado sin pago'
-              : r.estado==='urgente'
-              ? (esEntregada ? '🟠 Entregado sin pago' : '🟠 Liberado — en camino')
-              : '🟣 Anticipo pendiente';
-            const fechaRef = r.estado==='critico'
-              ? (r.f_entrega||r.f_liberacion||r.f_factura)
-              : r.estado==='urgente'
-              ? (r.f_liberacion||r.f_factura)
-              : r.f_factura;
-            const diasLabel = r.estado==='critico'
-              ? (r.f_entrega ? 'días desde entrega' : 'días desde liberación')
-              : r.estado==='urgente'
-              ? (esLiberada ? 'días desde liberación' : 'días desde factura')
-              : 'días desde factura';
+            const dc=diasColor(r.dias_alerta);
+            const esLib=r.f_liberacion&&r.f_liberacion!=='';
+            const esEnt=r.f_entrega&&r.f_entrega!=='';
+            const estadoLbl=r.estado==='critico'?'🔴 Entregado sin pago':
+              r.estado==='urgente'?(esEnt?'🟠 Entregado sin pago':'🟠 Liberado — en camino'):
+              '🟣 Anticipo pendiente';
+            const diasLabel=r.estado==='urgente'?(esLib?'días desde liberación':'días desde factura'):
+              r.estado==='critico'?'días desde liberación':'días desde factura';
             return`<div class="unit-row ${r.estado}">
               <div class="u-dias-block">
                 <div class="u-dias-n ${dc}">${r.dias_alerta}</div>
@@ -464,18 +494,9 @@ function renderCob(){
                   <div class="u-estado-pill ${cls}">${estadoLbl}</div>
                 </div>
                 <div class="u-timeline">
-                  <div class="u-titem">
-                    <div class="u-titem-lbl">Facturado</div>
-                    <div class="u-titem-val">${r.f_factura||'—'}</div>
-                  </div>
-                  ${esLiberada?`<div class="u-titem">
-                    <div class="u-titem-lbl">Liberado planta</div>
-                    <div class="u-titem-val highlight">${r.f_liberacion}</div>
-                  </div>`:''}
-                  ${esEntregada?`<div class="u-titem">
-                    <div class="u-titem-lbl">Entregado</div>
-                    <div class="u-titem-val highlight" style="color:var(--${cls})">${r.f_entrega}</div>
-                  </div>`:''}
+                  <div class="u-titem"><div class="u-titem-lbl">Facturado</div><div class="u-titem-val">${r.f_factura||'—'}</div></div>
+                  ${esLib?`<div class="u-titem"><div class="u-titem-lbl">Liberado</div><div class="u-titem-val highlight">${r.f_liberacion}</div></div>`:''}
+                  ${esEnt?`<div class="u-titem"><div class="u-titem-lbl">Entregado</div><div class="u-titem-val highlight" style="color:var(--${cls})">${r.f_entrega}</div></div>`:''}
                 </div>
                 <div class="u-folio-line">Folio <span>${r.folio}</span> · <span>${r.vin}</span></div>
               </div>
@@ -486,7 +507,7 @@ function renderCob(){
     });
   }
   document.getElementById('cob-main').innerHTML=html;
-  setTimeout(()=>{ const c=document.querySelectorAll('.dcob-head'); if(c.length===1) toggleDcob(c[0]); },100);
+  setTimeout(()=>{const c=document.querySelectorAll('.dcob-head');if(c.length===1)toggleDcob(c[0]);},100);
 }
 
 function toggleDcob(head){
@@ -494,45 +515,38 @@ function toggleDcob(head){
   head.querySelector('.dcob-toggle').classList.toggle('open');
 }
 
-function mbc(sem){ return{cumplido:'green',cubierto:'blue',parcial:'orange',urgente:'red',sinbp:'gray'}[sem]||'gray'; }
+// ── PROGRAMACION ─────────────────────────────────────────────────────────────
+function mbc(sem){return{cumplido:'green',cubierto:'blue',parcial:'orange',urgente:'red',sinbp:'gray'}[sem]||'gray';}
+function msc(sem){return{cumplido:'green',cubierto:'blue',parcial:'orange',urgente:'red',sinbp:'gray'}[sem]||'gray';}
+function msl(sem){return{cumplido:'✅ Cumplido',cubierto:'🔵 Con BO',parcial:'⚠ Gap',urgente:'🔴 Sin BO',sinbp:'—'}[sem]||'';}
 
 function renderProgSummary(did){
-  const d=did==="all"?PROG:PROG.filter(r=>r.did===did);
-  const urg=d.filter(r=>r.sem==="urgente").length;
-  const par=d.filter(r=>r.sem==="parcial").length;
+  const d=did==='all'?PROG:PROG.filter(r=>r.did===did);
+  const urg=d.filter(r=>r.sem==='urgente').length;
+  const par=d.filter(r=>r.sem==='parcial').length;
   const gap=d.reduce((s,r)=>s+r.gap,0);
   const bc=d.reduce((s,r)=>s+r.conf,0);
   const bpv=d.reduce((s,r)=>s+r.pv,0);
-  document.getElementById("prog-summary").innerHTML=
-    `<div class="scard red"><div class="sl">🔴 Sin BO — Ordenar ya</div><div class="sn">${urg}</div><div class="ss">Modelos sin ningún pedido</div></div>`+
-    `<div class="scard orange"><div class="sl">🟠 Gap — Ampliar pedido</div><div class="sn">${par}</div><div class="ss">BO insuficiente vs BP</div></div>`+
-    `<div class="scard"><div class="sl">Unidades por ordenar</div><div class="sn" style="color:var(--navy)">${gap}</div><div class="ss">Gap total región</div></div>`+
-    `<div class="scard green"><div class="sl">BO confirmado</div><div class="sn">${bc}</div><div class="ss">Pedidos 2026 vigentes</div></div>`+
-    `<div class="scard orange"><div class="sl">BO por validar</div><div class="sn">${bpv}</div><div class="ss">Pedidos 2025 — confirmar</div></div>`;
+  document.getElementById('prog-summary').innerHTML=
+    `<div class="scard red"><div class="sl">🔴 Ordenar ya</div><div class="sn">${urg}</div><div class="ss">Sin ningún BO</div></div>`+
+    `<div class="scard orange"><div class="sl">🟠 Ampliar pedido</div><div class="sn">${par}</div><div class="ss">BO insuficiente</div></div>`+
+    `<div class="scard"><div class="sl">Total por ordenar</div><div class="sn" style="color:var(--navy)">${gap}</div><div class="ss">Gap vs BP</div></div>`+
+    `<div class="scard green"><div class="sl">BO confirmado</div><div class="sn">${bc}</div><div class="ss">Pedidos 2026</div></div>`+
+    `<div class="scard orange"><div class="sl">BO por validar</div><div class="sn">${bpv}</div><div class="ss">Pedidos 2025</div></div>`;
 }
 
-function mbc(sem){return{cumplido:"green",cubierto:"blue",parcial:"orange",urgente:"red",sinbp:"gray"}[sem]||"gray"}
-function msc(sem){return{cumplido:"green",cubierto:"blue",parcial:"orange",urgente:"red",sinbp:"gray"}[sem]||"gray"}
-function msl(sem){return{cumplido:"✅ Cumplido",cubierto:"🔵 Con BO",parcial:"⚠ Gap",urgente:"🔴 Sin BO",sinbp:"—"}[sem]||""}
-
 function renderProgRegional(){
-  // Dealer cards with model-by-model breakdown
-  const cards = Object.entries(DL).map(([id,nm])=>{
-    const rows=PROG.filter(r=>r.did===id); if(!rows.length)return"";
-    const urg=rows.filter(r=>r.sem==="urgente").length;
-    const par=rows.filter(r=>r.sem==="parcial").length;
-    const ac=urg?"red":par?"orange":"green";
-    const at=urg?`${urg} sin BO 🔴`:par?`${par} con gap 🟠`:"✅ En orden";
-
+  const cards=Object.entries(DL).map(([id,nm])=>{
+    const rows=PROG.filter(r=>r.did===id); if(!rows.length)return'';
+    const urg=rows.filter(r=>r.sem==='urgente').length;
+    const par=rows.filter(r=>r.sem==='parcial').length;
+    const ac=urg?'red':par?'orange':'green';
+    const at=urg?urg+' sin BO 🔴':par?par+' con gap 🟠':'✅ En orden';
     const modelRows=MODS.map(m=>{
       const r=rows.find(x=>x.modelo===m);
-      if(!r||r.bp===0)return`<div class="prog-model-row">
-        <div class="pm-name" style="color:#ccc">${m}</div>
-        <div class="pm-bar-col"><div style="font-size:11px;color:#ccc">Sin BP</div></div>
-        <div></div><div></div>
-      </div>`;
+      if(!r||r.bp===0) return`<div class="prog-model-row"><div class="pm-name" style="color:#ccc">${m}</div><div class="pm-bar-col"><div style="font-size:11px;color:#ccc">Sin BP</div></div><div></div><div></div></div>`;
       const pct=Math.min(100,Math.round((r.fac+r.conf+r.pv)/r.bp*100));
-      const gc=msc(r.sem); const bc=mbc(r.sem);
+      const gc=msc(r.sem), bc=mbc(r.sem);
       return`<div class="prog-model-row sem-${r.sem}">
         <div class="pm-name">${m}</div>
         <div class="pm-bar-col">
@@ -541,116 +555,71 @@ function renderProgRegional(){
         </div>
         <div class="pm-status ${gc}">${msl(r.sem)}</div>
         <div class="pm-gap">
-          <div class="pm-gap-n ${r.gap>0?gc:"green"}">${r.gap>0?"-"+r.gap:"✓"}</div>
-          <div class="pm-gap-l">${r.gap>0?"por ordenar":"cubierto"}</div>
+          <div class="pm-gap-n ${r.gap>0?gc:'green'}">${r.gap>0?'-'+r.gap:'✓'}</div>
+          <div class="pm-gap-l">${r.gap>0?'por ordenar':'cubierto'}</div>
         </div>
       </div>`;
-    }).join("");
-
+    }).join('');
     return`<div class="prog-dcard" onclick="goProgDealer('${id}')">
-      <div class="prog-dcard-head">
-        <div class="prog-dcard-name">${nm}</div>
-        <div class="prog-dcard-total" style="color:var(--${ac})">${at}</div>
-      </div>
+      <div class="prog-dcard-head"><div class="prog-dcard-name">${nm}</div><div class="prog-dcard-total" style="color:var(--${ac})">${at}</div></div>
       <div class="prog-dcard-body">${modelRows}</div>
     </div>`;
-  }).join("");
+  }).join('');
 
-  // Action tables
-  const urg=PROG.filter(r=>r.sem==="urgente"&&r.gap>0).sort((a,b)=>b.gap-a.gap);
-  const par=PROG.filter(r=>r.sem==="parcial"&&r.gap>0).sort((a,b)=>b.gap-a.gap);
-
-  let ahtml="";
-  if(urg.length){
-    const rows=urg.map(r=>{
-      const pct=Math.min(100,Math.round(r.fac/r.bp*100));
-      return`<div class="pab-row">
-        <div class="pab-dealer">${DL[r.did]||r.did}</div>
-        <div class="pab-model">${r.modelo}</div>
-        <div class="pab-bar-col">
-          <div class="pab-big-bar"><div class="pab-big-fill" style="width:${pct}%;background:var(--blue)"></div></div>
-          <div class="pab-nums">Facturado <b>${r.fac}</b> de <b>${r.bp}</b> (${pct}%) · <span style="color:var(--red);font-weight:700">${r.gap} unidades sin pedir</span></div>
-        </div>
-        <div class="pab-act"><span class="chip red">Programar pedido</span></div>
-      </div>`;
-    }).join("");
-    ahtml+=`<div class="prog-action-block">
-      <div class="pab-head"><h3>🔴 Ordenar de inmediato — Sin back order</h3><span style="font-size:12px;color:var(--mut)">${urg.length} modelos</span></div>
-      ${rows}
-    </div>`;
-  }
-  if(par.length){
-    const rows=par.map(r=>{
-      const pct=Math.min(100,Math.round((r.fac+r.conf+r.pv)/r.bp*100));
-      return`<div class="pab-row">
-        <div class="pab-dealer">${DL[r.did]||r.did}</div>
-        <div class="pab-model">${r.modelo}</div>
-        <div class="pab-bar-col">
-          <div class="pab-big-bar"><div class="pab-big-fill" style="width:${pct}%;background:var(--orange)"></div></div>
-          <div class="pab-nums">Fac <b>${r.fac}</b> · BO <b>${r.conf+r.pv}</b> · BP <b>${r.bp}</b> · <span style="color:var(--orange);font-weight:700">faltan ${r.gap} u</span></div>
-        </div>
-        <div class="pab-act"><span class="chip orange">Ampliar BO</span></div>
-      </div>`;
-    }).join("");
-    ahtml+=`<div class="prog-action-block">
-      <div class="pab-head"><h3>🟠 Ampliar pedido — BO insuficiente</h3><span style="font-size:12px;color:var(--mut)">${par.length} modelos</span></div>
-      ${rows}
-    </div>`;
-  }
-
+  const urg=PROG.filter(r=>r.sem==='urgente'&&r.gap>0).sort((a,b)=>b.gap-a.gap);
+  const par=PROG.filter(r=>r.sem==='parcial'&&r.gap>0).sort((a,b)=>b.gap-a.gap);
+  let ahtml='';
+  if(urg.length) ahtml+=`<div class="prog-action-block"><div class="pab-head"><h3>🔴 Ordenar de inmediato</h3><span style="font-size:12px;color:var(--mut)">${urg.length} modelos sin BO</span></div>${urg.map(r=>{const pct=Math.min(100,Math.round(r.fac/r.bp*100));return`<div class="pab-row"><div class="pab-dealer">${DL[r.did]||r.did}</div><div class="pab-model">${r.modelo}</div><div class="pab-bar-col"><div class="pab-big-bar"><div class="pab-big-fill" style="width:${pct}%;background:var(--blue)"></div></div><div class="pab-nums">Facturado ${r.fac} de ${r.bp} · <strong style="color:var(--red)">${r.gap} sin pedir</strong></div></div><div class="pab-act"><span class="chip red">Programar pedido</span></div></div>`;}).join('')}</div>`;
+  if(par.length) ahtml+=`<div class="prog-action-block"><div class="pab-head"><h3>🟠 Ampliar pedido</h3><span style="font-size:12px;color:var(--mut)">${par.length} modelos con gap</span></div>${par.map(r=>{const pct=Math.min(100,Math.round((r.fac+r.conf+r.pv)/r.bp*100));return`<div class="pab-row"><div class="pab-dealer">${DL[r.did]||r.did}</div><div class="pab-model">${r.modelo}</div><div class="pab-bar-col"><div class="pab-big-bar"><div class="pab-big-fill" style="width:${pct}%;background:var(--orange)"></div></div><div class="pab-nums">Fac ${r.fac} · BO ${r.conf+r.pv} · BP ${r.bp} · <strong style="color:var(--orange)">faltan ${r.gap}</strong></div></div><div class="pab-act"><span class="chip orange">Ampliar BO</span></div></div>`;}).join('')}</div>`;
   return`<div class="prog-dealer-grid">${cards}</div>${ahtml}`;
 }
 
 function renderProgDealer(did){
   const rows=PROG.filter(r=>r.did===did);
+  const SL={cumplido:'✅ BP cumplido',cubierto:'🔵 Cubierto con BO',parcial:'🟠 Ampliar pedido',urgente:'🔴 Ordenar ya',sinbp:'Sin BP'};
+  const SC={cumplido:'green',cubierto:'green',parcial:'orange',urgente:'red',sinbp:'gray'};
   let html=`<button class="back-btn" onclick="goProgDealer('all')">← Todos los distribuidores</button>
-    <div class="prog-detail-card">
-      <div class="prog-detail-head"><h2>${DL[did]} — Facturado vs BO vs BP</h2></div>`;
-
+    <div class="prog-detail-card"><div class="prog-detail-head"><h2>${DL[did]||did} — Detalle por modelo</h2></div>`;
   MODS.forEach(m=>{
     const r=rows.find(x=>x.modelo===m); if(!r||r.bp===0)return;
     const pct=Math.min(100,Math.round((r.fac+r.conf+r.pv)/r.bp*100));
-    const gc=msc(r.sem); const bc=mbc(r.sem);
-    const chipCls={cumplido:"green",cubierto:"green",parcial:"orange",urgente:"red",sinbp:"gray"}[r.sem]||"gray";
     html+=`<div class="prog-model-detail">
       <div class="pmd-header">
         <div class="pmd-name">${m}</div>
         <div class="pmd-kpis">
-          <div class="pmd-kpi"><div class="pmd-kpi-n" style="color:var(--navy)">${r.bp}</div><div class="pmd-kpi-l">BP 2026</div></div>
+          <div class="pmd-kpi"><div class="pmd-kpi-n" style="color:var(--navy)">${r.bp}</div><div class="pmd-kpi-l">BP</div></div>
           <div class="pmd-kpi"><div class="pmd-kpi-n" style="color:var(--blue)">${r.fac}</div><div class="pmd-kpi-l">Facturado</div></div>
           <div class="pmd-kpi"><div class="pmd-kpi-n" style="color:var(--green)">${r.conf}</div><div class="pmd-kpi-l">BO conf</div></div>
           <div class="pmd-kpi"><div class="pmd-kpi-n" style="color:var(--orange)">${r.pv}</div><div class="pmd-kpi-l">BO pv</div></div>
-          <div class="pmd-kpi"><div class="pmd-kpi-n" style="color:var(--${r.gap>0?"red":"green"})">${r.gap}</div><div class="pmd-kpi-l">Por ordenar</div></div>
+          <div class="pmd-kpi"><div class="pmd-kpi-n" style="color:var(--${r.gap>0?'red':'green'})">${r.gap}</div><div class="pmd-kpi-l">Gap</div></div>
         </div>
-        <span class="chip ${chipCls}">${{cumplido:"✅ BP cumplido",cubierto:"🔵 Cubierto con BO",parcial:"🟠 Ampliar pedido",urgente:"🔴 Ordenar ya",sinbp:"Sin BP"}[r.sem]}</span>
+        <span class="chip ${SC[r.sem]}">${SL[r.sem]||r.sem}</span>
       </div>
-      <div class="pmd-bar"><div class="pmd-bar-fill" style="width:${pct}%;background:var(--${bc})"></div></div>
+      <div class="pmd-bar"><div class="pmd-bar-fill" style="width:${pct}%;background:var(--${mbc(r.sem)})"></div></div>
       <div class="pmd-folios">
         ${r.folios.length
-          ?r.folios.map(f=>`<div class="pmd-folio-row">
-            <span class="pmd-folio-num">${f.folio||"—"}</span>
-            <span>${f.modelo}</span>
-            <strong>${f.u} u</strong>
-            <span style="color:var(--mut)">${f.fecha}</span>
-            ${f.status==="por_validar"
-              ?'<span class="pmd-tag-pv">Pedido 2025 — validar con LDR</span>'
-              :'<span class="pmd-tag-conf">Confirmado 2026</span>'}
-            ${f.obs?`<span style="color:var(--mut)">${f.obs}</span>`:""}
-          </div>`).join("")
-          :`<div class="pmd-no-bo">⚠ Sin back order — programar pedido con este distribuidor.</div>`}
+          ?r.folios.map(f=>`<div class="pmd-folio-row"><span class="pmd-folio-num">${f.folio||'—'}</span><span>${f.modelo}</span><strong>${f.u} u</strong><span style="color:var(--mut)">${f.fecha}</span>${f.status==='por_validar'?'<span class="pmd-tag-pv">Pedido 2025</span>':'<span class="pmd-tag-conf">Confirmado</span>'}${f.obs?`<span style="color:var(--mut)">${f.obs}</span>`:''}</div>`).join('')
+          :'<div class="pmd-no-bo">⚠ Sin back order — programar pedido</div>'}
       </div>
     </div>`;
   });
-  html+="</div>";
-  return html;
+  return html+'</div>';
 }
 
 function goProgDealer(id){
   progDealer=id;
-  document.getElementById("prog-sel").value=id;
+  const s=document.getElementById('prog-sel');
+  if(s) s.value=id;
   renderProgSummary(id);
-  document.getElementById("prog-main").innerHTML=id==="all"?renderProgRegional():renderProgDealer(id);
+  document.getElementById('prog-main').innerHTML=id==='all'?renderProgRegional():renderProgDealer(id);
   window.scrollTo({top:0});
+}
+
+function buildSel(elId, cb){
+  const s=document.getElementById(elId);
+  s.innerHTML='<option value="all">🌎 Todos los distribuidores</option>'+
+    Object.entries(DL).sort((a,b)=>a[1].localeCompare(b[1])).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
+  s.onchange=()=>cb(s.value);
 }
 
 // Init
