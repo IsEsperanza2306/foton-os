@@ -152,6 +152,66 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--mut)}
   .arow{grid-template-columns:1fr 1fr}
   header{flex-wrap:wrap;padding:12px 16px}
 }
+
+/* ── PROG REDESIGN ── */
+.prog-dealer-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;margin-bottom:24px}
+.prog-dcard{background:#fff;border:1.5px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;transition:.15s}
+.prog-dcard:hover{border-color:#9BBDE0;box-shadow:0 4px 16px rgba(4,44,83,.08)}
+.prog-dcard-head{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.prog-dcard-name{font-weight:700;font-size:14px;color:var(--navy)}
+.prog-dcard-total{font-size:12px;color:var(--mut);font-weight:600}
+.prog-dcard-body{padding:0}
+.prog-model-row{display:grid;grid-template-columns:44px 1fr 90px 72px;align-items:center;gap:0;padding:10px 16px;border-bottom:1px solid #F0F5FB}
+.prog-model-row:last-child{border-bottom:none}
+.prog-model-row.sem-urgente{background:#FFFAF8}
+.prog-model-row.sem-parcial{background:#FFFDF7}
+.pm-name{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--navy)}
+.pm-bar-col{display:flex;flex-direction:column;gap:3px}
+.pm-bar{height:8px;background:#EDF1F7;border-radius:4px;overflow:hidden}
+.pm-bar-fill{height:100%;border-radius:4px}
+.pm-bar-fill.green{background:var(--green)}.pm-bar-fill.blue{background:var(--blue)}
+.pm-bar-fill.orange{background:var(--orange)}.pm-bar-fill.red{background:var(--red)}.pm-bar-fill.gray{background:#ccc}
+.pm-nums{font-size:10.5px;color:var(--mut);display:flex;gap:6px}
+.pm-nums b{color:var(--ink)}
+.pm-status{text-align:center;font-size:11px;font-weight:700}
+.pm-status.green{color:var(--green)}.pm-status.blue{color:var(--blue)}
+.pm-status.orange{color:var(--orange)}.pm-status.red{color:var(--red)}.pm-status.gray{color:var(--mut)}
+.pm-gap{text-align:right}
+.pm-gap-n{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800}
+.pm-gap-n.red{color:var(--red)}.pm-gap-n.orange{color:var(--orange)}.pm-gap-n.green{color:var(--green)}.pm-gap-n.gray{color:#ccc}
+.pm-gap-l{font-size:9.5px;color:var(--mut);font-weight:600}
+.prog-detail-card{background:#fff;border:1.5px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:14px}
+.prog-detail-head{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+.prog-detail-head h2{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;text-transform:uppercase;color:var(--navy)}
+.prog-model-detail{padding:18px 20px;border-bottom:1px solid var(--line)}
+.prog-model-detail:last-child{border-bottom:none}
+.pmd-header{display:flex;align-items:center;gap:14px;margin-bottom:12px;flex-wrap:wrap}
+.pmd-name{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:800;color:var(--navy)}
+.pmd-kpis{display:flex;gap:16px;flex-wrap:wrap}
+.pmd-kpi{display:flex;flex-direction:column;align-items:center;gap:1px}
+.pmd-kpi-n{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:700}
+.pmd-kpi-l{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;font-weight:600}
+.pmd-bar{height:12px;background:#EDF1F7;border-radius:8px;overflow:hidden;margin-bottom:12px}
+.pmd-bar-fill{height:100%;border-radius:8px}
+.pmd-folios{display:flex;flex-direction:column;gap:0}
+.pmd-folio-row{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #EFF3F8;font-size:12.5px;flex-wrap:wrap}
+.pmd-folio-row:last-child{border-bottom:none}
+.pmd-folio-num{font-weight:700;color:var(--navy)}
+.pmd-tag-conf{background:var(--green-bg);color:var(--green);font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px}
+.pmd-tag-pv{background:#FEF0E6;color:var(--orange);font-size:10px;font-weight:700;padding:2px 8px;border-radius:8px}
+.pmd-no-bo{background:var(--red-bg);border-radius:8px;padding:10px 14px;font-size:12.5px;color:var(--red);font-weight:600}
+.prog-action-block{background:#fff;border:1.5px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:14px}
+.pab-head{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;background:#FAFCFE}
+.pab-head h3{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;text-transform:uppercase;color:var(--navy)}
+.pab-row{display:grid;grid-template-columns:160px 48px 1fr 120px;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--line)}
+.pab-row:last-child{border-bottom:none}
+.pab-dealer{font-size:13px;font-weight:700;color:var(--navy)}
+.pab-model{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800;color:var(--navy)}
+.pab-bar-col{display:flex;flex-direction:column;gap:3px}
+.pab-big-bar{height:10px;background:#EDF1F7;border-radius:6px;overflow:hidden}
+.pab-big-fill{height:100%;border-radius:6px}
+.pab-nums{font-size:11px;color:var(--mut)}
+.pab-act{text-align:right}
 </style>
 </head>
 <body>
@@ -428,88 +488,160 @@ function toggleDcob(head){
 
 function mbc(sem){ return{cumplido:'green',cubierto:'blue',parcial:'orange',urgente:'red',sinbp:'gray'}[sem]||'gray'; }
 
-function renderProgSummary(){
-  const urg=PROG.filter(r=>r.sem==='urgente').length;
-  const par=PROG.filter(r=>r.sem==='parcial').length;
-  const gap=PROG.reduce((s,r)=>s+r.gap,0);
-  const bc=PROG.reduce((s,r)=>s+r.conf,0);
-  const bpv=PROG.reduce((s,r)=>s+r.pv,0);
-  document.getElementById('prog-summary').innerHTML=
-    `<div class="scard red"><div class="sl">🔴 Ordenar ya</div><div class="sn">${urg}</div><div class="ss">Modelos sin ningún BO</div></div>`+
-    `<div class="scard orange"><div class="sl">🟠 Ampliar pedido</div><div class="sn">${par}</div><div class="ss">BO insuficiente vs BP</div></div>`+
-    `<div class="scard"><div class="sl">Total por ordenar</div><div class="sn" style="color:var(--navy)">${gap}</div><div class="ss">Unidades · gap región</div></div>`+
-    `<div class="scard green"><div class="sl">BO confirmado</div><div class="sn">${bc}</div><div class="ss">Pedidos 2026</div></div>`+
-    `<div class="scard orange"><div class="sl">BO por validar</div><div class="sn">${bpv}</div><div class="ss">Pedidos 2025 → confirmar</div></div>`;
+function renderProgSummary(did){
+  const d=did==="all"?PROG:PROG.filter(r=>r.did===did);
+  const urg=d.filter(r=>r.sem==="urgente").length;
+  const par=d.filter(r=>r.sem==="parcial").length;
+  const gap=d.reduce((s,r)=>s+r.gap,0);
+  const bc=d.reduce((s,r)=>s+r.conf,0);
+  const bpv=d.reduce((s,r)=>s+r.pv,0);
+  document.getElementById("prog-summary").innerHTML=
+    `<div class="scard red"><div class="sl">🔴 Sin BO — Ordenar ya</div><div class="sn">${urg}</div><div class="ss">Modelos sin ningún pedido</div></div>`+
+    `<div class="scard orange"><div class="sl">🟠 Gap — Ampliar pedido</div><div class="sn">${par}</div><div class="ss">BO insuficiente vs BP</div></div>`+
+    `<div class="scard"><div class="sl">Unidades por ordenar</div><div class="sn" style="color:var(--navy)">${gap}</div><div class="ss">Gap total región</div></div>`+
+    `<div class="scard green"><div class="sl">BO confirmado</div><div class="sn">${bc}</div><div class="ss">Pedidos 2026 vigentes</div></div>`+
+    `<div class="scard orange"><div class="sl">BO por validar</div><div class="sn">${bpv}</div><div class="ss">Pedidos 2025 — confirmar</div></div>`;
 }
 
-function renderProgMain(){
-  if(progDealer!=='all'){ renderProgDealer(progDealer); return; }
-  const cards=Object.entries(DL).map(([id,nm])=>{
-    const rows=PROG.filter(r=>r.did===id);if(!rows.length)return'';
-    const urg=rows.filter(r=>r.sem==='urgente').length;
-    const par=rows.filter(r=>r.sem==='parcial').length;
-    const ac=urg?'red':par?'orange':'green';
-    const at=urg?urg+' sin BO':par?par+' con gap':'Todo en orden';
-    return`<div class="pcard" onclick="goProgDealer('${id}')">
-      <div class="pcard-head"><div class="pcard-name">${nm}</div><div class="pcard-alert" style="color:var(--${ac})">${at}</div></div>
-      <div class="pcard-body">
-        ${MODS.map(m=>{
-          const r=rows.find(x=>x.modelo===m);
-          if(!r||r.bp===0)return`<div class="mrow"><div class="mname" style="color:#ccc">${m}</div><div style="flex:1;text-align:center;font-size:11px;color:#ccc">Sin BP</div></div>`;
-          const pct=Math.min(100,Math.round((r.fac+r.conf+r.pv)/r.bp*100));
-          const gc={cumplido:'green',cubierto:'green',parcial:'orange',urgente:'red',sinbp:'gray'}[r.sem]||'gray';
-          return`<div class="mrow"><div class="mname">${m}</div><div class="mbar"><div class="mbar-fill ${mbc(r.sem)}" style="width:${pct}%"></div></div><div class="mgap ${gc}">${r.gap>0?'-'+r.gap+' u':'✓ '+r.fac+'/'+r.bp}</div></div><div class="mleg">Fac ${r.fac} · BO ${r.conf+r.pv} · BP ${r.bp}</div>`;
-        }).join('')}
+function mbc(sem){return{cumplido:"green",cubierto:"blue",parcial:"orange",urgente:"red",sinbp:"gray"}[sem]||"gray"}
+function msc(sem){return{cumplido:"green",cubierto:"blue",parcial:"orange",urgente:"red",sinbp:"gray"}[sem]||"gray"}
+function msl(sem){return{cumplido:"✅ Cumplido",cubierto:"🔵 Con BO",parcial:"⚠ Gap",urgente:"🔴 Sin BO",sinbp:"—"}[sem]||""}
+
+function renderProgRegional(){
+  // Dealer cards with model-by-model breakdown
+  const cards = Object.entries(DL).map(([id,nm])=>{
+    const rows=PROG.filter(r=>r.did===id); if(!rows.length)return"";
+    const urg=rows.filter(r=>r.sem==="urgente").length;
+    const par=rows.filter(r=>r.sem==="parcial").length;
+    const ac=urg?"red":par?"orange":"green";
+    const at=urg?`${urg} sin BO 🔴`:par?`${par} con gap 🟠`:"✅ En orden";
+
+    const modelRows=MODS.map(m=>{
+      const r=rows.find(x=>x.modelo===m);
+      if(!r||r.bp===0)return`<div class="prog-model-row">
+        <div class="pm-name" style="color:#ccc">${m}</div>
+        <div class="pm-bar-col"><div style="font-size:11px;color:#ccc">Sin BP</div></div>
+        <div></div><div></div>
+      </div>`;
+      const pct=Math.min(100,Math.round((r.fac+r.conf+r.pv)/r.bp*100));
+      const gc=msc(r.sem); const bc=mbc(r.sem);
+      return`<div class="prog-model-row sem-${r.sem}">
+        <div class="pm-name">${m}</div>
+        <div class="pm-bar-col">
+          <div class="pm-bar"><div class="pm-bar-fill ${bc}" style="width:${pct}%"></div></div>
+          <div class="pm-nums">Fac <b>${r.fac}</b> · BO <b>${r.conf+r.pv}</b> · BP <b>${r.bp}</b></div>
+        </div>
+        <div class="pm-status ${gc}">${msl(r.sem)}</div>
+        <div class="pm-gap">
+          <div class="pm-gap-n ${r.gap>0?gc:"green"}">${r.gap>0?"-"+r.gap:"✓"}</div>
+          <div class="pm-gap-l">${r.gap>0?"por ordenar":"cubierto"}</div>
+        </div>
+      </div>`;
+    }).join("");
+
+    return`<div class="prog-dcard" onclick="goProgDealer('${id}')">
+      <div class="prog-dcard-head">
+        <div class="prog-dcard-name">${nm}</div>
+        <div class="prog-dcard-total" style="color:var(--${ac})">${at}</div>
       </div>
+      <div class="prog-dcard-body">${modelRows}</div>
     </div>`;
-  }).join('');
+  }).join("");
 
-  const urg=PROG.filter(r=>r.sem==='urgente'&&r.gap>0).sort((a,b)=>b.gap-a.gap);
-  const par=PROG.filter(r=>r.sem==='parcial'&&r.gap>0).sort((a,b)=>b.gap-a.gap);
-  let ahtml='';
-  if(urg.length) ahtml+=`<div class="action-card"><div class="action-head"><h2>🔴 Ordenar de inmediato</h2><span style="font-size:12px;color:var(--mut)">${urg.length} modelos sin back order</span></div>${urg.map(r=>{const pct=Math.min(100,Math.round(r.fac/r.bp*100));return`<div class="arow"><div class="ar-d">${DL[r.did]||r.did}</div><div class="ar-m">${r.modelo}</div><div><div class="big-bar"><div class="big-fill" style="width:${pct}%;background:var(--blue)"></div></div><div class="ar-nums">Facturado ${r.fac} de ${r.bp} · <strong style="color:var(--red)">${r.gap} sin pedir</strong></div></div><div class="ar-act"><span class="chip red">Programar pedido</span></div></div>`;}).join('')}</div>`;
-  if(par.length) ahtml+=`<div class="action-card"><div class="action-head"><h2>🟠 Ampliar pedido</h2><span style="font-size:12px;color:var(--mut)">${par.length} modelos con gap</span></div>${par.map(r=>{const pct=Math.min(100,Math.round((r.fac+r.conf+r.pv)/r.bp*100));return`<div class="arow"><div class="ar-d">${DL[r.did]||r.did}</div><div class="ar-m">${r.modelo}</div><div><div class="big-bar"><div class="big-fill" style="width:${pct}%;background:var(--orange)"></div></div><div class="ar-nums">Fac ${r.fac} · BO ${r.conf+r.pv} · BP ${r.bp} · <strong style="color:var(--orange)">faltan ${r.gap}</strong></div></div><div class="ar-act"><span class="chip orange">Ampliar BO</span></div></div>`;}).join('')}</div>`;
+  // Action tables
+  const urg=PROG.filter(r=>r.sem==="urgente"&&r.gap>0).sort((a,b)=>b.gap-a.gap);
+  const par=PROG.filter(r=>r.sem==="parcial"&&r.gap>0).sort((a,b)=>b.gap-a.gap);
 
-  document.getElementById('prog-main').innerHTML=`<div class="prog-grid">${cards}</div>${ahtml}`;
+  let ahtml="";
+  if(urg.length){
+    const rows=urg.map(r=>{
+      const pct=Math.min(100,Math.round(r.fac/r.bp*100));
+      return`<div class="pab-row">
+        <div class="pab-dealer">${DL[r.did]||r.did}</div>
+        <div class="pab-model">${r.modelo}</div>
+        <div class="pab-bar-col">
+          <div class="pab-big-bar"><div class="pab-big-fill" style="width:${pct}%;background:var(--blue)"></div></div>
+          <div class="pab-nums">Facturado <b>${r.fac}</b> de <b>${r.bp}</b> (${pct}%) · <span style="color:var(--red);font-weight:700">${r.gap} unidades sin pedir</span></div>
+        </div>
+        <div class="pab-act"><span class="chip red">Programar pedido</span></div>
+      </div>`;
+    }).join("");
+    ahtml+=`<div class="prog-action-block">
+      <div class="pab-head"><h3>🔴 Ordenar de inmediato — Sin back order</h3><span style="font-size:12px;color:var(--mut)">${urg.length} modelos</span></div>
+      ${rows}
+    </div>`;
+  }
+  if(par.length){
+    const rows=par.map(r=>{
+      const pct=Math.min(100,Math.round((r.fac+r.conf+r.pv)/r.bp*100));
+      return`<div class="pab-row">
+        <div class="pab-dealer">${DL[r.did]||r.did}</div>
+        <div class="pab-model">${r.modelo}</div>
+        <div class="pab-bar-col">
+          <div class="pab-big-bar"><div class="pab-big-fill" style="width:${pct}%;background:var(--orange)"></div></div>
+          <div class="pab-nums">Fac <b>${r.fac}</b> · BO <b>${r.conf+r.pv}</b> · BP <b>${r.bp}</b> · <span style="color:var(--orange);font-weight:700">faltan ${r.gap} u</span></div>
+        </div>
+        <div class="pab-act"><span class="chip orange">Ampliar BO</span></div>
+      </div>`;
+    }).join("");
+    ahtml+=`<div class="prog-action-block">
+      <div class="pab-head"><h3>🟠 Ampliar pedido — BO insuficiente</h3><span style="font-size:12px;color:var(--mut)">${par.length} modelos</span></div>
+      ${rows}
+    </div>`;
+  }
+
+  return`<div class="prog-dealer-grid">${cards}</div>${ahtml}`;
 }
 
 function renderProgDealer(did){
   const rows=PROG.filter(r=>r.did===did);
-  const SL={cumplido:'✅ BP cumplido',cubierto:'🔵 Cubierto con BO',parcial:'🟠 Ampliar pedido',urgente:'🔴 Ordenar ya',sinbp:'Sin BP'};
-  const SC={cumplido:'green',cubierto:'green',parcial:'orange',urgente:'red',sinbp:'gray'};
   let html=`<button class="back-btn" onclick="goProgDealer('all')">← Todos los distribuidores</button>
-    <div class="action-card"><div class="action-head"><h2>${DL[did]} — Detalle por modelo</h2></div>`;
+    <div class="prog-detail-card">
+      <div class="prog-detail-head"><h2>${DL[did]} — Facturado vs BO vs BP</h2></div>`;
+
   MODS.forEach(m=>{
-    const r=rows.find(x=>x.modelo===m);if(!r||r.bp===0)return;
+    const r=rows.find(x=>x.modelo===m); if(!r||r.bp===0)return;
     const pct=Math.min(100,Math.round((r.fac+r.conf+r.pv)/r.bp*100));
-    html+=`<div class="mod-detail">
-      <div class="mod-hdr">
-        <div class="mod-nm">${m}</div>
-        <div class="mod-stats">
-          <div class="si"><div class="si-n" style="color:var(--navy)">${r.bp}</div><div class="si-l">BP</div></div>
-          <div class="si"><div class="si-n" style="color:var(--blue)">${r.fac}</div><div class="si-l">Facturado</div></div>
-          <div class="si"><div class="si-n" style="color:var(--green)">${r.conf}</div><div class="si-l">BO conf</div></div>
-          <div class="si"><div class="si-n" style="color:var(--orange)">${r.pv}</div><div class="si-l">BO pv</div></div>
-          <div class="si"><div class="si-n" style="color:var(--${r.gap>0?'red':'green'})">${r.gap}</div><div class="si-l">Gap</div></div>
+    const gc=msc(r.sem); const bc=mbc(r.sem);
+    const chipCls={cumplido:"green",cubierto:"green",parcial:"orange",urgente:"red",sinbp:"gray"}[r.sem]||"gray";
+    html+=`<div class="prog-model-detail">
+      <div class="pmd-header">
+        <div class="pmd-name">${m}</div>
+        <div class="pmd-kpis">
+          <div class="pmd-kpi"><div class="pmd-kpi-n" style="color:var(--navy)">${r.bp}</div><div class="pmd-kpi-l">BP 2026</div></div>
+          <div class="pmd-kpi"><div class="pmd-kpi-n" style="color:var(--blue)">${r.fac}</div><div class="pmd-kpi-l">Facturado</div></div>
+          <div class="pmd-kpi"><div class="pmd-kpi-n" style="color:var(--green)">${r.conf}</div><div class="pmd-kpi-l">BO conf</div></div>
+          <div class="pmd-kpi"><div class="pmd-kpi-n" style="color:var(--orange)">${r.pv}</div><div class="pmd-kpi-l">BO pv</div></div>
+          <div class="pmd-kpi"><div class="pmd-kpi-n" style="color:var(--${r.gap>0?"red":"green"})">${r.gap}</div><div class="pmd-kpi-l">Por ordenar</div></div>
         </div>
-        <span class="chip ${SC[r.sem]}">${SL[r.sem]}</span>
+        <span class="chip ${chipCls}">${{cumplido:"✅ BP cumplido",cubierto:"🔵 Cubierto con BO",parcial:"🟠 Ampliar pedido",urgente:"🔴 Ordenar ya",sinbp:"Sin BP"}[r.sem]}</span>
       </div>
-      <div class="big-bar"><div class="big-fill" style="width:${pct}%;background:var(--${mbc(r.sem)})"></div></div>
-      <div style="margin-top:12px">
+      <div class="pmd-bar"><div class="pmd-bar-fill" style="width:${pct}%;background:var(--${bc})"></div></div>
+      <div class="pmd-folios">
         ${r.folios.length
-          ?r.folios.map(f=>`<div class="fo-item"><span class="fo-num">${f.folio}</span><span>${f.modelo}</span><strong>${f.u} u</strong><span style="color:var(--mut)">${f.fecha}</span>${f.status==='por_validar'?'<span class="tag-pv">Pedido 2025</span>':'<span class="tag-ok">Confirmado</span>'}${f.obs?`<span style="color:var(--mut)">${f.obs}</span>`:''}</div>`).join('')
-          :`<div class="no-bo">⚠ Sin back order — programar pedido con este distribuidor</div>`}
+          ?r.folios.map(f=>`<div class="pmd-folio-row">
+            <span class="pmd-folio-num">${f.folio||"—"}</span>
+            <span>${f.modelo}</span>
+            <strong>${f.u} u</strong>
+            <span style="color:var(--mut)">${f.fecha}</span>
+            ${f.status==="por_validar"
+              ?'<span class="pmd-tag-pv">Pedido 2025 — validar con LDR</span>'
+              :'<span class="pmd-tag-conf">Confirmado 2026</span>'}
+            ${f.obs?`<span style="color:var(--mut)">${f.obs}</span>`:""}
+          </div>`).join("")
+          :`<div class="pmd-no-bo">⚠ Sin back order — programar pedido con este distribuidor.</div>`}
       </div>
     </div>`;
   });
-  html+='</div>';
-  document.getElementById('prog-main').innerHTML=html;
+  html+="</div>";
+  return html;
 }
 
 function goProgDealer(id){
   progDealer=id;
-  renderProgSummary();
-  renderProgMain();
+  document.getElementById("prog-sel").value=id;
+  renderProgSummary(id);
+  document.getElementById("prog-main").innerHTML=id==="all"?renderProgRegional():renderProgDealer(id);
   window.scrollTo({top:0});
 }
 
