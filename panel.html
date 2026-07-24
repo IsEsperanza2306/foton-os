@@ -212,6 +212,9 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--mut)}
 .pab-big-fill{height:100%;border-radius:6px}
 .pab-nums{font-size:11px;color:var(--mut)}
 .pab-act{text-align:right}
+.rbtn{padding:7px 14px;border:1.5px solid rgba(255,255,255,.3);border-radius:8px;background:rgba(255,255,255,.1);color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:Inter;transition:.15s}
+.rbtn:hover{background:rgba(255,255,255,.2)}
+.rbtn.on{background:#fff;color:var(--navy)}
 </style>
 </head>
 <body>
@@ -225,7 +228,12 @@ footer{text-align:center;padding:20px;font-size:11px;color:var(--mut)}
 <header>
   <div class="h-brand">
     <h1>Foton · Panel Operativo 2026</h1>
-    <p>LÍNEA S3 · S5 · S6 · S8 · S12 — REGIÓN CENTRO-SUR</p>
+    <p id="region-label">LÍNEA S3 · S5 · S6 · S8 · S12 — REGIÓN CENTRO-SUR</p>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <button class="rbtn on" data-r="israel" onclick="setRegion('israel')">🟦 Israel</button>
+    <button class="rbtn" data-r="marco" onclick="setRegion('marco')">🟩 Marco</button>
+    <button class="rbtn" data-r="all" onclick="setRegion('all')">🌎 Daniel / General</button>
   </div>
   <div class="h-right">
     <div class="h-corte"><div class="dot"></div><span id="corte-lbl">Cargando…</span></div>
@@ -279,7 +287,7 @@ function toast(msg, err=false) {
 
 async function cargarDatos() {
   const [cob, prog, bp, fac] = await Promise.all([
-    q('/cobranza_2026?anio=eq.2026&select=*&order=dias_alerta.desc'),
+    (CURRENT_REGION==="all"?q('/cobranza_2026?anio=eq.2026&select=*&order=dias_alerta.desc'):q('/cobranza_2026?anio=eq.2026&region=eq.'+CURRENT_REGION+'&select=*&order=dias_alerta.desc')),
     q('/back_order?select=*'),
     q('/bp_anual?anio=eq.2026&select=distribuidor_id,modelo,unidades_bp'),
     q('/facturado_ytd?anio=eq.2026&select=distribuidor_id,modelo,unidades_facturadas')
