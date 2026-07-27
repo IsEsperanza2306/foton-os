@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Foton MDT/LDT — Red de Distribuidores 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#042C53;--blue:#1565C0;--red:#C62828;--green:#2E7D32;--orange:#E65100;--gold:#F9A825;--silver:#78909C;--bronze:#6D4C41;--ink:#1A1A2E;--mut:#64748B;--line:#E8EDF4;--bg:#F4F7FB;--white:#FFFFFF}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+.header{background:var(--navy);padding:20px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.header-brand{display:flex;align-items:center;gap:14px}
+.header-logo{width:36px;height:36px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:18px;color:var(--navy)}
+.header-title h1{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;letter-spacing:.5px;color:#fff}
+.header-title p{font-size:11px;color:rgba(255,255,255,.6);margin-top:1px}
+.header-corte{font-size:12px;color:rgba(255,255,255,.5);background:rgba(255,255,255,.08);padding:6px 12px;border-radius:8px}
+.main{max-width:1100px;margin:0 auto;padding:32px 24px}
+.section-header{display:flex;align-items:baseline;gap:12px;margin-bottom:20px}
+.section-header h2{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800;text-transform:uppercase;color:var(--navy)}
+.section-header span{font-size:12px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.6px}
+.tabs{display:flex;gap:4px;background:var(--white);border:1.5px solid var(--line);border-radius:12px;padding:4px;margin-bottom:28px;width:fit-content}
+.tab{padding:8px 20px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;color:var(--mut);transition:.15s;font-family:'Inter',sans-serif}
+.tab.on{background:var(--navy);color:#fff}
+.ranking-card{background:var(--white);border:1.5px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:28px}
+.rank-header-row{display:grid;grid-template-columns:44px 1fr 80px 80px 140px 60px;gap:0;padding:10px 24px;background:#F0F4FA;border-bottom:1px solid var(--line)}
+.rank-header-row span{font-size:10px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;text-align:right}
+.rank-header-row span:nth-child(2){text-align:left}
+.rank-row{display:grid;grid-template-columns:44px 1fr 80px 80px 140px 60px;align-items:center;gap:0;padding:0 24px;border-bottom:1px solid var(--line);min-height:60px;cursor:pointer;transition:background .12s}
+.rank-row:last-child{border-bottom:none}
+.rank-row:hover{background:#F8FAFD}
+.rank-pos{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:var(--mut)}
+.rank-pos.gold{color:var(--gold)}.rank-pos.silver{color:var(--silver)}.rank-pos.bronze{color:var(--bronze)}
+.rank-name{font-size:13.5px;font-weight:600;color:var(--navy)}
+.rank-region{font-size:10px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.rank-ytd{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800;color:var(--navy);text-align:right}
+.rank-ytd-lbl{font-size:9px;color:var(--mut);font-weight:600;text-align:right}
+.rank-bp{font-size:12px;color:var(--mut);text-align:right}
+.rank-bar-col{padding:0 8px}
+.rank-bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin-bottom:3px}
+.rank-bar-fill{height:100%;border-radius:4px}
+.rank-pct{font-size:12px;font-weight:700;text-align:right}
+.rank-pct.over{color:var(--green)}.rank-pct.good{color:var(--blue)}.rank-pct.mid{color:var(--orange)}.rank-pct.low{color:var(--red)}
+.dealer-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:28px}
+.dealer-btn{background:var(--white);border:1.5px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;text-align:left;transition:.15s;font-family:'Inter',sans-serif;width:100%}
+.dealer-btn:hover{border-color:var(--blue);box-shadow:0 4px 16px rgba(4,44,83,.08);transform:translateY(-1px)}
+.dealer-btn-pos{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:var(--line);line-height:1}
+.dealer-btn-name{font-size:12px;font-weight:700;color:var(--navy);margin:4px 0 8px;line-height:1.3}
+.dealer-btn-ytd{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--navy)}
+.dealer-btn-lbl{font-size:10px;color:var(--mut);font-weight:600}
+.dealer-btn-bar{height:4px;background:var(--line);border-radius:2px;margin-top:10px;overflow:hidden}
+.dealer-btn-fill{height:100%;border-radius:2px}
+.back-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;background:var(--white);border:1.5px solid var(--line);font-size:13px;font-weight:600;color:var(--navy);cursor:pointer;margin-bottom:24px;font-family:'Inter',sans-serif;transition:.12s}
+.back-btn:hover{border-color:var(--navy)}
+.radio-hero{background:var(--navy);border-radius:16px;padding:28px 32px;margin-bottom:20px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:24px}
+.radio-hero-name{font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:800;color:#fff;line-height:1.1}
+.radio-hero-region{font-size:12px;color:rgba(255,255,255,.5);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.radio-hero-pos-n{font-family:'Barlow Condensed',sans-serif;font-size:72px;font-weight:900;color:rgba(255,255,255,.15);line-height:1;text-align:right}
+.radio-hero-pos-l{font-size:11px;color:rgba(255,255,255,.4);font-weight:600;text-transform:uppercase;text-align:right}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.kpi-card{background:var(--white);border:1.5px solid var(--line);border-radius:14px;padding:18px 20px}
+.kpi-n{font-family:'Barlow Condensed',sans-serif;font-size:44px;font-weight:900;line-height:1;color:var(--navy)}
+.kpi-n.green{color:var(--green)}.kpi-n.blue{color:var(--blue)}.kpi-n.orange{color:var(--orange)}.kpi-n.red{color:var(--red)}
+.kpi-l{font-size:11px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin-top:4px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.card{background:var(--white);border:1.5px solid var(--line);border-radius:14px;overflow:hidden}
+.card-head{padding:14px 20px;border-bottom:1px solid var(--line);background:#FAFCFE}
+.card-head h4{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;color:var(--navy)}
+.card-body{padding:16px 20px}
+.monthly-bars{display:flex;align-items:flex-end;gap:6px;height:80px}
+.month-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.month-bar-wrap{flex:1;width:100%;display:flex;align-items:flex-end}
+.month-bar{width:100%;border-radius:4px 4px 0 0;min-height:2px;transition:height .3s}
+.month-lbl{font-size:9px;color:var(--mut);font-weight:600}
+.month-val{font-size:10px;font-weight:700;color:var(--navy)}
+.modelo-row{display:grid;grid-template-columns:48px 1fr 60px 50px;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
+.modelo-row:last-child{border-bottom:none}
+.modelo-tag{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--navy)}
+.modelo-bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.modelo-bar-fill{height:100%;border-radius:3px}
+.modelo-nums{font-size:10px;color:var(--mut);margin-top:2px}
+.modelo-pct{font-size:12px;font-weight:700;text-align:right}
+.cob-mini-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:12px}
+.cob-mini-row:last-child{border-bottom:none}
+.cob-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cob-dot.critico{background:var(--red)}.cob-dot.urgente{background:var(--orange)}.cob-dot.anticipo{background:#7B1FA2}
+.cob-modelo{font-weight:700;color:var(--navy);flex:1}
+.cob-dias{font-weight:700;color:var(--mut)}
+.cob-estado{font-size:10px;color:var(--mut)}
+.empty-state{text-align:center;padding:32px;color:var(--green);font-size:13px;font-weight:600}
+.overlay{display:none;position:fixed;inset:0;background:rgba(4,44,83,.5);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center}
+.overlay.on{display:flex}
+.spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:700px){.kpi-grid{grid-template-columns:1fr 1fr}.two-col{grid-template-columns:1fr}.radio-hero{grid-template-columns:1fr}.radio-hero-pos-n{font-size:48px}.rank-row,.rank-header-row{grid-template-columns:36px 1fr 70px 110px 50px}.rank-row>:nth-child(4),.rank-header-row>:nth-child(4){display:none}}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="header-brand">
+    <div class="header-logo">FT</div>
+    <div class="header-title">
+      <h1>Foton MDT/LDT — Red de Distribuidores</h1>
+      <p id="corte-lbl">Cargando datos...</p>
+    </div>
+  </div>
+  <div class="header-corte">2026</div>
+</header>
+<div class="overlay" id="overlay"><div class="spinner"></div></div>
+<main class="main" id="main"></main>
+<script>
+const SB='https://gblwoaaitnqbgorxaydv.supabase.co/rest/v1';
+const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdibHdvYWFpdG5xYmdvcnhheWR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxOTQ3NTMsImV4cCI6MjA5NTc3MDc1M30.o7zYCCfH2rHEs69o4U7Zc9dM4IvQi8GsXRlZFW_2kso';
+const H={apikey:KEY,Authorization:'Bearer '+KEY};
+const MESES=['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const MODS=['S3','S5','S6','S8','S12'];
+let DEALERS=[],RANKING=[],FAC_MES=[],COBRANZA=[],BACK_ORDER=[],BP=[];
+const urlParams=new URLSearchParams(window.location.search);
+const DEALER_PARAM=urlParams.get('dealer');
+
+async function q(path){const r=await fetch(SB+path,{headers:H});return r.json();}
+
+function fmtPct(p){
+  if(p>=100)return{cls:'over',txt:p.toFixed(1)+'%'};
+  if(p>=50)return{cls:'good',txt:p.toFixed(1)+'%'};
+  if(p>=25)return{cls:'mid',txt:p.toFixed(1)+'%'};
+  return{cls:'low',txt:p.toFixed(1)+'%'};
+}
+function barColor(p){
+  if(p>=100)return'#2E7D32';if(p>=50)return'#1565C0';if(p>=25)return'#E65100';return'#C62828';
+}
+
+async function cargar(){
+  document.getElementById('overlay').classList.add('on');
+  const[dealers,fac,cob,bo,bp]=await Promise.all([
+    q('/distribuidores?region=in.(israel,marco)&select=id,nombre,region&order=nombre'),
+    q('/facturado_ytd?anio=eq.2026&select=distribuidor_id,mes,modelo,unidades_facturadas'),
+    q('/cobranza_2026?anio=eq.2026&select=distribuidor_id,modelo,familia,estado,dias_alerta,folio&order=dias_alerta.desc'),
+    q('/back_order?select=distribuidor_id,modelo,modelo_familia,unidades,fecha_solicitud'),
+    q('/bp_anual?anio=eq.2026&select=distribuidor_id,modelo,unidades_bp'),
+  ]);
+  DEALERS=dealers;FAC_MES=fac;COBRANZA=cob;BACK_ORDER=bo;BP=bp;
+  RANKING=DEALERS.map(d=>{
+    const ytd=fac.filter(r=>r.distribuidor_id===d.id).reduce((s,r)=>s+r.unidades_facturadas,0);
+    const bpT=bp.filter(r=>r.distribuidor_id===d.id).reduce((s,r)=>s+r.unidades_bp,0);
+    return{...d,ytd,bp:bpT,pct:bpT>0?ytd/bpT*100:0};
+  }).sort((a,b)=>b.ytd-a.ytd);
+  const maxMes=Math.max(1,...fac.map(r=>r.mes).filter(Boolean));
+  document.getElementById('corte-lbl').textContent='Corte '+MESES[maxMes]+' 2026 · '+DEALERS.length+' distribuidores';
+  document.getElementById('overlay').classList.remove('on');
+  if(DEALER_PARAM){const d=DEALERS.find(x=>x.id===DEALER_PARAM);if(d){mostrarRadiografia({...d,...RANKING.find(x=>x.id===d.id)});return;}}
+  renderHome();
+}
+
+function renderHome(){
+  document.getElementById('main').innerHTML=`
+    <div class="section-header"><h2>Ranking de la Red</h2><span>Corte YTD 2026 · Unidades facturadas</span></div>
+    <div class="tabs">
+      <button class="tab on" onclick="filtrarRanking('all',this)">Toda la red</button>
+      <button class="tab" onclick="filtrarRanking('israel',this)">🟦 Israel</button>
+      <button class="tab" onclick="filtrarRanking('marco',this)">🟩 Marco</button>
+    </div>
+    <div id="ranking-wrap">${renderRanking('all')}</div>
+    <div class="section-header" style="margin-top:32px"><h2>Ver mi radiografía</h2><span>Selecciona tu distribuidor</span></div>
+    <div class="dealer-grid">${renderDealerGrid()}</div>`;
+}
+
+function filtrarRanking(region,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('ranking-wrap').innerHTML=renderRanking(region);
+}
+
+function renderRanking(region){
+  const lista=region==='all'?RANKING:RANKING.filter(d=>d.region===region);
+  const rows=lista.map((d,i)=>{
+    const pos=i+1;
+    const posCls=pos===1?'gold':pos===2?'silver':pos===3?'bronze':'';
+    const pctF=fmtPct(d.pct);
+    const pct=Math.min(100,d.pct);
+    return`<div class="rank-row" onclick="mostrarRadiografia(RANKING.find(x=>x.id==='${d.id}'))">
+      <div class="rank-pos ${posCls}">${pos}</div>
+      <div><div class="rank-name">${d.nombre}</div><div class="rank-region">${d.region==='israel'?'🟦 Centro-Sur':'🟩 Noroeste/Pacífico'}</div></div>
+      <div><div class="rank-ytd">${d.ytd}</div><div class="rank-ytd-lbl">unidades</div></div>
+      <div class="rank-bp">${d.bp} BP</div>
+      <div class="rank-bar-col">
+        <div class="rank-bar"><div class="rank-bar-fill" style="width:${pct}%;background:${barColor(d.pct)}"></div></div>
+        <div style="font-size:10px;color:var(--mut);text-align:right;margin-top:2px">${d.pct.toFixed(1)}% de meta</div>
+      </div>
+      <div class="rank-pct ${pctF.cls}">${pctF.txt}</div>
+    </div>`;
+  }).join('');
+  return`<div class="ranking-card">
+    <div class="rank-header-row"><span>#</span><span>Distribuidor</span><span>YTD</span><span>BP</span><span>Avance</span><span>%</span></div>
+    ${rows}</div>`;
+}
+
+function renderDealerGrid(){
+  return RANKING.map((d,i)=>{
+    const pct=Math.min(100,d.pct);
+    return`<button class="dealer-btn" onclick="mostrarRadiografia(RANKING.find(x=>x.id==='${d.id}'))">
+      <div class="dealer-btn-pos">${String(i+1).padStart(2,'0')}</div>
+      <div class="dealer-btn-name">${d.nombre}</div>
+      <div class="dealer-btn-ytd">${d.ytd}</div>
+      <div class="dealer-btn-lbl">unidades YTD</div>
+      <div class="dealer-btn-bar"><div class="dealer-btn-fill" style="width:${pct}%;background:${barColor(d.pct)}"></div></div>
+    </button>`;
+  }).join('');
+}
+
+function mostrarRadiografia(dealer){
+  const pos=RANKING.findIndex(d=>d.id===dealer.id)+1;
+  const did=dealer.id;
+  const porMes={};
+  FAC_MES.filter(r=>r.distribuidor_id===did).forEach(r=>{porMes[r.mes]=(porMes[r.mes]||0)+r.unidades_facturadas;});
+  const maxVal=Math.max(1,...Object.values(porMes));
+  const barras=[1,2,3,4,5,6,7,8,9,10,11,12].map(m=>{
+    const v=porMes[m]||0;const h=Math.round(v/maxVal*100);const futuro=m>7;
+    return`<div class="month-col">
+      <div class="month-val">${v||''}</div>
+      <div class="month-bar-wrap"><div class="month-bar" style="height:${h}%;background:${futuro?'var(--line)':'var(--blue)'}"></div></div>
+      <div class="month-lbl">${MESES[m]}</div>
+    </div>`;
+  }).join('');
+  const bpMap={},facMap={},boMap={};
+  BP.filter(r=>r.distribuidor_id===did).forEach(r=>{bpMap[r.modelo]=(bpMap[r.modelo]||0)+r.unidades_bp;});
+  FAC_MES.filter(r=>r.distribuidor_id===did).forEach(r=>{facMap[r.modelo]=(facMap[r.modelo]||0)+r.unidades_facturadas;});
+  BACK_ORDER.filter(r=>r.distribuidor_id===did).forEach(r=>{const m=r.modelo_familia||'S3';boMap[m]=(boMap[m]||0)+r.unidades;});
+  const modeloRows=MODS.map(m=>{
+    const bp=bpMap[m]||0;if(!bp)return'';
+    const fac=facMap[m]||0;const bo=boMap[m]||0;
+    const pct=Math.min(100,Math.round(fac/bp*100));
+    const pctF=fmtPct(fac/bp*100);
+    const gap=bp-fac;
+    return`<div class="modelo-row">
+      <div class="modelo-tag">${m}</div>
+      <div>
+        <div class="modelo-bar"><div class="modelo-bar-fill" style="width:${pct}%;background:${barColor(fac/bp*100)}"></div></div>
+        <div class="modelo-nums">Fac <b>${fac}</b> · BO <b>${bo}</b> · BP <b>${bp}</b></div>
+      </div>
+      <div class="modelo-pct ${pctF.cls}">${pctF.txt}</div>
+      <div style="font-size:11px;color:var(--red);text-align:right;font-weight:700">${gap>0?'-'+gap:''}</div>
+    </div>`;
+  }).join('');
+  const cobPend=COBRANZA.filter(r=>r.distribuidor_id===did&&['critico','urgente','anticipo'].includes(r.estado));
+  const cobRows=cobPend.length?cobPend.slice(0,8).map(r=>{
+    const lbl={critico:'Entregado sin pagar',urgente:'Liberado sin pagar',anticipo:'Anticipo pendiente'}[r.estado]||r.estado;
+    return`<div class="cob-mini-row">
+      <div class="cob-dot ${r.estado}"></div>
+      <div class="cob-modelo">${r.familia||r.modelo}</div>
+      <div class="cob-estado">${lbl}</div>
+      <div class="cob-dias">${r.dias_alerta}d</div>
+    </div>`;
+  }).join(''):`<div class="empty-state">✅ Sin adeudos pendientes</div>`;
+  const rankR=RANKING.filter(d=>d.region===dealer.region).findIndex(d=>d.id===did)+1;
+  const totR=RANKING.filter(d=>d.region===dealer.region).length;
+  const pctD=dealer.pct||0;
+  document.getElementById('main').innerHTML=`
+    <button class="back-btn" onclick="renderHome()">← Volver al ranking</button>
+    <div class="radio-hero">
+      <div>
+        <div class="radio-hero-name">${dealer.nombre}</div>
+        <div class="radio-hero-region">${dealer.region==='israel'?'🟦 Región Centro-Sur · Israel Esperanza':'🟩 Región Noroeste/Pacífico · Marco Chagoya'}</div>
+      </div>
+      <div>
+        <div class="radio-hero-pos-n">#${pos}</div>
+        <div class="radio-hero-pos-l">Posición en la red</div>
+      </div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-n blue">${dealer.ytd}</div><div class="kpi-l">Unidades YTD</div></div>
+      <div class="kpi-card"><div class="kpi-n">${dealer.bp}</div><div class="kpi-l">Business Plan 2026</div></div>
+      <div class="kpi-card"><div class="kpi-n ${pctD>=100?'green':pctD>=50?'blue':pctD>=25?'orange':'red'}">${pctD.toFixed(1)}%</div><div class="kpi-l">Avance vs BP</div></div>
+      <div class="kpi-card"><div class="kpi-n ${cobPend.length?'red':'green'}">${cobPend.length}</div><div class="kpi-l">Cobros pendientes</div></div>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-head"><h4>📅 Facturación mensual 2026</h4></div>
+      <div class="card-body"><div class="monthly-bars">${barras}</div></div>
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <div class="card-head"><h4>📊 Avance por modelo</h4></div>
+        <div class="card-body">${modeloRows||'<div class="empty-state">Sin BP registrado</div>'}</div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h4>💳 Cobranza pendiente</h4></div>
+        <div class="card-body">${cobRows}</div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:16px;font-size:12px;color:var(--mut)">
+      Posición en región: <strong>${rankR}° de ${totR}</strong> · Posición en red: <strong>${pos}° de ${RANKING.length}</strong>
+    </div>`;
+}
+cargar();
+</script>
+</body>
+</html>
