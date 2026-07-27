@@ -382,7 +382,7 @@ async function cargarDatos() {
   // Update corte - use latest updated_at from Supabase (reliable)
   const updAt = new Date('2026-07-24T22:41:13Z');
   const corteStr = updAt.toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'});
-  document.getElementById('corte-lbl').textContent='Corte 23/07/2026 · Cargado '+corteStr;
+  const fmt=d=>d.toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'}); document.getElementById('corte-lbl').textContent='Corte 23/07/2026 · Cargado '+fmt(new Date());
 
   renderCob();
   renderProgSummary(progDealer);
