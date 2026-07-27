@@ -327,7 +327,7 @@ async function cargarDatos() {
 
   const [cob, bo, bp, fac] = await Promise.all([
     q(cobPath),
-    q('/back_order?select=*'),
+    q('/back_order?select=distribuidor_id,modelo,modelo_familia,unidades,status,fecha_solicitud,notas,created_at'),
     q('/bp_anual?anio=eq.2026&select=distribuidor_id,modelo,unidades_bp'),
     q('/facturado_ytd?anio=eq.2026&select=distribuidor_id,modelo,unidades_facturadas')
   ]);
@@ -348,7 +348,8 @@ async function cargarDatos() {
     facMap[k]=(facMap[k]||0)+r.unidades_facturadas;
   });
   bo.filter(r => dlKeys.includes(r.distribuidor_id)).forEach(r => {
-    const fm = (['S3','S5','S6','S8','S12'].find(m=>r.modelo.startsWith(m+' '))||r.modelo.split(' ')[0]);
+    const fm = r.modelo_familia || (['S3','S5','S6','S8','S12'].find(m=>r.modelo&&r.modelo.includes(m))||'?');
+    if(fm==='?') return;
     const k=r.distribuidor_id+'|'+fm;
     if(!boMap[k]) boMap[k]={conf:0,pv:0,folios:[]};
     if(r.status==='confirmado') boMap[k].conf+=r.unidades; else boMap[k].pv+=r.unidades;
@@ -380,9 +381,12 @@ async function cargarDatos() {
   });
 
   // Update corte - use latest updated_at from Supabase (reliable)
-  const updAt = new Date('2026-07-24T22:41:13Z');
-  const corteStr = updAt.toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'});
-  const fmt=d=>d.toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'}); document.getElementById('corte-lbl').textContent='Corte 23/07/2026 · Cargado '+fmt(new Date());
+  // Corte = max fecha factura in current cobranza
+  const fmt=d=>d.toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'});
+  const parseF=s=>{if(!s)return 0;const p=s.split('/');return p.length===3?new Date(+p[2],+p[1]-1,+p[0]).getTime():0;};
+  const maxFecha=cob.reduce((mx,r)=>{const t=parseF(r.f_factura);return t>mx.t?{t,s:r.f_factura}:mx;},{t:0,s:''});
+  const corteLabel=maxFecha.s?'Corte '+maxFecha.s:'Corte —';
+  document.getElementById('corte-lbl').textContent=corteLabel+' · Actualizado '+fmt(new Date());
 
   renderCob();
   renderProgSummary(progDealer);
