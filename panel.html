@@ -523,7 +523,7 @@ function toggleDcob(head){
 // ── PROGRAMACION ─────────────────────────────────────────────────────────────
 function mbc(sem){return{cumplido:'green',cubierto:'blue',parcial:'orange',urgente:'red',sinbp:'gray'}[sem]||'gray';}
 function msc(sem){return{cumplido:'green',cubierto:'blue',parcial:'orange',urgente:'red',sinbp:'gray'}[sem]||'gray';}
-function msl(sem){return{cumplido:'✅ Cumplido',cubierto:'🔵 Con BO',parcial:'⚠ Gap',urgente:'🔴 Sin BO',sinbp:'—'}[sem]||'';}
+function msl(sem){return{cumplido:'✅ Meta alcanzada',cubierto:'🔵 Con BO',parcial:'⚠ Gap',urgente:'🔴 Sin BO',sinbp:'—'}[sem]||'';}
 
 function renderProgSummary(did){
   const d=did==='all'?PROG:PROG.filter(r=>r.did===did);
@@ -581,7 +581,7 @@ function renderProgRegional(){
 
 function renderProgDealer(did){
   const rows=PROG.filter(r=>r.did===did);
-  const SL={cumplido:'✅ BP cumplido',cubierto:'🔵 Cubierto con BO',parcial:'🟠 Ampliar pedido',urgente:'🔴 Ordenar ya',sinbp:'Sin BP'};
+  const SL={cumplido:'✅ Meta alcanzada',cubierto:'🔵 Cubierto con BO',parcial:'🟠 Ampliar pedido',urgente:'🔴 Ordenar ya',sinbp:'Sin BP'};
   const SC={cumplido:'green',cubierto:'green',parcial:'orange',urgente:'red',sinbp:'gray'};
   let html=`<button class="back-btn" onclick="goProgDealer('all')">← Todos los distribuidores</button>
     <div class="prog-detail-card"><div class="prog-detail-head"><h2>${DL[did]||did} — Detalle por modelo</h2></div>`;
