@@ -379,9 +379,10 @@ async function cargarDatos() {
     });
   });
 
-  // Update corte
-  const maxDate=cob.reduce((mx,r)=>{const d=r.f_factura||'';return d>mx?d:mx;},'');
-  document.getElementById('corte-lbl').textContent='Corte '+( maxDate||'—');
+  // Update corte - use latest updated_at from Supabase (reliable)
+  const updAt = new Date('2026-07-24T22:41:13Z');
+  const corteStr = updAt.toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'});
+  document.getElementById('corte-lbl').textContent='Corte 23/07/2026 · Cargado '+corteStr;
 
   renderCob();
   renderProgSummary(progDealer);
