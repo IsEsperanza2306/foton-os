@@ -227,6 +227,48 @@ main{padding:20px 24px 60px;max-width:1500px;margin:0 auto}
   box-shadow:0 8px 28px rgba(4,44,83,.28)}
 .toast.on{transform:translateX(-50%) translateY(0)}
 
+/* ── BACK ORDER PENDIENTE ── */
+.bo-hd{display:grid;grid-template-columns:74px 1fr 150px 92px 1fr;gap:14px;padding:9px 18px;
+  background:var(--ice);border-bottom:1px solid var(--line);font-size:9.5px;font-weight:700;
+  color:var(--mut);text-transform:uppercase;letter-spacing:.9px}
+.bo-row{display:grid;grid-template-columns:74px 1fr 150px 92px 1fr;gap:14px;align-items:center;
+  padding:11px 18px;border-bottom:1px solid var(--line2);transition:background .12s}
+.bo-row:last-child{border-bottom:0}
+.bo-row:hover{background:#FAFCFE}
+.bo-age{text-align:center}
+.bo-age-n{font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700;line-height:1}
+.bo-age-l{font-size:8px;color:var(--dim);font-weight:600;letter-spacing:.3px}
+.bo-dl{font-size:12.5px;font-weight:600;color:var(--navy);line-height:1.3}
+.bo-pl{font-size:10px;color:var(--dim);margin-top:2px}
+.bo-mods{display:flex;flex-wrap:wrap;gap:4px}
+.bo-chip{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;
+  background:var(--ice);color:var(--blue);padding:2px 8px;border-radius:5px;letter-spacing:.3px}
+.bo-fec{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mut)}
+.bo-fol{font-size:9.5px;color:var(--dim);margin-top:2px}
+.bo-note{font-size:11px;color:var(--mut);line-height:1.35}
+.bo-note b{color:var(--ink);font-weight:600}
+.bo-mes{display:inline-block;background:var(--amb-bg);color:var(--amb);font-size:9.5px;
+  font-weight:700;padding:2px 7px;border-radius:5px;margin-right:5px;letter-spacing:.3px}
+.bo-ref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim)}
+
+/* ── FACTURAS EN MODAL ── */
+.iv{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line2);font-size:11px}
+.iv:last-child{border-bottom:0}
+.iv-f{font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--blue);min-width:62px}
+.iv-v{font-family:'JetBrains Mono',monospace;color:var(--mut);flex:1;font-size:10px;letter-spacing:-.2px}
+.iv-d{font-family:'JetBrains Mono',monospace;color:var(--dim);font-size:10px}
+.iv-s{font-size:9.5px;font-weight:600;padding:2px 7px;border-radius:4px;white-space:nowrap;min-width:74px;text-align:center}
+.iv-s.pagado{background:var(--grn-bg);color:var(--grn)}
+.iv-s.critico{background:var(--red-bg);color:var(--red)}
+.iv-s.urgente{background:var(--amb-bg);color:var(--amb)}
+.iv-s.anticipo{background:var(--pur-bg);color:var(--pur)}
+.iv-s.pendiente{background:#F0F3F7;color:var(--mut)}
+.msec{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;
+  letter-spacing:1.1px;color:var(--mut);margin:16px 0 4px;display:flex;align-items:center;gap:9px}
+.msec:first-child{margin-top:0}
+.msec .rule{flex:1;height:1px;background:var(--line)}
+.msec span{font-family:Inter;font-size:10px;font-weight:500;letter-spacing:0;color:var(--dim);text-transform:none}
+
 @media(max-width:1150px){
   .msum{grid-template-columns:repeat(3,1fr)}
   .aging{grid-template-columns:repeat(2,1fr)}
@@ -246,6 +288,10 @@ main{padding:20px 24px 60px;max-width:1500px;margin:0 auto}
   .tabbar{padding:0 14px}
   .act{grid-template-columns:1fr 44px 66px;gap:10px}
   .act-i,.act-bar,.act-lbl{display:none}
+  .bo-hd{display:none}
+  .bo-row{grid-template-columns:60px 1fr;gap:10px;padding:11px 14px}
+  .bo-row>:nth-child(3),.bo-row>:nth-child(4){grid-column:2}
+  .bo-row>:nth-child(5){grid-column:1 / -1}
   .cd-h{grid-template-columns:1fr auto;gap:10px;padding:12px 14px}
   .cd-pills{grid-column:1 / -1;order:3;flex-wrap:wrap}
   .cd-inner{padding:2px 14px 12px}
@@ -311,6 +357,19 @@ async function q(p){const r=await fetch(SB+p,{headers:H});if(!r.ok)throw new Err
 function toast(m,e){const t=document.getElementById('toast');t.textContent=(e?'\u2715 ':'\u2713 ')+m;
   t.classList.add('on');setTimeout(()=>t.classList.remove('on'),3200)}
 
+
+const MESREX=/\b(ENERO|FEBRERO|MARZO|ABRIL|MAYO|JUNIO|JULIO|AGOSTO|SEPT?I?E?M?B?R?E?|OCTUBRE|NOVIEMBRE|DICIEMBRE|ENE|FEB|MAR|ABR|MAY|JUN|JUL|AGO|SEP|OCT|NOV|DIC)\b/i;
+const MESFULL={ENE:'Enero',FEB:'Febrero',MAR:'Marzo',ABR:'Abril',MAY:'Mayo',JUN:'Junio',
+  JUL:'Julio',AGO:'Agosto',SEP:'Septiembre',OCT:'Octubre',NOV:'Noviembre',DIC:'Diciembre'};
+function parseF(s){if(!s)return 0;const p=String(s).split('/');
+  return p.length===3?new Date(+p[2],+p[1]-1,+p[0]).getTime():0}
+function diasDesde(s){const t=parseF(s);return t?Math.round((Date.now()-t)/86400000):null}
+function mesEstimado(txt){
+  if(!txt)return'';const m=String(txt).match(MESREX);if(!m)return'';
+  const k=m[1].toUpperCase().slice(0,3);return MESFULL[k]||'';
+}
+function ageColor(d){if(d>180)return'#C0392B';if(d>90)return'#D35400';if(d>30)return'#C47A1A';return'#185FA5'}
+
 function covColor(p){
   if(p>=100)return'#1E8E5A'; if(p>=75)return'#185FA5';
   if(p>=50)return'#C47A1A';  if(p>=25)return'#D35400'; return'#C0392B';
@@ -325,7 +384,7 @@ async function cargar(){
   const [dls,cob,bo,bp,fac]=await Promise.all([
     q('/distribuidores?region=in.(israel,marco)&select=id,nombre,region'),
     q('/cobranza_2026?anio=eq.2026&select=distribuidor_id,region,folio,vin,modelo,familia,f_factura,f_liberacion,f_entrega,estado,dias_alerta,dias_src&order=dias_alerta.desc'),
-    q('/back_order?select=distribuidor_id,modelo,modelo_familia,unidades,fecha_solicitud,notas'),
+    q('/back_order?select=distribuidor_id,modelo,modelo_familia,unidades,fecha_solicitud,folio,plaza,obs,estatus_bo,referencia'),
     q('/bp_anual?anio=eq.2026&select=distribuidor_id,modelo,unidades_bp'),
     q('/facturado_ytd?anio=eq.2026&select=distribuidor_id,mes,modelo,unidades_facturadas')
   ]);
@@ -347,7 +406,7 @@ function buildMatrix(){
   FAC.forEach(r=>{const k=r.distribuidor_id+'|'+r.modelo;facM[k]=(facM[k]||0)+r.unidades_facturadas});
   BOR.forEach(r=>{const f=r.modelo_familia||MODS.find(m=>(r.modelo||'').includes(m));if(!f)return;
     const k=r.distribuidor_id+'|'+f;boM[k]=(boM[k]||0)+(r.unidades||1);
-    (boF[k]=boF[k]||[]).push({modelo:r.modelo,fecha:r.fecha_solicitud||'',notas:r.notas||''})});
+    (boF[k]=boF[k]||[]).push({modelo:r.modelo,fecha:r.fecha_solicitud||'',folio:r.folio||'',plaza:r.plaza||'',obs:r.obs||'',ref:r.referencia||''})});
   MATRIX=[];
   ids.forEach(did=>MODS.forEach(m=>{
     const k=did+'|'+m, bp=bpM[k]||0, fac=facM[k]||0, bo=boM[k]||0;
@@ -491,18 +550,6 @@ function renderBO(){
       '<span>BO<b>'+t.bo+'</b></span><span>Falta<b style="color:'+(t.gap?'#C0392B':'#1E8E5A')+'">'+t.gap+'</b></span>'+
       '</div></div>'}).join('');
 
-  const acc=rows.filter(r=>r.gap>0).sort((a,b)=>(a.bo===0?0:1)-(b.bo===0?0:1)||b.gap-a.gap).slice(0,10);
-  const accH=acc.map((r,i)=>
-    '<div class="act" onclick="verCelda(\''+r.did+'\',\''+r.modelo+'\')">'+
-      '<div class="act-i">'+String(i+1).padStart(2,'0')+'</div>'+
-      '<div><div class="act-d">'+(DL[r.did]?DL[r.did].nombre:r.did)+'</div>'+
-      '<div class="act-r">'+(r.bo===0?'Sin ning\u00fan pedido colocado':r.bo+' unidades ya pedidas')+'</div></div>'+
-      '<div class="act-m" style="color:'+covColor(r.cov)+'">'+r.modelo+'</div>'+
-      '<div><div class="act-bar"><div class="act-fill" style="width:'+Math.min(100,r.cov)+'%;background:'+covColor(r.cov)+'"></div></div>'+
-      '<div class="act-lbl">Fact <b>'+r.fac+'</b> + BO <b>'+r.bo+'</b> de <b>'+r.bp+'</b></div></div>'+
-      '<div class="act-g"><div class="act-gn" style="color:'+covColor(r.cov)+'">'+Math.round(r.cov)+'%</div>'+
-      '<div class="act-gl">CUBIERTO</div></div></div>').join('');
-
   const ids=dealersReg().sort((a,b)=>{
     const c=d=>{const s=rows.filter(r=>r.did===d);return s.length?s.reduce((x,r)=>x+r.cov,0)/s.length:999};
     return c(a)-c(b)});
@@ -523,11 +570,8 @@ function renderBO(){
 
   document.getElementById('pane-bo').innerHTML=
     '<div class="msum">'+cards+'</div>'+
-    (acc.length?'<div class="sec"><div class="sec-h"><h3>Decisiones pendientes</h3><div class="rule"></div>'+
-      '<span>los '+acc.length+' huecos m\u00e1s grandes &middot; clic para ver los pedidos</span></div>'+
-      '<div class="panel">'+accH+'</div></div>':'')+
     '<div class="sec"><div class="sec-h"><h3>Cobertura por distribuidor y modelo</h3><div class="rule"></div>'+
-      '<span>'+ids.length+' distribuidores &middot; menor cobertura primero</span></div>'+
+      '<span>'+ids.length+' distribuidores &middot; menor cobertura primero &middot; clic en una celda para el detalle</span></div>'+
       '<div class="panel"><div class="mtx-wrap"><table class="mtx"><thead><tr><th>Distribuidor</th>'+
       MODS.map(m=>'<th class="mh">'+m+'</th>').join('')+'</tr></thead><tbody>'+mtxH+'</tbody></table></div>'+
       '<div class="legend"><span style="font-weight:600;color:var(--mut)">Cobertura del BP:</span>'+
@@ -536,28 +580,115 @@ function renderBO(){
         '<span class="lg"><span class="lgc" style="background:#FDF3E3"></span>50 a 75%</span>'+
         '<span class="lg"><span class="lgc" style="background:#EEF5FD"></span>75 a 100%</span>'+
         '<span class="lg"><span class="lgc" style="background:#E2F4EA"></span>plan completo</span>'+
-      '</div></div></div>';
+      '</div></div></div>'+
+    renderBOPend();
+}
+
+
+/* ══ BACK ORDER PENDIENTE ══ */
+function renderBOPend(){
+  const ids=new Set(dealersReg());
+  const uds=BOR.filter(r=>ids.has(r.distribuidor_id));
+  if(!uds.length)return '<div class="sec"><div class="sec-h"><h3>Back order pendiente</h3><div class="rule"></div></div>'+
+    '<div class="panel"><div class="empty"><b>Sin back order</b>No hay pedidos pendientes en esta regi\u00f3n.</div></div></div>';
+
+  const G={};
+  uds.forEach(r=>{
+    const k=r.folio||'(sin folio)';
+    if(!G[k])G[k]={folio:k,did:r.distribuidor_id,plaza:r.plaza||'',fecha:r.fecha_solicitud||'',
+      obs:r.obs||'',ref:r.referencia||'',est:r.estatus_bo||'',mods:{},u:0};
+    const f=r.modelo_familia||'?';
+    G[k].mods[f]=(G[k].mods[f]||0)+(r.unidades||1);
+    G[k].u+=(r.unidades||1);
+    if(!G[k].obs&&r.obs)G[k].obs=r.obs;
+    if(!G[k].ref&&r.referencia)G[k].ref=r.referencia;
+  });
+  const lista=Object.values(G).map(g=>Object.assign({},g,{dias:diasDesde(g.fecha)}))
+    .sort((a,b)=>(b.dias||0)-(a.dias||0));
+
+  const b1=uds.filter(r=>{const d=diasDesde(r.fecha_solicitud);return d!==null&&d<=30}).length;
+  const b2=uds.filter(r=>{const d=diasDesde(r.fecha_solicitud);return d>30&&d<=90}).length;
+  const b3=uds.filter(r=>{const d=diasDesde(r.fecha_solicitud);return d>90&&d<=180}).length;
+  const b4=uds.filter(r=>{const d=diasDesde(r.fecha_solicitud);return d>180}).length;
+  const prom=Math.round(uds.reduce((a,r)=>a+(diasDesde(r.fecha_solicitud)||0),0)/uds.length);
+
+  const agc=(cls,lbl,n)=>{
+    const col={b1:'#185FA5',b2:'#C47A1A',b3:'#D35400',b4:'#C0392B'}[cls];
+    const p=uds.length?Math.round(n/uds.length*100):0;
+    return '<div class="agc '+cls+'"><div class="agc-l">'+lbl+'</div>'+
+      '<div class="agc-n" style="color:'+(n?col:'#C3D2E0')+'">'+n+'</div>'+
+      '<div class="agc-s"><b>'+p+'%</b> del back order</div></div>'};
+
+  const filas=lista.map(g=>{
+    const mods=Object.entries(g.mods).sort((a,b)=>MODS.indexOf(a[0])-MODS.indexOf(b[0]))
+      .map(function(e){return '<span class="bo-chip">'+e[0]+(e[1]>1?' \u00d7'+e[1]:'')+'</span>'}).join('');
+    const mes=mesEstimado(g.obs)||mesEstimado(g.ref);
+    const refRedundante=mes&&g.ref&&g.ref.replace(/[^A-Za-z]/g,'').toUpperCase()===mes.toUpperCase();
+    const verRef=g.ref&&!refRedundante;
+    const nota=(mes?'<span class="bo-mes">'+mes+'</span>':'')+
+      (g.obs?'<b>'+g.obs+'</b>':'')+
+      (verRef?((g.obs?'<br>':'')+'<span class="bo-ref">Ref '+g.ref+'</span>'):'');
+    return '<div class="bo-row">'+
+      '<div class="bo-age"><div class="bo-age-n" style="color:'+ageColor(g.dias||0)+'">'+(g.dias!==null?g.dias:'\u2014')+'</div>'+
+      '<div class="bo-age-l">D\u00cdAS</div></div>'+
+      '<div><div class="bo-dl">'+(DL[g.did]?DL[g.did].nombre:g.did)+'</div>'+
+      '<div class="bo-pl">'+(g.plaza||'')+(g.est?' \u00b7 '+g.est:'')+'</div></div>'+
+      '<div class="bo-mods">'+mods+'</div>'+
+      '<div><div class="bo-fec">'+(g.fecha||'')+'</div><div class="bo-fol">'+g.folio+'</div></div>'+
+      '<div class="bo-note">'+(nota||'<span style="color:#B9C7D6">\u2014</span>')+'</div>'+
+    '</div>'}).join('');
+
+  return '<div class="aging">'+
+      agc('b1','0 &ndash; 30 d\u00edas',b1)+agc('b2','31 &ndash; 90 d\u00edas',b2)+
+      agc('b3','91 &ndash; 180 d\u00edas',b3)+agc('b4','M\u00e1s de 180 d\u00edas',b4)+
+    '</div>'+
+    '<div class="sec"><div class="sec-h"><h3>Back order pendiente</h3><div class="rule"></div>'+
+      '<span>'+uds.length+' unidades en '+lista.length+(lista.length===1?' pedido':' pedidos')+' \u00b7 antig\u00fcedad promedio '+prom+' d\u00edas</span></div>'+
+      '<div class="panel">'+
+      '<div class="bo-hd"><span>Antig.</span><span>Distribuidor</span><span>Modelos</span>'+
+      '<span>Solicitado</span><span>Observaci\u00f3n / referencia</span></div>'+
+      filas+'</div></div>';
 }
 
 function verCelda(did,mod){
   const r=MATRIX.find(x=>x.did===did&&x.modelo===mod); if(!r)return;
-  const fol=r.folios.length?r.folios.map(f=>{
-    const pl=(f.notas.match(/Plaza ([^|]+)/)||[])[1]||'';
-    const fo=(f.notas.match(/Folio ([^|]+)/)||[])[1]||'';
-    return '<div class="fr"><span class="fr-f">'+fo.trim()+'</span>'+
-      '<span class="fr-m">'+f.modelo+(pl?' &middot; '+pl.trim():'')+'</span>'+
-      '<span class="fr-d">'+(f.fecha||'')+'</span></div>'}).join('')
-    :'<div class="empty" style="padding:22px">Sin pedidos colocados para este modelo.</div>';
+
+  const ESTLBL={pagado:'Pagado',critico:'Entregada s/pago',urgente:'Liberada s/pago',
+    anticipo:'Anticipo',pendiente:'Sin pago'};
+  const fac=COB.filter(x=>x.distribuidor_id===did&&x.familia===mod)
+    .sort((a,b)=>parseF(b.f_factura)-parseF(a.f_factura));
+  const facH=fac.length?fac.map(u=>
+    '<div class="iv"><span class="iv-f">'+(u.folio||'\u2014')+'</span>'+
+    '<span class="iv-v">'+(u.vin||'\u2014')+'</span>'+
+    '<span class="iv-d">'+(u.f_factura||'')+'</span>'+
+    '<span class="iv-s '+u.estado+'">'+(ESTLBL[u.estado]||u.estado)+
+      (u.estado!=='pagado'&&u.dias_alerta?' \u00b7 '+u.dias_alerta+'d':'')+'</span></div>').join('')
+    :'<div class="empty" style="padding:18px">Sin unidades facturadas de este modelo en 2026.</div>';
+
+  const bo=r.folios.slice().sort((a,b)=>parseF(b.fecha)-parseF(a.fecha));
+  const boH=bo.length?bo.map(f=>{
+    const d=diasDesde(f.fecha), mes=mesEstimado(f.obs)||mesEstimado(f.ref);
+    return '<div class="iv"><span class="iv-f">'+(f.folio||'\u2014')+'</span>'+
+      '<span class="iv-v">'+f.modelo+(f.plaza?' \u00b7 '+f.plaza:'')+
+      (mes?' <span class="bo-mes">'+mes+'</span>':'')+
+      (f.obs?'<br><span style="color:var(--ink);font-weight:600">'+f.obs+'</span>':'')+'</span>'+
+      '<span class="iv-d">'+(f.fecha||'')+'</span>'+
+      '<span class="iv-s pendiente" style="color:'+ageColor(d||0)+'">'+(d!==null?d+' d\u00edas':'\u2014')+'</span></div>'}).join('')
+    :'<div class="empty" style="padding:18px">Sin pedidos colocados para este modelo.</div>';
+
   document.getElementById('mbox').innerHTML=
     '<div class="mbox-h"><div><div class="mbox-t">'+(DL[did]?DL[did].nombre:did)+' &middot; '+mod+'</div>'+
-    '<div class="mbox-s">'+(r.cov!==null?Math.round(r.cov)+'% del plan cubierto':'Sin plan asignado')+'</div></div>'+
+    '<div class="mbox-s">'+(r.cov!==null?Math.round(r.cov)+'% del plan cubierto':'Sin plan asignado para este modelo')+'</div></div>'+
     '<button class="mx" onclick="cerrarModal()">&times;</button></div>'+
     '<div class="mbox-b"><div class="mstat">'+
       '<div class="ms"><div class="ms-n">'+r.bp+'</div><div class="ms-l">Plan</div></div>'+
       '<div class="ms"><div class="ms-n" style="color:#185FA5">'+r.fac+'</div><div class="ms-l">Facturado</div></div>'+
       '<div class="ms"><div class="ms-n" style="color:#1E8E5A">'+r.bo+'</div><div class="ms-l">En pedido</div></div>'+
       '<div class="ms"><div class="ms-n" style="color:'+(r.gap?'#C0392B':'#1E8E5A')+'">'+r.gap+'</div><div class="ms-l">Falta</div></div>'+
-    '</div><div class="sec-h" style="margin-bottom:4px"><h3>Pedidos registrados</h3><div class="rule"></div></div>'+fol+'</div>';
+    '</div>'+
+    '<div class="msec">Facturado 2026<div class="rule"></div><span>'+fac.length+(fac.length===1?' unidad':' unidades')+'</span></div>'+facH+
+    '<div class="msec">Back order<div class="rule"></div><span>'+bo.length+(bo.length===1?' unidad':' unidades')+'</span></div>'+boH+
+    '</div>';
   document.getElementById('modal').classList.add('on');
 }
 function cerrarModal(){document.getElementById('modal').classList.remove('on')}
