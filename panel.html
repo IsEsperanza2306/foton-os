@@ -4,224 +4,235 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Foton · Panel Operativo 2026</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --canvas:#00102B; --surface:#001A44; --raised:#052C68;
-  --line:#0C356E; --line2:#164A93;
-  --tx:#EAF2FB; --mut:#8CA7C6; --dim:#5F7B9C;
-  --brand:#0057B8; --accent:#4A90D9; --deep:#002870;
-  --c0:#C0392B; --c1:#D35400; --c2:#E8A13D; --c3:#4A90D9; --c4:#2FB37A;
-  --purple:#8E44AD;
+  --bg:#F4F7FB; --card:#FFFFFF; --ice:#EEF5FD;
+  --deep:#002870; --navy:#042C53; --blue:#185FA5; --sky:#4A90D9; --tab:#0B4FA8;
+  --ink:#1B2733; --mut:#5B6B7C; --dim:#8496A8;
+  --line:#D6E4F2; --line2:#E8EFF7;
+  --red:#C0392B;  --red-bg:#FBEAE7;
+  --org:#D35400;  --org-bg:#FDEDE3;
+  --amb:#C47A1A;  --amb-bg:#FDF3E3;
+  --blu:#185FA5;  --blu-bg:#EEF5FD;
+  --grn:#1E8E5A;  --grn-bg:#E2F4EA;
+  --pur:#8E44AD;  --pur-bg:#F5EEF8;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--canvas)}
-body{font-family:Inter,sans-serif;color:var(--tx);-webkit-font-smoothing:antialiased}
+html,body{background:var(--bg)}
+body{font-family:Inter,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased}
 .mono{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
-.cond{font-family:'Barlow Condensed',sans-serif}
 
-/* HEADER */
-header{background:linear-gradient(180deg,var(--deep),var(--canvas));border-bottom:1px solid var(--line);
-  padding:14px 24px;display:flex;align-items:center;gap:20px;position:sticky;top:0;z-index:50}
-.logo{height:26px;width:auto;opacity:.95;flex-shrink:0}
-.hdiv{width:1px;height:26px;background:var(--line2)}
-.htitle .t1{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:700;letter-spacing:.4px;line-height:1}
-.htitle .t2{font-size:10px;color:var(--dim);letter-spacing:1.4px;font-weight:600;margin-top:3px}
+/* ── CHROME ── */
+header{background:linear-gradient(180deg,#00214F,var(--deep));padding:13px 24px;
+  display:flex;align-items:center;gap:18px}
+.logo{height:24px;width:auto;flex-shrink:0}
+.hdiv{width:1px;height:24px;background:rgba(255,255,255,.22)}
+.htitle .t1{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:700;
+  letter-spacing:.4px;line-height:1;color:#fff}
+.htitle .t2{font-size:9.5px;color:rgba(255,255,255,.55);letter-spacing:1.5px;font-weight:600;margin-top:3px}
 .hspace{flex:1}
-.rswitch{display:flex;gap:2px;background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:3px}
-.rbtn{padding:7px 15px;border:0;background:none;color:var(--mut);font-family:Inter;font-size:12px;
-  font-weight:600;border-radius:6px;cursor:pointer;transition:.14s;white-space:nowrap}
-.rbtn:hover{color:var(--tx)}
-.rbtn.on{background:var(--brand);color:#fff}
-.corte{font-size:10.5px;color:var(--dim);text-align:right;line-height:1.35;font-weight:500}
-.corte b{color:var(--mut);display:block;font-size:11.5px;font-weight:600}
-.refresh{width:34px;height:34px;border-radius:8px;border:1px solid var(--line2);background:var(--surface);
-  color:var(--mut);cursor:pointer;font-size:14px;transition:.14s}
-.refresh:hover{border-color:var(--accent);color:var(--accent)}
+.rswitch{display:flex;gap:2px;background:rgba(255,255,255,.1);border-radius:8px;padding:3px}
+.rbtn{padding:7px 15px;border:0;background:none;color:rgba(255,255,255,.65);font-family:Inter;
+  font-size:12px;font-weight:600;border-radius:6px;cursor:pointer;transition:.14s;white-space:nowrap}
+.rbtn:hover{color:#fff}
+.rbtn.on{background:#fff;color:var(--deep)}
+.corte{font-size:10px;color:rgba(255,255,255,.5);text-align:right;line-height:1.35;font-weight:500}
+.corte b{color:rgba(255,255,255,.85);display:block;font-size:11.5px;font-weight:600}
+.refresh{width:32px;height:32px;border-radius:7px;border:1px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.08);color:rgba(255,255,255,.8);cursor:pointer;font-size:14px;transition:.14s}
+.refresh:hover{background:#fff;color:var(--deep)}
 .refresh.load{animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* TABS */
-.tabbar{display:flex;gap:0;padding:0 24px;background:var(--canvas);border-bottom:1px solid var(--line);
-  position:sticky;top:57px;z-index:49}
-.tab{padding:13px 20px;border:0;background:none;color:var(--dim);font-family:Inter;font-size:13px;
-  font-weight:600;cursor:pointer;border-bottom:2px solid transparent;transition:.14s;display:flex;
-  align-items:center;gap:8px}
-.tab:hover{color:var(--mut)}
-.tab.on{color:var(--tx);border-bottom-color:var(--accent)}
+.tabbar{display:flex;background:var(--tab);padding:0 24px}
+.tab{padding:12px 22px;border:0;background:none;color:rgba(255,255,255,.6);font-family:Inter;
+  font-size:13px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent;
+  transition:.14s;display:flex;align-items:center;gap:8px}
+.tab:hover{color:rgba(255,255,255,.9)}
+.tab.on{color:#fff;border-bottom-color:#fff}
 .tbadge{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;padding:2px 6px;
-  border-radius:5px;background:var(--raised);color:var(--mut)}
-.tab.on .tbadge{background:var(--brand);color:#fff}
+  border-radius:5px;background:rgba(255,255,255,.18);color:#fff}
 
-main{padding:22px 24px 60px;max-width:1500px;margin:0 auto}
+/* ── FRANJA DEGRADADO ── */
+.strip{background:linear-gradient(100deg,#0B57B5 0%,#2E7FD4 60%,#4A90D9 100%);
+  padding:17px 24px;display:flex;align-items:center;gap:26px}
+.strip-main{font-family:'Barlow Condensed',sans-serif;font-size:25px;font-weight:700;
+  color:#fff;line-height:1.15;letter-spacing:.2px}
+.strip-main em{font-style:normal;color:#FFE08A}
+.strip-sub{font-size:12px;color:rgba(255,255,255,.8);margin-top:4px;line-height:1.45}
+.strip-sub b{color:#fff;font-weight:600}
+.strip-txt{flex:1}
+.strip-kpis{display:flex;gap:0;flex-shrink:0}
+.sk{padding:0 20px;border-left:1px solid rgba(255,255,255,.22);text-align:center}
+.sk:first-child{border-left:0}
+.sk-n{font-family:'Barlow Condensed',sans-serif;font-size:27px;font-weight:800;color:#fff;line-height:1}
+.sk-l{font-size:9px;color:rgba(255,255,255,.7);font-weight:600;letter-spacing:.7px;
+  text-transform:uppercase;margin-top:3px}
 
-/* HEADLINE */
-.headline{background:linear-gradient(135deg,#0F2340,#0B1A2E);border:1px solid var(--line2);
-  border-radius:13px;padding:20px 24px;margin-bottom:14px;display:flex;align-items:center;gap:24px}
-.hl-bar{width:3px;align-self:stretch;border-radius:2px;background:var(--brand);flex-shrink:0}
-.hl-txt{flex:1}
-.hl-main{font-family:'Barlow Condensed',sans-serif;font-size:25px;font-weight:700;line-height:1.15;letter-spacing:.2px}
-.hl-main em{font-style:normal;color:var(--accent)}
-.hl-main .bad{color:var(--c1)}
-.hl-sub{font-size:12.5px;color:var(--mut);margin-top:5px;line-height:1.45}
-.hl-sub b{color:var(--tx);font-weight:600}
+main{padding:20px 24px 60px;max-width:1500px;margin:0 auto}
 
-/* GRID SUMMARY */
-.msum{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px}
-.mcard{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:14px 16px;
-  position:relative;overflow:hidden}
-.mcard-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:9px}
-.mcard-mod{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800;letter-spacing:.5px}
-.mcard-pct{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700}
-.mcard-bar{height:5px;background:#00102B;border-radius:3px;overflow:hidden;margin-bottom:9px}
-.mcard-fill{height:100%;border-radius:3px;transition:width .5s cubic-bezier(.4,0,.2,1)}
-.mcard-nums{display:flex;justify-content:space-between;font-size:10px;color:var(--dim);font-weight:500}
-.mcard-nums b{font-family:'JetBrains Mono',monospace;color:var(--mut);font-weight:600;display:block;
-  font-size:12px;margin-top:1px}
-
-/* SECTION */
+/* ── SECCION ── */
 .sec{margin-bottom:16px}
-.sec-h{display:flex;align-items:baseline;gap:10px;margin-bottom:9px;padding:0 2px}
+.sec-h{display:flex;align-items:center;gap:12px;margin-bottom:9px}
 .sec-h h3{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;
-  text-transform:uppercase;letter-spacing:1.1px;color:var(--mut)}
-.sec-h span{font-size:11px;color:var(--dim)}
-.sec-h .spacer{flex:1}
+  text-transform:uppercase;letter-spacing:1.2px;color:var(--mut);white-space:nowrap}
+.sec-h .rule{flex:1;height:1px;background:var(--line)}
+.sec-h span{font-size:11px;color:var(--dim);white-space:nowrap}
 
-/* PANEL */
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;
+  box-shadow:0 1px 3px rgba(4,44,83,.05)}
 
-/* ACTION LIST */
+/* ── TARJETAS MODELO ── */
+.msum{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:18px}
+.mcard{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:14px 16px;
+  box-shadow:0 1px 3px rgba(4,44,83,.05)}
+.mcard-top{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:9px}
+.mcard-mod{font-family:'Barlow Condensed',sans-serif;font-size:25px;font-weight:800;
+  color:var(--navy);letter-spacing:.5px}
+.mcard-pct{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700}
+.mcard-bar{height:5px;background:var(--line2);border-radius:3px;overflow:hidden;margin-bottom:9px}
+.mcard-fill{height:100%;border-radius:3px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.mcard-nums{display:flex;justify-content:space-between;font-size:9.5px;color:var(--dim);font-weight:500}
+.mcard-nums b{font-family:'JetBrains Mono',monospace;color:var(--ink);font-weight:600;
+  display:block;font-size:12px;margin-top:1px}
+
+/* ── LISTA ACCION ── */
 .act{display:grid;grid-template-columns:26px 1fr 52px 132px 74px;align-items:center;gap:12px;
-  padding:11px 18px;border-bottom:1px solid var(--line);cursor:pointer;transition:background .12s}
+  padding:11px 18px;border-bottom:1px solid var(--line2);cursor:pointer;transition:background .12s}
 .act:last-child{border-bottom:0}
-.act:hover{background:var(--raised)}
+.act:hover{background:var(--ice)}
 .act-i{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);font-weight:600}
-.act-d{font-size:13px;font-weight:600;letter-spacing:.1px}
+.act-d{font-size:13px;font-weight:600;color:var(--navy)}
 .act-r{font-size:10px;color:var(--dim);margin-top:2px;font-weight:500}
 .act-m{font-family:'Barlow Condensed',sans-serif;font-size:21px;font-weight:800;text-align:center}
-.act-bar{height:5px;background:#00102B;border-radius:3px;overflow:hidden;margin-bottom:4px}
+.act-bar{height:5px;background:var(--line2);border-radius:3px;overflow:hidden;margin-bottom:4px}
 .act-fill{height:100%;border-radius:3px}
 .act-lbl{font-size:9.5px;color:var(--dim);font-weight:500}
 .act-lbl b{font-family:'JetBrains Mono',monospace;color:var(--mut)}
 .act-g{text-align:right}
 .act-gn{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:700}
-.act-gl{font-size:9px;color:var(--dim);font-weight:600;letter-spacing:.3px}
+.act-gl{font-size:8.5px;color:var(--dim);font-weight:600;letter-spacing:.3px}
 
-/* MATRIX */
+/* ── MATRIZ ── */
 .mtx-wrap{overflow-x:auto}
 .mtx{width:100%;border-collapse:separate;border-spacing:0}
-.mtx th{position:sticky;top:0;background:var(--raised);font-size:10px;font-weight:700;color:var(--mut);
-  text-transform:uppercase;letter-spacing:.9px;padding:9px 6px;text-align:center;border-bottom:1px solid var(--line2)}
-.mtx th:first-child{text-align:left;padding-left:18px;min-width:180px}
-.mtx th.mh{font-family:'Barlow Condensed',sans-serif;font-size:16px;letter-spacing:.5px;color:var(--tx);width:88px}
-.mtx td{padding:0;border-bottom:1px solid var(--line)}
+.mtx th{background:var(--ice);font-size:9.5px;font-weight:700;color:var(--mut);text-transform:uppercase;
+  letter-spacing:.9px;padding:9px 6px;text-align:center;border-bottom:1px solid var(--line)}
+.mtx th:first-child{text-align:left;padding-left:18px;min-width:190px}
+.mtx th.mh{font-family:'Barlow Condensed',sans-serif;font-size:16px;letter-spacing:.5px;
+  color:var(--navy);width:90px}
+.mtx td{padding:0;border-bottom:1px solid var(--line2)}
 .mtx tr:last-child td{border-bottom:0}
-.mtx tr:hover td{background:rgba(74,144,217,.06)}
-.mtx-d{padding:0 18px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.mtx tr:hover td{background:#FAFCFE}
+.mtx-d{padding:0 18px;font-size:12.5px;font-weight:600;white-space:nowrap;color:var(--navy)}
 .mtx-dr{font-size:9.5px;color:var(--dim);font-weight:500;margin-top:1px}
 .cell{margin:3px;height:38px;border-radius:6px;display:flex;flex-direction:column;align-items:center;
   justify-content:center;cursor:pointer;transition:.14s;border:1px solid transparent;position:relative}
-.cell:hover{transform:scale(1.06);border-color:rgba(255,255,255,.3);z-index:2}
+.cell:hover{transform:scale(1.06);box-shadow:0 3px 10px rgba(4,44,83,.16);z-index:2}
 .cell-p{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;line-height:1}
-.cell-g{font-size:8.5px;font-weight:600;opacity:.75;margin-top:2px;letter-spacing:.2px}
-.cell.na{background:#00102B;cursor:default}
-.cell.na:hover{transform:none;border-color:transparent}
-.cell.na .cell-p{color:#2C4A73;font-size:11px}
+.cell-g{font-size:8.5px;font-weight:600;opacity:.8;margin-top:2px;letter-spacing:.2px}
+.cell.na{background:#F7F9FC;cursor:default;border-color:var(--line2)}
+.cell.na:hover{transform:none;box-shadow:none}
+.cell.na .cell-p{color:#B9C7D6;font-size:11px}
 
-/* LEGEND */
-.legend{display:flex;align-items:center;gap:14px;padding:11px 18px;border-top:1px solid var(--line);
-  font-size:10.5px;color:var(--dim);flex-wrap:wrap}
+.legend{display:flex;align-items:center;gap:14px;padding:11px 18px;border-top:1px solid var(--line2);
+  font-size:10.5px;color:var(--dim);flex-wrap:wrap;background:#FBFCFE}
 .lg{display:flex;align-items:center;gap:6px;font-weight:500}
-.lgc{width:13px;height:13px;border-radius:4px}
+.lgc{width:13px;height:13px;border-radius:4px;border:1px solid rgba(4,44,83,.08)}
 
-/* AGING */
-.aging{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
-.agc{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:15px 17px;
-  border-left:3px solid var(--line2)}
-.agc.b1{border-left-color:var(--c3)}
-.agc.b2{border-left-color:var(--c2)}
-.agc.b3{border-left-color:var(--c1)}
-.agc.b4{border-left-color:var(--c0)}
-.agc-l{font-size:10px;color:var(--dim);font-weight:700;letter-spacing:.9px;text-transform:uppercase}
-.agc-n{font-family:'Barlow Condensed',sans-serif;font-size:38px;font-weight:800;line-height:1;margin:5px 0 3px}
+/* ── AGING ── */
+.aging{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.agc{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:14px 17px;
+  border-left:4px solid var(--line);box-shadow:0 1px 3px rgba(4,44,83,.05)}
+.agc.b1{border-left-color:var(--blu)}
+.agc.b2{border-left-color:var(--amb)}
+.agc.b3{border-left-color:var(--org)}
+.agc.b4{border-left-color:var(--red)}
+.agc-l{font-size:9.5px;color:var(--dim);font-weight:700;letter-spacing:.9px;text-transform:uppercase}
+.agc-n{font-family:'Barlow Condensed',sans-serif;font-size:37px;font-weight:800;line-height:1;margin:5px 0 3px}
 .agc-s{font-size:10.5px;color:var(--mut);font-weight:500}
-.agc-s b{font-family:'JetBrains Mono',monospace}
+.agc-s b{font-family:'JetBrains Mono',monospace;color:var(--ink)}
 
-/* COB DEALER */
-.cd{border-bottom:1px solid var(--line)}
+/* ── COBRANZA DEALER ── */
+.cd{border-bottom:1px solid var(--line2)}
 .cd:last-child{border-bottom:0}
-.cd-h{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:16px;padding:13px 18px;
+.cd-h{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:16px;padding:12px 18px;
   cursor:pointer;transition:background .12s}
-.cd-h:hover{background:var(--raised)}
-.cd-n{font-size:13.5px;font-weight:600}
+.cd-h:hover{background:var(--ice)}
+.cd-n{font-size:13.5px;font-weight:600;color:var(--navy)}
 .cd-r{font-size:10px;color:var(--dim);margin-top:2px;font-weight:500}
 .cd-pills{display:flex;gap:6px}
-.pill{display:flex;align-items:center;gap:5px;padding:4px 9px;border-radius:6px;font-size:11px;font-weight:700}
-.pill .mono{font-size:12px}
-.pill.c{background:rgba(192,57,43,.22);color:#E36A59}
-.pill.u{background:rgba(232,161,61,.18);color:#E8A13D}
-.pill.a{background:rgba(142,68,173,.22);color:#B478D0}
+.pill{display:flex;align-items:center;gap:5px;padding:4px 9px;border-radius:6px;font-size:11px;font-weight:600}
+.pill .mono{font-size:12px;font-weight:700}
+.pill.c{background:var(--red-bg);color:var(--red)}
+.pill.u{background:var(--amb-bg);color:var(--amb)}
+.pill.a{background:var(--pur-bg);color:var(--pur)}
 .cd-max{text-align:right;min-width:66px}
 .cd-maxn{font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700}
-.cd-maxl{font-size:9px;color:var(--dim);font-weight:600;letter-spacing:.3px}
+.cd-maxl{font-size:8.5px;color:var(--dim);font-weight:600;letter-spacing:.3px}
 .cd-body{max-height:0;overflow:hidden;transition:max-height .32s ease}
 .cd-body.open{max-height:2600px}
-.cd-inner{padding:0 18px 12px;border-top:1px solid var(--line)}
+.cd-inner{padding:2px 18px 12px;background:#FBFCFE;border-top:1px solid var(--line2)}
 .ur{display:grid;grid-template-columns:56px 46px 1fr auto;align-items:center;gap:13px;padding:9px 0;
-  border-bottom:1px solid rgba(30,52,84,.5)}
+  border-bottom:1px solid var(--line2)}
 .ur:last-child{border-bottom:0}
 .ur-d{text-align:center}
 .ur-dn{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:700;line-height:1}
 .ur-dl{font-size:8px;color:var(--dim);font-weight:600;letter-spacing:.2px}
-.ur-m{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:800;text-align:center}
+.ur-m{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:800;text-align:center;color:var(--navy)}
 .ur-i{font-size:11px;color:var(--mut)}
-.ur-i b{color:var(--tx);font-weight:600}
+.ur-i b{color:var(--ink);font-weight:600}
 .ur-f{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);margin-top:2px}
-.ur-s{font-size:10px;font-weight:700;padding:3px 9px;border-radius:5px;white-space:nowrap}
-.ur-s.critico{background:rgba(192,57,43,.22);color:#E36A59}
-.ur-s.urgente{background:rgba(232,161,61,.18);color:#E8A13D}
-.ur-s.anticipo{background:rgba(142,68,173,.22);color:#B478D0}
+.ur-s{font-size:10px;font-weight:600;padding:3px 9px;border-radius:5px;white-space:nowrap}
+.ur-s.critico{background:var(--red-bg);color:var(--red)}
+.ur-s.urgente{background:var(--amb-bg);color:var(--amb)}
+.ur-s.anticipo{background:var(--pur-bg);color:var(--pur)}
 
-/* MODAL */
-.modal{display:none;position:fixed;inset:0;background:rgba(3,9,18,.8);backdrop-filter:blur(6px);
+/* ── MODAL ── */
+.modal{display:none;position:fixed;inset:0;background:rgba(4,44,83,.45);backdrop-filter:blur(4px);
   z-index:100;align-items:center;justify-content:center;padding:24px}
 .modal.on{display:flex}
-.mbox{background:var(--surface);border:1px solid var(--line2);border-radius:14px;max-width:560px;width:100%;
-  max-height:80vh;overflow:auto}
-.mbox-h{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;
-  justify-content:space-between;position:sticky;top:0;background:var(--surface)}
-.mbox-t{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700}
+.mbox{background:var(--card);border-radius:14px;max-width:560px;width:100%;max-height:80vh;
+  overflow:auto;box-shadow:0 20px 60px rgba(4,44,83,.3)}
+.mbox-h{padding:17px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;
+  justify-content:space-between;position:sticky;top:0;background:var(--card)}
+.mbox-t{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:var(--navy)}
 .mbox-s{font-size:11px;color:var(--dim);margin-top:2px}
-.mx{width:28px;height:28px;border-radius:7px;border:1px solid var(--line2);background:none;color:var(--mut);
-  cursor:pointer;font-size:15px}
-.mx:hover{border-color:var(--c1);color:var(--c1)}
+.mx{width:28px;height:28px;border-radius:7px;border:1px solid var(--line);background:none;
+  color:var(--mut);cursor:pointer;font-size:15px}
+.mx:hover{border-color:var(--red);color:var(--red)}
 .mbox-b{padding:18px 22px}
 .mstat{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:16px}
-.ms{background:var(--raised);border-radius:9px;padding:11px 13px;text-align:center}
-.ms-n{font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700}
-.ms-l{font-size:9px;color:var(--dim);font-weight:600;letter-spacing:.4px;margin-top:2px;text-transform:uppercase}
-.fr{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--line);font-size:11.5px}
+.ms{background:var(--ice);border-radius:9px;padding:11px 13px;text-align:center}
+.ms-n{font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700;color:var(--navy)}
+.ms-l{font-size:8.5px;color:var(--dim);font-weight:600;letter-spacing:.4px;margin-top:2px;text-transform:uppercase}
+.fr{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid var(--line2);font-size:11.5px}
 .fr:last-child{border-bottom:0}
-.fr-f{font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--accent);font-size:11px}
+.fr-f{font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--blue);font-size:11px}
 .fr-m{flex:1;color:var(--mut)}
 .fr-d{font-family:'JetBrains Mono',monospace;color:var(--dim);font-size:10.5px}
 
-.empty{padding:38px;text-align:center;color:var(--dim);font-size:12.5px}
-.empty b{display:block;color:var(--c4);font-size:15px;margin-bottom:5px;font-family:'Barlow Condensed',sans-serif}
+.empty{padding:38px;text-align:center;color:var(--mut);font-size:12.5px}
+.empty b{display:block;color:var(--grn);font-size:16px;margin-bottom:5px;font-family:'Barlow Condensed',sans-serif}
 
-.overlay{display:none;position:fixed;inset:0;background:rgba(7,17,32,.75);backdrop-filter:blur(3px);
-  z-index:200;align-items:center;justify-content:center}
+.overlay{display:none;position:fixed;inset:0;background:rgba(244,247,251,.8);z-index:200;
+  align-items:center;justify-content:center}
 .overlay.on{display:flex}
-.spin{width:36px;height:36px;border:2.5px solid rgba(43,127,217,.2);border-top-color:var(--accent);
+.spin{width:34px;height:34px;border:2.5px solid var(--line);border-top-color:var(--blue);
   border-radius:50%;animation:spin .7s linear infinite}
-.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(90px);background:var(--raised);
-  border:1px solid var(--line2);color:var(--tx);padding:11px 20px;border-radius:9px;font-size:12.5px;
-  font-weight:500;z-index:300;transition:transform .3s cubic-bezier(.4,0,.2,1);box-shadow:0 8px 28px rgba(0,0,0,.5)}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(90px);
+  background:var(--navy);color:#fff;padding:11px 20px;border-radius:9px;font-size:12.5px;
+  font-weight:500;z-index:300;transition:transform .3s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 8px 28px rgba(4,44,83,.28)}
 .toast.on{transform:translateX(-50%) translateY(0)}
 
-@media(max-width:1100px){
+@media(max-width:1150px){
   .msum{grid-template-columns:repeat(3,1fr)}
   .aging{grid-template-columns:repeat(2,1fr)}
+  .strip{flex-wrap:wrap;gap:14px}
+  .strip-kpis{width:100%}
+  .sk:first-child{padding-left:0}
 }
 @media(max-width:760px){
   header{flex-wrap:wrap;gap:12px;padding:12px 16px}
@@ -230,10 +241,20 @@ main{padding:22px 24px 60px;max-width:1500px;margin:0 auto}
   .rbtn{flex:1}
   main{padding:16px 14px 50px}
   .msum{grid-template-columns:repeat(2,1fr)}
-  .hl-main{font-size:20px}
+  .strip{padding:15px 16px}
+  .strip-main{font-size:20px}
+  .tabbar{padding:0 14px}
   .act{grid-template-columns:1fr 44px 66px;gap:10px}
   .act-i,.act-bar,.act-lbl{display:none}
-  .tabbar{padding:0 14px;top:auto;position:relative}
+  .cd-h{grid-template-columns:1fr auto;gap:10px;padding:12px 14px}
+  .cd-pills{grid-column:1 / -1;order:3;flex-wrap:wrap}
+  .cd-inner{padding:2px 14px 12px}
+  .ur{grid-template-columns:48px 40px 1fr;gap:10px}
+  .ur-s{grid-column:1 / -1;justify-self:start}
+  .mtx th:first-child{min-width:150px}
+  .sec-h{flex-wrap:wrap;gap:6px}
+  .sec-h .rule{display:none}
+  .sec-h span{white-space:normal;flex-basis:100%}
 }
 </style>
 </head>
@@ -249,10 +270,10 @@ main{padding:22px 24px 60px;max-width:1500px;margin:0 auto}
   <div class="hspace"></div>
   <div class="rswitch">
     <button class="rbtn on" data-r="israel" onclick="setRegion('israel')">Centro-Sur</button>
-    <button class="rbtn" data-r="marco" onclick="setRegion('marco')">Noroeste / Pacífico</button>
+    <button class="rbtn" data-r="marco" onclick="setRegion('marco')">Noroeste / Pac&iacute;fico</button>
     <button class="rbtn" data-r="all" onclick="setRegion('all')">Nacional</button>
   </div>
-  <div class="corte"><b id="corte1">—</b><span id="corte2">cargando</span></div>
+  <div class="corte"><b id="corte1">&mdash;</b><span id="corte2">cargando</span></div>
   <button class="refresh" id="btnr" onclick="actualizar()">&#8635;</button>
 </header>
 
@@ -260,6 +281,8 @@ main{padding:22px 24px 60px;max-width:1500px;margin:0 auto}
   <button class="tab on" id="tab-cob" onclick="setTab('cob')">Cobranza <span class="tbadge" id="bcob">0</span></button>
   <button class="tab" id="tab-bo" onclick="setTab('bo')">Back Order <span class="tbadge" id="bbo">0</span></button>
 </div>
+
+<div class="strip" id="strip"></div>
 
 <main>
   <div id="pane-cob"></div>
@@ -277,9 +300,9 @@ const SB='https://gblwoaaitnqbgorxaydv.supabase.co/rest/v1';
 const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdibHdvYWFpdG5xYmdvcnhheWR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxOTQ3NTMsImV4cCI6MjA5NTc3MDc1M30.o7zYCCfH2rHEs69o4U7Zc9dM4IvQi8GsXRlZFW_2kso';
 const H={apikey:KEY,Authorization:'Bearer '+KEY};
 const MODS=['S3','S5','S6','S8','S12'];
-const RLBL={israel:'CENTRO-SUR',marco:'NOROESTE / PACÍFICO',all:'RED NACIONAL'};
-const RNOM={israel:'Centro-Sur',marco:'Noroeste / Pacífico',all:'La red nacional'};
-const RSUB={israel:'Israel Esperanza',marco:'Marco Chagoya',all:'Daniel Alcántara'};
+const RLBL={israel:'CENTRO-SUR',marco:'NOROESTE / PAC\u00cdFICO',all:'RED NACIONAL'};
+const RSUB={israel:'Israel Esperanza',marco:'Marco Chagoya',all:'Daniel Alc\u00e1ntara'};
+const RNOM={israel:'Centro-Sur',marco:'Noroeste / Pac\u00edfico',all:'La red nacional'};
 
 let REG='israel', TAB='cob';
 let DL={}, COB=[], BOR=[], BP=[], FAC=[], MATRIX=[];
@@ -288,17 +311,15 @@ async function q(p){const r=await fetch(SB+p,{headers:H});if(!r.ok)throw new Err
 function toast(m,e){const t=document.getElementById('toast');t.textContent=(e?'\u2715 ':'\u2713 ')+m;
   t.classList.add('on');setTimeout(()=>t.classList.remove('on'),3200)}
 
-/* escala de cobertura */
 function covColor(p){
-  if(p>=100)return'#2FB37A'; if(p>=75)return'#4A90D9';
-  if(p>=50)return'#E8A13D';  if(p>=25)return'#D35400'; return'#C0392B';
+  if(p>=100)return'#1E8E5A'; if(p>=75)return'#185FA5';
+  if(p>=50)return'#C47A1A';  if(p>=25)return'#D35400'; return'#C0392B';
 }
 function covBg(p){
-  if(p>=100)return'rgba(47,179,122,.20)'; if(p>=75)return'rgba(74,144,217,.20)';
-  if(p>=50)return'rgba(232,161,61,.18)';  if(p>=25)return'rgba(211,84,0,.22)';
-  return'rgba(192,57,43,.24)';
+  if(p>=100)return'#E2F4EA'; if(p>=75)return'#EEF5FD';
+  if(p>=50)return'#FDF3E3';  if(p>=25)return'#FDEDE3'; return'#FBEAE7';
 }
-function diasColor(d){ if(d>=60)return'#C0392B'; if(d>=31)return'#D35400'; if(d>=16)return'#E8A13D'; return'#4A90D9' }
+function diasColor(d){ if(d>=60)return'#C0392B'; if(d>=31)return'#D35400'; if(d>=16)return'#C47A1A'; return'#185FA5' }
 
 async function cargar(){
   const [dls,cob,bo,bp,fac]=await Promise.all([
@@ -310,19 +331,18 @@ async function cargar(){
   ]);
   DL={}; dls.forEach(d=>DL[d.id]={nombre:d.nombre,region:d.region});
   COB=cob; BOR=bo; BP=bp; FAC=fac;
-
   const mx=cob.reduce((a,r)=>{const p=(r.f_factura||'').split('/');if(p.length!==3)return a;
     const t=new Date(+p[2],+p[1]-1,+p[0]).getTime();return t>a.t?{t,s:r.f_factura}:a},{t:0,s:''});
-  document.getElementById('corte1').textContent='Corte '+(mx.s||'—');
+  document.getElementById('corte1').textContent='Corte '+(mx.s||'\u2014');
   document.getElementById('corte2').textContent='Actualizado '+new Date().toLocaleDateString('es-MX',{day:'2-digit',month:'short'});
   render();
 }
 
 function dealersReg(){return Object.keys(DL).filter(id=>REG==='all'||DL[id].region===REG)}
+function rMatch(did){return REG==='all'||(DL[did]&&DL[did].region===REG)}
 
 function buildMatrix(){
-  const ids=dealersReg();
-  const bpM={},facM={},boM={},boF={};
+  const ids=dealersReg(), bpM={},facM={},boM={},boF={};
   BP.forEach(r=>{const k=r.distribuidor_id+'|'+r.modelo;bpM[k]=(bpM[k]||0)+r.unidades_bp});
   FAC.forEach(r=>{const k=r.distribuidor_id+'|'+r.modelo;facM[k]=(facM[k]||0)+r.unidades_facturadas});
   BOR.forEach(r=>{const f=r.modelo_familia||MODS.find(m=>(r.modelo||'').includes(m));if(!f)return;
@@ -331,39 +351,75 @@ function buildMatrix(){
   MATRIX=[];
   ids.forEach(did=>MODS.forEach(m=>{
     const k=did+'|'+m, bp=bpM[k]||0, fac=facM[k]||0, bo=boM[k]||0;
-    const cov=bp>0?((fac+bo)/bp*100):null;
-    MATRIX.push({did,modelo:m,bp,fac,bo,cov,gap:Math.max(0,bp-fac-bo),folios:boF[k]||[]});
+    MATRIX.push({did,modelo:m,bp,fac,bo,cov:bp>0?((fac+bo)/bp*100):null,
+      gap:Math.max(0,bp-fac-bo),folios:boF[k]||[]});
   }));
 }
 
-function render(){buildMatrix();renderCob();renderBO();
+function render(){buildMatrix();renderCob();renderBO();renderStrip();
   const al=COB.filter(r=>rMatch(r.distribuidor_id)&&['critico','urgente','anticipo'].includes(r.estado)).length;
   const sinbo=MATRIX.filter(r=>r.bp>0&&r.bo===0&&r.gap>0).length;
   document.getElementById('bcob').textContent=al;
   document.getElementById('bbo').textContent=sinbo;
 }
-function rMatch(did){return REG==='all'||(DL[did]&&DL[did].region===REG)}
+
+/* ══ FRANJA ══ */
+function renderStrip(){
+  const s=document.getElementById('strip');
+  if(TAB==='cob'){
+    const al=COB.filter(r=>rMatch(r.distribuidor_id)&&['critico','urgente','anticipo'].includes(r.estado));
+    if(!al.length){s.innerHTML='<div class="strip-txt"><div class="strip-main">'+RNOM[REG]+
+      ' sin adeudos pendientes</div><div class="strip-sub">Toda la cartera est\u00e1 al corriente.</div></div>';return}
+    const prom=Math.round(al.reduce((a,r)=>a+r.dias_alerta,0)/al.length);
+    const viejo=al.reduce((m,r)=>Math.max(m,r.dias_alerta),0);
+    const b4=al.filter(r=>r.dias_alerta>60).length;
+    const nD=new Set(al.map(r=>r.distribuidor_id)).size;
+    s.innerHTML='<div class="strip-txt">'+
+      '<div class="strip-main"><em>'+al.length+'</em> unidades sin pago en '+RNOM[REG]+
+      (b4?' &mdash; <em>'+b4+'</em> rebasan 60 d\u00edas':'')+'</div>'+
+      '<div class="strip-sub">Concentradas en <b>'+nD+' distribuidores</b> &middot; promedio de <b>'+prom+
+      ' d\u00edas</b> sin cobrar</div></div>'+
+      '<div class="strip-kpis">'+
+        '<div class="sk"><div class="sk-n">'+al.length+'</div><div class="sk-l">Unidades</div></div>'+
+        '<div class="sk"><div class="sk-n">'+prom+'</div><div class="sk-l">D\u00edas prom.</div></div>'+
+        '<div class="sk"><div class="sk-n">'+viejo+'</div><div class="sk-l">M\u00e1s antigua</div></div>'+
+        '<div class="sk"><div class="sk-n">'+nD+'</div><div class="sk-l">Dealers</div></div>'+
+      '</div>';
+  } else {
+    const rows=MATRIX.filter(r=>r.bp>0);
+    if(!rows.length){s.innerHTML='<div class="strip-txt"><div class="strip-main">Sin Business Plan cargado</div>'+
+      '<div class="strip-sub">No hay BP registrado para esta regi\u00f3n.</div></div>';return}
+    const act=MATRIX.filter(r=>r.bp>0||r.fac>0||r.bo>0);
+    const TB=act.reduce((a,r)=>a+r.bp,0), TF=act.reduce((a,r)=>a+r.fac,0);
+    const TO=act.reduce((a,r)=>a+r.bo,0), TG=act.reduce((a,r)=>a+r.gap,0);
+    const TC=TB?((TF+TO)/TB*100):0;
+    const tot={}; MODS.forEach(m=>{const x=act.filter(r=>r.modelo===m);
+      const bp=x.reduce((a,r)=>a+r.bp,0);
+      tot[m]={bp,cov:bp?((x.reduce((a,r)=>a+r.fac,0)+x.reduce((a,r)=>a+r.bo,0))/bp*100):0}});
+    const peor=MODS.filter(m=>tot[m].bp>0).sort((a,b)=>tot[a].cov-tot[b].cov)[0];
+    s.innerHTML='<div class="strip-txt">'+
+      '<div class="strip-main">'+RNOM[REG]+' tiene <em>'+Math.round(TC)+'%</em> de su plan cubierto'+
+      (peor?' &mdash; <em>'+peor+'</em> es el hueco m\u00e1s grande':'')+'</div>'+
+      '<div class="strip-sub">Quedan <b>'+TG+' unidades</b> por colocar contra un plan de <b>'+TB+'</b>'+
+      (peor?' &middot; '+peor+' solo tiene <b>'+Math.round(tot[peor].cov)+'%</b> cubierto':'')+'</div></div>'+
+      '<div class="strip-kpis">'+
+        '<div class="sk"><div class="sk-n">'+TB+'</div><div class="sk-l">Plan 2026</div></div>'+
+        '<div class="sk"><div class="sk-n">'+TF+'</div><div class="sk-l">Facturado</div></div>'+
+        '<div class="sk"><div class="sk-n">'+TO+'</div><div class="sk-l">En pedido</div></div>'+
+        '<div class="sk"><div class="sk-n">'+TG+'</div><div class="sk-l">Por colocar</div></div>'+
+      '</div>';
+  }
+}
 
 /* ══ COBRANZA ══ */
 function renderCob(){
   const al=COB.filter(r=>rMatch(r.distribuidor_id)&&['critico','urgente','anticipo'].includes(r.estado));
   if(!al.length){document.getElementById('pane-cob').innerHTML=
-    '<div class="panel"><div class="empty"><b>Sin adeudos pendientes</b>Toda la cartera de la región está al corriente.</div></div>';return}
-
+    '<div class="panel"><div class="empty"><b>Sin adeudos pendientes</b>Toda la cartera de la regi\u00f3n est\u00e1 al corriente.</div></div>';return}
   const b1=al.filter(r=>r.dias_alerta<=15), b2=al.filter(r=>r.dias_alerta>15&&r.dias_alerta<=30);
   const b3=al.filter(r=>r.dias_alerta>30&&r.dias_alerta<=60), b4=al.filter(r=>r.dias_alerta>60);
-  const prom=Math.round(al.reduce((s,r)=>s+r.dias_alerta,0)/al.length);
-  const crit=al.filter(r=>r.estado==='critico').length;
-  const viejo=al.reduce((m,r)=>Math.max(m,r.dias_alerta),0);
-  const nD=new Set(al.map(r=>r.distribuidor_id)).size;
 
-  let hl;
-  if(b4.length) hl='<em>'+al.length+'</em> unidades sin pago &mdash; <span class="bad">'+b4.length+' rebasan 60 días</span>';
-  else if(crit) hl='<em>'+al.length+'</em> unidades sin pago &mdash; <span class="bad">'+crit+' ya entregadas</span>';
-  else hl='<em>'+al.length+'</em> unidades sin pago en la region';
-
-  const grupos={};
-  al.forEach(r=>{(grupos[r.distribuidor_id]=grupos[r.distribuidor_id]||[]).push(r)});
+  const grupos={}; al.forEach(r=>{(grupos[r.distribuidor_id]=grupos[r.distribuidor_id]||[]).push(r)});
   const orden=Object.entries(grupos).sort((a,b)=>{
     const sc=g=>g.filter(x=>x.estado==='critico').length*1000+Math.max(...g.map(x=>x.dias_alerta));
     return sc(b[1])-sc(a[1])});
@@ -374,50 +430,42 @@ function renderCob(){
     const a=us.filter(x=>x.estado==='anticipo').length;
     const mx=Math.max(...us.map(x=>x.dias_alerta));
     const ord=us.sort((x,y)=>({critico:0,urgente:1,anticipo:2}[x.estado]-{critico:0,urgente:1,anticipo:2}[y.estado])||y.dias_alerta-x.dias_alerta);
-    return '<div class="cd">'+
-      '<div class="cd-h" onclick="tog(this)">'+
-        '<div><div class="cd-n">'+(DL[did]?DL[did].nombre:did)+'</div>'+
-        '<div class="cd-r">'+us.length+' unidades pendientes</div></div>'+
-        '<div class="cd-pills">'+
-          (c?'<span class="pill c"><span class="mono">'+c+'</span> entregadas</span>':'')+
-          (u?'<span class="pill u"><span class="mono">'+u+'</span> liberadas</span>':'')+
-          (a?'<span class="pill a"><span class="mono">'+a+'</span> anticipo</span>':'')+
-        '</div>'+
-        '<div class="cd-max"><div class="cd-maxn" style="color:'+diasColor(mx)+'">'+mx+'d</div>'+
-        '<div class="cd-maxl">MÁS ANTIGUA</div></div>'+
+    return '<div class="cd"><div class="cd-h" onclick="tog(this)">'+
+      '<div><div class="cd-n">'+(DL[did]?DL[did].nombre:did)+'</div>'+
+      '<div class="cd-r">'+us.length+' unidades pendientes</div></div>'+
+      '<div class="cd-pills">'+
+        (c?'<span class="pill c"><span class="mono">'+c+'</span> entregadas</span>':'')+
+        (u?'<span class="pill u"><span class="mono">'+u+'</span> liberadas</span>':'')+
+        (a?'<span class="pill a"><span class="mono">'+a+'</span> anticipo</span>':'')+
       '</div>'+
+      '<div class="cd-max"><div class="cd-maxn" style="color:'+diasColor(mx)+'">'+mx+'d</div>'+
+      '<div class="cd-maxl">M\u00c1S ANTIGUA</div></div></div>'+
       '<div class="cd-body"><div class="cd-inner">'+ord.map(r=>{
         const lb={critico:'Entregada sin pago',urgente:'Liberada sin pago',anticipo:'Anticipo parcial'}[r.estado];
-        const src=r.dias_src==='lib'?'desde liberación':'desde factura';
+        const src=r.dias_src==='lib'?'desde liberaci\u00f3n':'desde factura';
         return '<div class="ur">'+
           '<div class="ur-d"><div class="ur-dn" style="color:'+diasColor(r.dias_alerta)+'">'+r.dias_alerta+'</div>'+
-          '<div class="ur-dl">DÍAS</div></div>'+
+          '<div class="ur-dl">D\u00cdAS</div></div>'+
           '<div class="ur-m">'+(r.familia||'')+'</div>'+
-          '<div class="ur-i"><b>'+src+'</b>'+
-            '<div class="ur-f">'+(r.folio||'')+' &middot; '+(r.f_liberacion||r.f_factura||'')+'</div></div>'+
-          '<div class="ur-s '+r.estado+'">'+lb+'</div>'+
-        '</div>'}).join('')+
+          '<div class="ur-i"><b>'+src+'</b><div class="ur-f">'+(r.folio||'')+' &middot; '+
+          (r.f_liberacion||r.f_factura||'')+'</div></div>'+
+          '<div class="ur-s '+r.estado+'">'+lb+'</div></div>'}).join('')+
       '</div></div></div>'}).join('');
 
   document.getElementById('pane-cob').innerHTML=
-    '<div class="headline"><div class="hl-bar" style="background:'+(b4.length?'#C0392B':'#E8A13D')+'"></div>'+
-      '<div class="hl-txt"><div class="hl-main">'+hl+'</div>'+
-      '<div class="hl-sub">Promedio de <b>'+prom+' días</b> sin cobrar &middot; la más antigua lleva <b>'+viejo+' días</b> &middot; '+
-      'concentradas en <b>'+nD+' distribuidores</b></div></div></div>'+
     '<div class="aging">'+
-      ag('b1','1 &ndash; 15 días',b1,al.length)+ag('b2','16 &ndash; 30 días',b2,al.length)+
-      ag('b3','31 &ndash; 60 días',b3,al.length)+ag('b4','Más de 60 días',b4,al.length)+
+      ag('b1','1 &ndash; 15 d\u00edas',b1,al.length)+ag('b2','16 &ndash; 30 d\u00edas',b2,al.length)+
+      ag('b3','31 &ndash; 60 d\u00edas',b3,al.length)+ag('b4','M\u00e1s de 60 d\u00edas',b4,al.length)+
     '</div>'+
-    '<div class="sec"><div class="sec-h"><h3>Cartera por distribuidor</h3>'+
-      '<span>ordenada por severidad</span><div class="spacer"></div>'+
+    '<div class="sec"><div class="sec-h"><h3>Cartera por distribuidor</h3><div class="rule"></div>'+
       '<span>clic para ver el detalle</span></div>'+
       '<div class="panel">'+filas+'</div></div>';
 }
 function ag(cls,lbl,arr,tot){
   const p=tot?Math.round(arr.length/tot*100):0;
-  const col={b1:'#4A90D9',b2:'#E8A13D',b3:'#D35400',b4:'#C0392B'}[cls];
+  const col={b1:'#185FA5',b2:'#C47A1A',b3:'#D35400',b4:'#C0392B'}[cls];
   return '<div class="agc '+cls+'"><div class="agc-l">'+lbl+'</div>'+
-    '<div class="agc-n" style="color:'+(arr.length?col:'#2C4A73')+'">'+arr.length+'</div>'+
+    '<div class="agc-n" style="color:'+(arr.length?col:'#C3D2E0')+'">'+arr.length+'</div>'+
     '<div class="agc-s"><b>'+p+'%</b> de la cartera</div></div>'}
 function tog(el){el.nextElementSibling.classList.toggle('open')}
 
@@ -425,33 +473,22 @@ function tog(el){el.nextElementSibling.classList.toggle('open')}
 function renderBO(){
   const rows=MATRIX.filter(r=>r.bp>0);
   if(!rows.length){document.getElementById('pane-bo').innerHTML=
-    '<div class="panel"><div class="empty"><b>Sin Business Plan cargado</b>No hay BP registrado para esta región.</div></div>';return}
-
+    '<div class="panel"><div class="empty"><b>Sin Business Plan cargado</b>No hay BP registrado para esta regi\u00f3n.</div></div>';return}
   const act=MATRIX.filter(r=>r.bp>0||r.fac>0||r.bo>0);
   const tot={};
   MODS.forEach(m=>{const s=act.filter(r=>r.modelo===m);
     const bp=s.reduce((a,r)=>a+r.bp,0), fac=s.reduce((a,r)=>a+r.fac,0), bo=s.reduce((a,r)=>a+r.bo,0);
-    tot[m]={bp,fac,bo,cov:bp?((fac+bo)/bp*100):0,gap:Math.max(0,bp-fac-bo)}});
-
-  const TB=Object.values(tot).reduce((a,t)=>a+t.bp,0);
-  const TF=Object.values(tot).reduce((a,t)=>a+t.fac,0);
-  const TO=Object.values(tot).reduce((a,t)=>a+t.bo,0);
-  const TG=Object.values(tot).reduce((a,t)=>a+t.gap,0);
-  const TC=TB?((TF+TO)/TB*100):0;
-  const peor=MODS.filter(m=>tot[m].bp>0).sort((a,b)=>tot[a].cov-tot[b].cov)[0];
+    tot[m]={bp,fac,bo,cov:bp?((fac+bo)/bp*100):0,gap:s.reduce((a,r)=>a+r.gap,0)}});
 
   const cards=MODS.map(m=>{const t=tot[m];
-    if(!t.bp)return '<div class="mcard" style="opacity:.4"><div class="mcard-top">'+
-      '<div class="mcard-mod" style="color:#2C4A73">'+m+'</div></div>'+
-      '<div class="mcard-nums" style="color:#2C4A73">sin BP</div></div>';
-    return '<div class="mcard"><div class="mcard-top">'+
-      '<div class="mcard-mod">'+m+'</div>'+
+    if(!t.bp)return '<div class="mcard" style="opacity:.45"><div class="mcard-top">'+
+      '<div class="mcard-mod" style="color:#C3D2E0">'+m+'</div></div>'+
+      '<div class="mcard-nums" style="color:#C3D2E0">sin BP</div></div>';
+    return '<div class="mcard"><div class="mcard-top"><div class="mcard-mod">'+m+'</div>'+
       '<div class="mcard-pct" style="color:'+covColor(t.cov)+'">'+Math.round(t.cov)+'%</div></div>'+
       '<div class="mcard-bar"><div class="mcard-fill" style="width:'+Math.min(100,t.cov)+'%;background:'+covColor(t.cov)+'"></div></div>'+
-      '<div class="mcard-nums">'+
-        '<span>BP<b>'+t.bp+'</b></span><span>Fact<b>'+t.fac+'</b></span>'+
-        '<span>BO<b>'+t.bo+'</b></span>'+
-        '<span>Falta<b style="color:'+(t.gap?'#E36A59':'#2FB37A')+'">'+t.gap+'</b></span>'+
+      '<div class="mcard-nums"><span>BP<b>'+t.bp+'</b></span><span>Fact<b>'+t.fac+'</b></span>'+
+      '<span>BO<b>'+t.bo+'</b></span><span>Falta<b style="color:'+(t.gap?'#C0392B':'#1E8E5A')+'">'+t.gap+'</b></span>'+
       '</div></div>'}).join('');
 
   const acc=rows.filter(r=>r.gap>0).sort((a,b)=>(a.bo===0?0:1)-(b.bo===0?0:1)||b.gap-a.gap).slice(0,10);
@@ -459,13 +496,12 @@ function renderBO(){
     '<div class="act" onclick="verCelda(\''+r.did+'\',\''+r.modelo+'\')">'+
       '<div class="act-i">'+String(i+1).padStart(2,'0')+'</div>'+
       '<div><div class="act-d">'+(DL[r.did]?DL[r.did].nombre:r.did)+'</div>'+
-      '<div class="act-r">'+(r.bo===0?'Sin ningún pedido colocado':r.bo+' unidades ya pedidas')+'</div></div>'+
+      '<div class="act-r">'+(r.bo===0?'Sin ning\u00fan pedido colocado':r.bo+' unidades ya pedidas')+'</div></div>'+
       '<div class="act-m" style="color:'+covColor(r.cov)+'">'+r.modelo+'</div>'+
       '<div><div class="act-bar"><div class="act-fill" style="width:'+Math.min(100,r.cov)+'%;background:'+covColor(r.cov)+'"></div></div>'+
       '<div class="act-lbl">Fact <b>'+r.fac+'</b> + BO <b>'+r.bo+'</b> de <b>'+r.bp+'</b></div></div>'+
       '<div class="act-g"><div class="act-gn" style="color:'+covColor(r.cov)+'">'+Math.round(r.cov)+'%</div>'+
-      '<div class="act-gl">CUBIERTO</div></div>'+
-    '</div>').join('');
+      '<div class="act-gl">CUBIERTO</div></div></div>').join('');
 
   const ids=dealersReg().sort((a,b)=>{
     const c=d=>{const s=rows.filter(r=>r.did===d);return s.length?s.reduce((x,r)=>x+r.cov,0)/s.length:999};
@@ -475,41 +511,31 @@ function renderBO(){
       const r=MATRIX.find(x=>x.did===did&&x.modelo===m);
       if(!r||(!r.bp&&!r.fac&&!r.bo))return '<td><div class="cell na"><div class="cell-p">&mdash;</div></div></td>';
       if(!r.bp)return '<td><div class="cell na" style="cursor:pointer" onclick="verCelda(\''+did+'\',\''+m+'\')">'+
-        '<div class="cell-p" style="color:#8CA7C6;font-size:12px">'+(r.fac+r.bo)+'</div>'+
-        '<div class="cell-g" style="color:#5F7B9C">sin plan</div></div></td>';
+        '<div class="cell-p" style="color:#8496A8;font-size:12px">'+(r.fac+r.bo)+'</div>'+
+        '<div class="cell-g" style="color:#A9B9C9">sin plan</div></div></td>';
       return '<td><div class="cell" style="background:'+covBg(r.cov)+'" onclick="verCelda(\''+did+'\',\''+m+'\')">'+
         '<div class="cell-p" style="color:'+covColor(r.cov)+'">'+Math.round(r.cov)+'%</div>'+
         (r.gap?'<div class="cell-g" style="color:'+covColor(r.cov)+'">faltan '+r.gap+'</div>':
-               '<div class="cell-g" style="color:#2FB37A">completo</div>')+
-        '</div></td>'}).join('');
+               '<div class="cell-g" style="color:#1E8E5A">completo</div>')+'</div></td>'}).join('');
     return '<tr><td class="mtx-d"><div>'+(DL[did]?DL[did].nombre:did)+'</div>'+
-      (REG==='all'?'<div class="mtx-dr">'+(DL[did].region==='israel'?'Centro-Sur':'Noroeste / Pacífico')+'</div>':'')+
+      (REG==='all'?'<div class="mtx-dr">'+(DL[did].region==='israel'?'Centro-Sur':'Noroeste / Pac\u00edfico')+'</div>':'')+
       '</td>'+cells+'</tr>'}).join('');
 
   document.getElementById('pane-bo').innerHTML=
-    '<div class="headline"><div class="hl-bar" style="background:'+covColor(TC)+'"></div>'+
-      '<div class="hl-txt"><div class="hl-main">'+RNOM[REG]+' tiene <em>'+Math.round(TC)+'%</em> de su plan cubierto'+
-      (peor?' &mdash; <span class="bad">'+peor+' es el hueco más grande</span>':'')+'</div>'+
-      '<div class="hl-sub">Business Plan de <b>'+TB+' unidades</b> &middot; <b>'+TF+'</b> facturadas y <b>'+TO+'</b> en back order &middot; '+
-      'quedan <b>'+TG+' unidades</b> por colocar'+
-      (peor?' &middot; '+peor+' solo tiene <b>'+Math.round(tot[peor].cov)+'%</b> cubierto':'')+
-      '</div></div></div>'+
     '<div class="msum">'+cards+'</div>'+
-    (acc.length?'<div class="sec"><div class="sec-h"><h3>Decisiones pendientes</h3>'+
-      '<span>los '+acc.length+' huecos más grandes</span><div class="spacer"></div>'+
-      '<span>clic para ver los pedidos</span></div>'+
+    (acc.length?'<div class="sec"><div class="sec-h"><h3>Decisiones pendientes</h3><div class="rule"></div>'+
+      '<span>los '+acc.length+' huecos m\u00e1s grandes &middot; clic para ver los pedidos</span></div>'+
       '<div class="panel">'+accH+'</div></div>':'')+
-    '<div class="sec"><div class="sec-h"><h3>Cobertura por distribuidor y modelo</h3>'+
-      '<span>'+ids.length+' distribuidores</span><div class="spacer"></div>'+
-      '<span>menor cobertura primero</span></div>'+
+    '<div class="sec"><div class="sec-h"><h3>Cobertura por distribuidor y modelo</h3><div class="rule"></div>'+
+      '<span>'+ids.length+' distribuidores &middot; menor cobertura primero</span></div>'+
       '<div class="panel"><div class="mtx-wrap"><table class="mtx"><thead><tr><th>Distribuidor</th>'+
       MODS.map(m=>'<th class="mh">'+m+'</th>').join('')+'</tr></thead><tbody>'+mtxH+'</tbody></table></div>'+
       '<div class="legend"><span style="font-weight:600;color:var(--mut)">Cobertura del BP:</span>'+
-        '<span class="lg"><span class="lgc" style="background:rgba(192,57,43,.24)"></span>menos de 25%</span>'+
-        '<span class="lg"><span class="lgc" style="background:rgba(211,84,0,.22)"></span>25 a 50%</span>'+
-        '<span class="lg"><span class="lgc" style="background:rgba(232,161,61,.18)"></span>50 a 75%</span>'+
-        '<span class="lg"><span class="lgc" style="background:rgba(74,144,217,.20)"></span>75 a 100%</span>'+
-        '<span class="lg"><span class="lgc" style="background:rgba(47,179,122,.20)"></span>plan completo</span>'+
+        '<span class="lg"><span class="lgc" style="background:#FBEAE7"></span>menos de 25%</span>'+
+        '<span class="lg"><span class="lgc" style="background:#FDEDE3"></span>25 a 50%</span>'+
+        '<span class="lg"><span class="lgc" style="background:#FDF3E3"></span>50 a 75%</span>'+
+        '<span class="lg"><span class="lgc" style="background:#EEF5FD"></span>75 a 100%</span>'+
+        '<span class="lg"><span class="lgc" style="background:#E2F4EA"></span>plan completo</span>'+
       '</div></div></div>';
 }
 
@@ -524,14 +550,14 @@ function verCelda(did,mod){
     :'<div class="empty" style="padding:22px">Sin pedidos colocados para este modelo.</div>';
   document.getElementById('mbox').innerHTML=
     '<div class="mbox-h"><div><div class="mbox-t">'+(DL[did]?DL[did].nombre:did)+' &middot; '+mod+'</div>'+
-    '<div class="mbox-s">'+Math.round(r.cov)+'% del plan cubierto</div></div>'+
+    '<div class="mbox-s">'+(r.cov!==null?Math.round(r.cov)+'% del plan cubierto':'Sin plan asignado')+'</div></div>'+
     '<button class="mx" onclick="cerrarModal()">&times;</button></div>'+
     '<div class="mbox-b"><div class="mstat">'+
       '<div class="ms"><div class="ms-n">'+r.bp+'</div><div class="ms-l">Plan</div></div>'+
-      '<div class="ms"><div class="ms-n" style="color:#4A90D9">'+r.fac+'</div><div class="ms-l">Facturado</div></div>'+
-      '<div class="ms"><div class="ms-n" style="color:#2FB37A">'+r.bo+'</div><div class="ms-l">En pedido</div></div>'+
-      '<div class="ms"><div class="ms-n" style="color:'+(r.gap?'#E36A59':'#2FB37A')+'">'+r.gap+'</div><div class="ms-l">Falta</div></div>'+
-    '</div><div class="sec-h" style="margin-bottom:4px"><h3>Pedidos registrados</h3></div>'+fol+'</div>';
+      '<div class="ms"><div class="ms-n" style="color:#185FA5">'+r.fac+'</div><div class="ms-l">Facturado</div></div>'+
+      '<div class="ms"><div class="ms-n" style="color:#1E8E5A">'+r.bo+'</div><div class="ms-l">En pedido</div></div>'+
+      '<div class="ms"><div class="ms-n" style="color:'+(r.gap?'#C0392B':'#1E8E5A')+'">'+r.gap+'</div><div class="ms-l">Falta</div></div>'+
+    '</div><div class="sec-h" style="margin-bottom:4px"><h3>Pedidos registrados</h3><div class="rule"></div></div>'+fol+'</div>';
   document.getElementById('modal').classList.add('on');
 }
 function cerrarModal(){document.getElementById('modal').classList.remove('on')}
@@ -542,6 +568,7 @@ function setTab(t){TAB=t;
   document.getElementById('tab-bo').classList.toggle('on',t==='bo');
   document.getElementById('pane-cob').style.display=t==='cob'?'':'none';
   document.getElementById('pane-bo').style.display=t==='bo'?'':'none';
+  renderStrip();
 }
 function setRegion(r){REG=r;
   document.querySelectorAll('.rbtn').forEach(b=>b.classList.toggle('on',b.dataset.r===r));
