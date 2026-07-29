@@ -230,6 +230,7 @@ main{padding:20px 24px 60px;max-width:1500px;margin:0 auto}
 /* ── BACK ORDER PENDIENTE ── */
 .bo-dealer{border-bottom:1px solid var(--line)}
 .bo-dealer:last-child{border-bottom:0}
+/* nivel 1: cabecera dealer */
 .bo-dh{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:16px;
   padding:12px 18px;cursor:pointer;transition:background .12s}
 .bo-dh:hover{background:var(--ice)}
@@ -241,26 +242,35 @@ main{padding:20px 24px 60px;max-width:1500px;margin:0 auto}
 .bo-dmax{text-align:right;min-width:60px}
 .bo-dmaxn{font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700;line-height:1}
 .bo-dmaxl{font-size:8.5px;color:var(--dim);font-weight:600;letter-spacing:.3px}
-.bo-dbody{max-height:0;overflow:hidden;transition:max-height .32s ease}
-.bo-dbody.open{max-height:3000px}
-.bo-dhead{display:grid;grid-template-columns:62px 52px 70px 1fr 1fr;gap:12px;
-  padding:8px 18px 8px 36px;background:#F7FAFD;border-top:1px solid var(--line2);
-  font-size:9.5px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.8px}
-.bo-ped{display:grid;grid-template-columns:62px 52px 70px 1fr 1fr;gap:12px;align-items:start;
-  padding:10px 18px 10px 36px;border-top:1px solid var(--line2);transition:background .12s}
+.bo-dbody{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.bo-dbody.open{max-height:8000px}
+/* nivel 2: fila por modelo */
+.bo-mrow{display:grid;grid-template-columns:44px 1fr 56px 20px;align-items:center;gap:12px;
+  padding:11px 18px 11px 36px;border-top:1px solid var(--line2);cursor:pointer;transition:background .12s}
+.bo-mrow:hover{background:var(--ice)}
+.bo-mrow-mod{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;color:var(--navy);line-height:1}
+.bo-mrow-sub{font-size:10px;color:var(--dim);margin-top:2px}
+.bo-mrow-qty{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:800;color:var(--ink);text-align:right;line-height:1}
+.bo-mrow-lbl{font-size:8.5px;color:var(--dim);font-weight:600;letter-spacing:.3px;text-align:right}
+.bo-mrow-arr{font-size:12px;color:var(--dim);transition:transform .2s;text-align:center}
+.bo-mrow.mopen .bo-mrow-arr{transform:rotate(90deg)}
+/* nivel 3: pedidos del modelo */
+.bo-mbody{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.bo-mbody.mopen{max-height:3000px}
+.bo-dhead{display:grid;grid-template-columns:52px 1fr 1fr;gap:12px;
+  padding:7px 18px 7px 54px;background:#F7FAFD;border-top:1px solid var(--line2);
+  font-size:9px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.8px}
+.bo-ped{display:grid;grid-template-columns:52px 1fr 1fr;gap:12px;align-items:start;
+  padding:9px 18px 9px 54px;border-top:1px solid var(--line2);transition:background .12s}
 .bo-ped:hover{background:#FAFCFE}
-.bo-age-n{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:700;line-height:1}
+.bo-age-n{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;line-height:1}
 .bo-age-l{font-size:8px;color:var(--dim);font-weight:600;letter-spacing:.2px}
-.bo-mod{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:var(--navy)}
-.bo-qty{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:var(--ink)}
 .bo-fol{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--blue);font-weight:600}
-.bo-fecha{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim)}
+.bo-fecha{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);margin-top:2px}
 .bo-obs{font-size:11px;color:var(--mut);line-height:1.4}
 .bo-obs b{color:var(--ink);font-weight:600}
 .bo-mes{display:inline-block;background:var(--amb-bg);color:var(--amb);font-size:9px;
   font-weight:700;padding:1px 6px;border-radius:4px;margin-right:4px;letter-spacing:.3px}
-
-/* ── FACTURAS EN MODAL ── */
 .iv{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line2);font-size:11px}
 .iv:last-child{border-bottom:0}
 .iv-f{font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--blue);min-width:62px}
@@ -535,6 +545,7 @@ function ag(cls,lbl,arr,tot){
     '<div class="agc-n" style="color:'+(arr.length?col:'#C3D2E0')+'">'+arr.length+'</div>'+
     '<div class="agc-s"><b>'+p+'%</b> de la cartera</div></div>'}
 function togBO(el){el.nextElementSibling.classList.toggle('open')}
+function togMod(el,uid){el.classList.toggle('mopen');document.getElementById(uid+'_b').classList.toggle('mopen')}
 function tog(el){el.nextElementSibling.classList.toggle('open')}
 
 /* ══ BACK ORDER ══ */
@@ -602,100 +613,104 @@ function renderBOPend(){
     '<div class="rule"></div></div><div class="panel"><div class="empty">' +
     '<b>Sin back order</b>No hay pedidos pendientes en esta regi\u00f3n.</div></div></div>';
 
-  // ── Agrupar por distribuidor → por folio → lineas ──
+  // ── Agrupar: dealer → modelo → pedidos ──
   const DG = {};
   uds.forEach(r => {
     const did = r.distribuidor_id;
-    if (!DG[did]) DG[did] = { did, pedidos: {} };
+    if (!DG[did]) DG[did] = { did, modelos: {} };
+    const fam = r.modelo_familia || 'OTRO';
+    if (!DG[did].modelos[fam]) DG[did].modelos[fam] = { fam, pedidos: {}, total: 0 };
     const k = r.folio || '(sin folio)';
-    if (!DG[did].pedidos[k]) DG[did].pedidos[k] = {
-      folio: k, plaza: r.plaza || '', fecha: r.fecha_solicitud || '',
-      obs: r.obs || '', ref: r.referencia || '', est: r.estatus_bo || '', lineas: []
-    };
-    const g = DG[did].pedidos[k];
-    if (!g.obs && r.obs) g.obs = r.obs;
-    if (!g.ref && r.referencia) g.ref = r.referencia;
-    const fam = r.modelo_familia || '?';
-    const ex = g.lineas.find(l => l.fam === fam);
-    if (ex) ex.qty++;
-    else g.lineas.push({ fam, qty: 1, mod: r.modelo || fam });
+    if (!DG[did].modelos[fam].pedidos[k])
+      DG[did].modelos[fam].pedidos[k] = { folio:k, plaza:r.plaza||'', fecha:r.fecha_solicitud||'',
+        obs:r.obs||'', ref:r.referencia||'', qty:0 };
+    DG[did].modelos[fam].pedidos[k].qty++;
+    DG[did].modelos[fam].total++;
+    if (!DG[did].modelos[fam].pedidos[k].obs && r.obs) DG[did].modelos[fam].pedidos[k].obs = r.obs;
+    if (!DG[did].modelos[fam].pedidos[k].ref && r.referencia) DG[did].modelos[fam].pedidos[k].ref = r.referencia;
   });
 
-  // aging badges globales
+  // aging badges
   const b1=uds.filter(r=>{const d=diasDesde(r.fecha_solicitud);return d!==null&&d<=30}).length;
   const b2=uds.filter(r=>{const d=diasDesde(r.fecha_solicitud);return d>30&&d<=90}).length;
   const b3=uds.filter(r=>{const d=diasDesde(r.fecha_solicitud);return d>90&&d<=180}).length;
   const b4=uds.filter(r=>{const d=diasDesde(r.fecha_solicitud);return d>180}).length;
-  const prom = Math.round(uds.reduce((a,r)=>a+(diasDesde(r.fecha_solicitud)||0),0)/uds.length);
-
-  const agc = (cls,lbl,n) => {
-    const col = {b1:'#185FA5',b2:'#C47A1A',b3:'#D35400',b4:'#C0392B'}[cls];
+  const prom=Math.round(uds.reduce((a,r)=>a+(diasDesde(r.fecha_solicitud)||0),0)/uds.length);
+  const agc=(cls,lbl,n)=>{
+    const col={b1:'#185FA5',b2:'#C47A1A',b3:'#D35400',b4:'#C0392B'}[cls];
     return '<div class="agc '+cls+'"><div class="agc-l">'+lbl+'</div>'+
       '<div class="agc-n" style="color:'+(n?col:'#C3D2E0')+'">'+n+'</div>'+
       '<div class="agc-s"><b>'+Math.round(n/uds.length*100)+'%</b> del back order</div></div>'};
 
-  // ordenar dealers por antigüedad máxima de sus pedidos
+  // orden dealers: mayor antigüedad primero
+  const ORDEN_MODS = ['S3','S5','S6','S8','S12','MILER','OTRO'];
   const dealers = Object.values(DG).map(d => {
-    const pedList = Object.values(d.pedidos);
-    const maxD = Math.max(...pedList.map(p => diasDesde(p.fecha) || 0));
-    const totalU = uds.filter(r => r.distribuidor_id === d.did).length;
-    const mods = {};
-    pedList.forEach(p => p.lineas.forEach(l => { mods[l.fam]=(mods[l.fam]||0)+l.qty; }));
-    return { ...d, pedList, maxD, totalU, mods };
-  }).sort((a,b) => b.maxD - a.maxD);
+    const allU = uds.filter(r=>r.distribuidor_id===d.did);
+    const maxD = Math.max(...allU.map(r=>diasDesde(r.fecha_solicitud)||0));
+    const totalU = allU.length;
+    return {...d, maxD, totalU};
+  }).sort((a,b)=>b.maxD-a.maxD);
 
   const nDealers = dealers.length;
-  const nPedidos = Object.values(DG).reduce((s,d)=>s+Object.keys(d.pedidos).length,0);
+  const nPedidos = uds.reduce((s,r,_,arr)=>s+(arr.findIndex(x=>x.distribuidor_id===r.distribuidor_id&&x.folio===r.folio)===arr.indexOf(r)?1:0),0);
 
-  const filas = dealers.map((d,idx) => {
-    // chips de modelos del dealer
-    const modChips = MODS.filter(m => d.mods[m])
-      .map(m => '<span class="bo-dchip">'+m+(d.mods[m]>1?' \u00d7'+d.mods[m]:'')+'</span>').join('');
+  const filas = dealers.map((d,di) => {
+    // chips resumen
+    const modChips = ORDEN_MODS.filter(m=>d.modelos[m])
+      .map(m=>'<span class="bo-dchip">'+m+' \u00d7'+d.modelos[m].total+'</span>').join('');
 
-    // lineas de pedidos ordenados más viejo primero
-    const pedOrden = d.pedList.sort((a,b)=>(diasDesde(b.fecha)||0)-(diasDesde(a.fecha)||0));
-    const pedFilas = pedOrden.map(p => {
-      const dias = diasDesde(p.fecha);
-      const mes = mesEstimado(p.obs) || mesEstimado(p.ref);
-      const refRedundante = mes && p.ref && p.ref.replace(/[^A-Za-z]/g,'').toUpperCase() === mes.toUpperCase();
-      const obsHtml = (mes ? '<span class="bo-mes">'+mes+'</span>' : '') +
-        (p.obs && p.obs.trim().toUpperCase().replace(/[^A-Z]/g,'')!==mes.toUpperCase().replace(/[^A-Z]/g,'') ? '<b>'+p.obs+'</b>' : '') +
-        (p.ref && !refRedundante ? ((p.obs?'<br>':'')+'<span style="font-family:JetBrains Mono,monospace;font-size:10px;color:var(--dim)">Ref '+p.ref+'</span>') : '');
+    // nivel 2: fila por modelo
+    const modFilas = ORDEN_MODS.filter(m=>d.modelos[m]).map((m,mi) => {
+      const mg = d.modelos[m];
+      const pedList = Object.values(mg.pedidos).sort((a,b)=>(diasDesde(b.fecha)||0)-(diasDesde(a.fecha)||0));
+      const nPed = pedList.length;
+      const maxDM = Math.max(...pedList.map(p=>diasDesde(p.fecha)||0));
+      const uid = 'bom_'+di+'_'+mi;
 
-      return p.lineas.sort((a,b)=>MODS.indexOf(a.fam)-MODS.indexOf(b.fam)).map((l,li) => {
-        const esFirst = li === 0;
+      // nivel 3: pedidos del modelo
+      const pedFilas = pedList.map(p => {
+        const dias = diasDesde(p.fecha);
+        const mes = mesEstimado(p.obs)||mesEstimado(p.ref);
+        const refOk = p.ref && !(mes && p.ref.replace(/[^A-Za-z]/g,'').toUpperCase()===mes.toUpperCase());
+        const obsHtml = (mes?'<span class="bo-mes">'+mes+'</span>':'')+
+          (p.obs?'<b>'+p.obs+'</b>':'')+
+          (refOk?(p.obs?'<br>':'')+'<span style="font-family:JetBrains Mono,monospace;font-size:10px;color:var(--dim)">Ref '+p.ref+'</span>':'');
         return '<div class="bo-ped">'+
-          // antigüedad solo en la primera línea del pedido
-          '<div class="bo-age-n" style="color:'+ageColor(dias||0)+'">'+
-            (esFirst && dias!==null ? dias : '&nbsp;')+'</div>'+
-          '<div class="bo-mod">'+l.fam+'</div>'+
-          '<div class="bo-qty">\u00d7'+l.qty+'</div>'+
-          // folio solo en la primera línea
-          '<div>'+(esFirst ? '<div class="bo-fol">'+p.folio+'</div>'+
-            '<div class="bo-fecha">'+(p.fecha||'')+(p.plaza?' · '+p.plaza:'')+'</div>' : '')+'</div>'+
-          // observación solo en la primera línea
-          '<div>'+(esFirst ? '<div class="bo-obs">'+(obsHtml||'<span style="color:#C3D2E0">\u2014</span>')+'</div>' : '')+'</div>'+
-        '</div>'}).join('')}).join('');
+          '<div><div class="bo-age-n" style="color:'+ageColor(dias||0)+'">'+(dias!==null?dias:'\u2014')+'</div>'+
+          '<div class="bo-age-l">D\u00cdAS</div></div>'+
+          '<div><div class="bo-fol">'+p.folio+'</div>'+
+          '<div class="bo-fecha">'+(p.fecha||'')+(p.plaza?' \u00b7 '+p.plaza:'')+'</div></div>'+
+          '<div class="bo-obs">'+(obsHtml||'<span style="color:#C3D2E0">\u2014</span>')+'</div>'+
+        '</div>'}).join('');
+
+      return '<div>'+
+        '<div class="bo-mrow" onclick="togMod(this,\''+uid+'\')" id="'+uid+'_h">'+
+          '<div><div class="bo-mrow-mod">'+m+'</div></div>'+
+          '<div class="bo-mrow-info">'+nPed+(nPed===1?' pedido':' pedidos')+
+            (maxDM?' \u00b7 m\u00e1s antiguo '+maxDM+'d':'')+'</div>'+
+          '<div>'+
+            '<div class="bo-mrow-qty">'+mg.total+'</div>'+
+            '<div class="bo-mrow-lbl">UNID.</div>'+
+          '</div>'+
+          '<div class="bo-mrow-arr">&#9656;</div>'+
+        '</div>'+
+        '<div class="bo-mbody" id="'+uid+'_b">'+
+          '<div class="bo-dhead"><span>D\u00edas</span><span>Folio \u00b7 Fecha \u00b7 Plaza</span><span>Observaci\u00f3n</span></div>'+
+          pedFilas+
+        '</div>'+
+      '</div>'}).join('');
 
     return '<div class="bo-dealer">'+
       '<div class="bo-dh" onclick="togBO(this)">'+
-        '<div>'+
-          '<div class="bo-dn">'+(DL[d.did]?DL[d.did].nombre:d.did)+'</div>'+
-          '<div class="bo-dr">'+d.totalU+' unidades en '+d.pedList.length+(d.pedList.length===1?' pedido':' pedidos')+'</div>'+
-        '</div>'+
+        '<div><div class="bo-dn">'+(DL[d.did]?DL[d.did].nombre:d.did)+'</div>'+
+        '<div class="bo-dr">'+d.totalU+' unidades</div></div>'+
         '<div class="bo-dsummary">'+modChips+'</div>'+
         '<div class="bo-dmax">'+
           '<div class="bo-dmaxn" style="color:'+ageColor(d.maxD)+'">'+d.maxD+'d</div>'+
           '<div class="bo-dmaxl">M\u00c1S ANTIGUO</div>'+
         '</div>'+
       '</div>'+
-      '<div class="bo-dbody">'+
-        '<div class="bo-dhead">'+
-          '<span>D\u00edas</span><span>Modelo</span><span>Cant.</span>'+
-          '<span>Folio · Fecha · Plaza</span><span>Observaci\u00f3n</span>'+
-        '</div>'+
-        pedFilas+
-      '</div>'+
+      '<div class="bo-dbody">'+modFilas+'</div>'+
     '</div>'}).join('');
 
   return '<div class="aging">'+
@@ -703,9 +718,8 @@ function renderBOPend(){
     agc('b3','91 \u2013 180 d\u00edas',b3)+agc('b4','M\u00e1s de 180 d\u00edas',b4)+
   '</div>'+
   '<div class="sec"><div class="sec-h"><h3>Back order pendiente</h3><div class="rule"></div>'+
-    '<span>'+uds.length+' unidades · '+nDealers+' distribuidores · '+nPedidos+' pedidos · promedio '+prom+' d\u00edas</span>'+
-  '</div>'+
-  '<div class="panel">'+filas+'</div></div>';
+    '<span>'+uds.length+' unidades \u00b7 '+nDealers+' distribuidores \u00b7 promedio '+prom+' d\u00edas</span>'+
+  '</div><div class="panel">'+filas+'</div></div>';
 }
 
 function verCelda(did,mod){
