@@ -117,12 +117,17 @@ body{font-family:'Inter',sans-serif;background:var(--surf);color:var(--ink);min-
 .agc-d-n{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;line-height:1}
 .agc-d-s{font-size:11px;color:var(--dim);margin-top:3px}
 
-/* ── GRUPO DE ESTADO ── */
+/* ── GRUPO DE ESTADO COLAPSABLE ── */
 .cob-grupo{border-bottom:1px solid var(--line)}
 .cob-grupo:last-child{border-bottom:0}
-.cob-grupo-hd{display:flex;align-items:center;gap:10px;padding:8px 16px 7px;background:var(--ice)}
-.cob-grupo-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px}
-.cob-grupo-n{font-size:10px;color:var(--dim)}
+.cob-grupo-hd{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--ice);cursor:pointer;user-select:none;transition:background .12s}
+.cob-grupo-hd:hover{background:var(--line2)}
+.cob-grupo-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;flex:1}
+.cob-grupo-n{font-size:10px;color:var(--dim);margin-right:6px}
+.cob-grupo-arr{font-size:11px;color:var(--dim);transition:transform .2s}
+.cob-grupo-hd.open .cob-grupo-arr{transform:rotate(90deg)}
+.cob-grupo-body{max-height:0;overflow:hidden;transition:max-height .28s ease}
+.cob-grupo-body.open{max-height:3000px}
 .cob-hd{display:grid;grid-template-columns:52px 1fr 100px 76px;gap:8px;padding:7px 16px;background:#FAFCFE;font-size:9px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.7px}
 .cob-row{display:grid;grid-template-columns:52px 1fr 100px 76px;gap:8px;align-items:center;padding:10px 16px;border-top:1px solid var(--line2)}
 
@@ -278,6 +283,7 @@ function buildRanking(){
 
 // ACORDEÓN
 function togAcc(hd){hd.classList.toggle('open');hd.nextElementSibling.classList.toggle('open')}
+function togGrp(hd){hd.classList.toggle('open');hd.nextElementSibling.classList.toggle('open')}
 
 // AUTENTICACIÓN
 async function validarPin(){
@@ -372,14 +378,19 @@ function buildCob(id){
   const byEst={};rows.forEach(r=>{const k=r.estado||'pendiente';(byEst[k]=byEst[k]||[]).push(r)});
 
   let html='';
+  const ABIERTOS=['critico','urgente','anticipo'];
   GRUPOS.forEach(g=>{
     const gr=byEst[g.key];if(!gr||!gr.length)return;
+    const abierto=ABIERTOS.includes(g.key);
+    const uid='grp-'+g.key;
     html+='<div class="cob-grupo">'+
-      '<div class="cob-grupo-hd">'+
-        '<div style="width:8px;height:8px;border-radius:50%;background:'+g.col+'"></div>'+
+      '<div class="cob-grupo-hd'+(abierto?' open':'')+'" onclick="togGrp(this)">'+
+        '<div style="width:8px;height:8px;border-radius:50%;flex-shrink:0;background:'+g.col+'"></div>'+
         '<span class="cob-grupo-lbl" style="color:'+g.col+'">'+g.lbl+'</span>'+
         '<span class="cob-grupo-n">'+gr.length+' unidad'+(gr.length>1?'es':'')+'</span>'+
+        '<span class="cob-grupo-arr">&#9656;</span>'+
       '</div>'+
+      '<div class="cob-grupo-body'+(abierto?' open':'')+'">'+
       '<div class="cob-hd"><span>Días</span><span>Folio · VIN</span><span>Modelo</span><span>F. Factura</span></div>'+
       gr.map(r=>{
         const d=r.dias_alerta||0,c=d>60?'#C0392B':d>30?'#D35400':d>15?'#C47A1A':'var(--ink)';
@@ -390,6 +401,7 @@ function buildCob(id){
           '<div style="font-size:11px;font-weight:600">'+(fam(r.modelo))+'</div>'+
           '<div style="font-size:10px;font-family:JetBrains Mono,monospace;color:var(--mut)">'+(r.f_factura||'—')+'</div>'+
         '</div>'}).join('')+
+      '</div>'+
     '</div>';
   });
   document.getElementById('cob-body').innerHTML=html;
