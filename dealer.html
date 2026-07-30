@@ -69,9 +69,7 @@ body{font-family:'Inter',sans-serif;background:var(--surf);color:var(--ink);min-
 .mod-bar{height:5px;background:var(--line);border-radius:3px;margin:7px 0 5px;overflow:hidden}
 .mod-fill{height:100%;border-radius:3px}
 .mod-det{font-size:10px;color:var(--dim)}
-.cob-hd{display:grid;grid-template-columns:52px 1fr 90px 72px;gap:8px;padding:8px 16px;background:var(--ice);border-bottom:1px solid var(--line);font-size:9px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.8px}
-.cob-row{display:grid;grid-template-columns:52px 1fr 90px 72px;gap:8px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line2)}
-.cob-row:last-child{border-bottom:0}
+
 .dias-n{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700}
 .est{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;white-space:nowrap}
 .est.pagado{background:var(--grn-bg);color:var(--grn)}
@@ -110,7 +108,29 @@ body{font-family:'Inter',sans-serif;background:var(--surf);color:var(--ink);min-
 .mod-fill{height:100%;border-radius:2px}
 .mod-det{font-size:9.5px;color:var(--dim);line-height:1.5}
 
+
+/* ── AGING BUCKETS ── */
+.aging-d{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:1px solid var(--line)}
+.agc-d{padding:14px 16px;border-right:1px solid var(--line2)}
+.agc-d:last-child{border-right:0}
+.agc-d-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--dim);margin-bottom:6px}
+.agc-d-n{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;line-height:1}
+.agc-d-s{font-size:11px;color:var(--dim);margin-top:3px}
+
+/* ── GRUPO DE ESTADO ── */
+.cob-grupo{border-bottom:1px solid var(--line)}
+.cob-grupo:last-child{border-bottom:0}
+.cob-grupo-hd{display:flex;align-items:center;gap:10px;padding:8px 16px 7px;background:var(--ice)}
+.cob-grupo-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px}
+.cob-grupo-n{font-size:10px;color:var(--dim)}
+.cob-hd{display:grid;grid-template-columns:52px 1fr 100px 76px;gap:8px;padding:7px 16px;background:#FAFCFE;font-size:9px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.7px}
+.cob-row{display:grid;grid-template-columns:52px 1fr 100px 76px;gap:8px;align-items:center;padding:10px 16px;border-top:1px solid var(--line2)}
+
 @media(max-width:680px){
+  .aging-d{grid-template-columns:1fr 1fr}
+  .agc-d{border-bottom:1px solid var(--line2)}
+  .cob-hd,.cob-row{grid-template-columns:44px 1fr 70px;gap:6px}
+  .cob-hd>:nth-child(4),.cob-row>:nth-child(4){display:none}
   .dp-kpis{grid-template-columns:1fr 1fr}
   .rk-hd,.rk-row{grid-template-columns:28px 1fr 60px 52px;gap:6px;padding:10px 12px}
   .rk-hd>:nth-child(5),.rk-hd>:nth-child(6),.rk-hd>:nth-child(7),
@@ -194,7 +214,7 @@ body{font-family:'Inter',sans-serif;background:var(--surf);color:var(--ink);min-
         <span class="acc-arr">&#9656;</span>
       </div>
       <div class="acc-body">
-        <div class="cob-hd"><span>Días</span><span>Folio · VIN</span><span>Modelo</span><span>Estado</span></div>
+        <div id="cob-aging" class="aging-d"></div>
         <div id="cob-body"></div>
       </div>
     </div>
@@ -326,16 +346,53 @@ function buildMods(id){
 function buildCob(id){
   const rows=COB.filter(r=>r.distribuidor_id===id).sort((a,b)=>(b.dias_alerta||0)-(a.dias_alerta||0));
   document.getElementById('cob-sub').textContent=rows.length+' unidades';
-  const LEST={pagado:'Pagado',urgente:'Liberada s/pago',critico:'Entregada s/pago',anticipo:'Anticipo',pendiente:'Pendiente'};
-  document.getElementById('cob-body').innerHTML=rows.length?rows.map(r=>{
-    const d=r.dias_alerta||0,c=d>90?'#C0392B':d>30?'#D35400':'var(--ink)';
-    return '<div class="cob-row">'+
-      '<div><div class="dias-n" style="color:'+c+'">'+d+'</div></div>'+
-      '<div><div style="font-size:10px;font-family:JetBrains Mono,monospace;color:var(--blue);font-weight:600">'+(r.folio||'—')+'</div>'+
-      '<div style="font-size:10px;color:var(--dim)">'+(r.vin||'—')+'</div></div>'+
-      '<div style="font-size:11px;font-weight:600">'+(fam(r.modelo))+'</div>'+
-      '<div><span class="est '+(r.estado||'pendiente')+'">'+(LEST[r.estado]||r.estado||'—')+'</span></div>'+
-    '</div>'}).join(''):'<div class="empty-msg">Sin unidades en cobranza activa</div>';
+
+  // Aging buckets
+  const b1=rows.filter(r=>(r.dias_alerta||0)<=15).length;
+  const b2=rows.filter(r=>(r.dias_alerta||0)>15&&(r.dias_alerta||0)<=30).length;
+  const b3=rows.filter(r=>(r.dias_alerta||0)>30&&(r.dias_alerta||0)<=60).length;
+  const b4=rows.filter(r=>(r.dias_alerta||0)>60).length;
+  const agc=(col,lbl,n)=>'<div class="agc-d"><div class="agc-d-lbl">'+lbl+'</div>'+
+    '<div class="agc-d-n" style="color:'+(n?col:'#C3D2E0')+'">'+n+'</div>'+
+    '<div class="agc-d-s">'+(rows.length?Math.round(n/rows.length*100):0)+'% de la cartera</div></div>';
+  document.getElementById('cob-aging').innerHTML=
+    agc('#185FA5','1 – 15 días',b1)+agc('#C47A1A','16 – 30 días',b2)+
+    agc('#D35400','31 – 60 días',b3)+agc('#C0392B','Más de 60 días',b4);
+
+  if(!rows.length){document.getElementById('cob-body').innerHTML='<div class="empty-msg">Sin unidades en cobranza activa</div>';return}
+
+  // Grupos por estado — orden de severidad
+  const GRUPOS=[
+    {key:'critico',  lbl:'Entregada sin pago', col:'#C0392B', bg:'#FBEAE7'},
+    {key:'urgente',  lbl:'Liberada sin pago',  col:'#B56B0A', bg:'#FDF3E3'},
+    {key:'anticipo', lbl:'Con anticipo',        col:'#5B3BB5', bg:'#F0EBFF'},
+    {key:'pendiente',lbl:'Facturada pendiente', col:'#5A7394', bg:'#F0F3F7'},
+    {key:'pagado',   lbl:'Pagado',              col:'#1B7B3E', bg:'#EAF5EF'},
+  ];
+  const byEst={};rows.forEach(r=>{const k=r.estado||'pendiente';(byEst[k]=byEst[k]||[]).push(r)});
+
+  let html='';
+  GRUPOS.forEach(g=>{
+    const gr=byEst[g.key];if(!gr||!gr.length)return;
+    html+='<div class="cob-grupo">'+
+      '<div class="cob-grupo-hd">'+
+        '<div style="width:8px;height:8px;border-radius:50%;background:'+g.col+'"></div>'+
+        '<span class="cob-grupo-lbl" style="color:'+g.col+'">'+g.lbl+'</span>'+
+        '<span class="cob-grupo-n">'+gr.length+' unidad'+(gr.length>1?'es':'')+'</span>'+
+      '</div>'+
+      '<div class="cob-hd"><span>Días</span><span>Folio · VIN</span><span>Modelo</span><span>F. Factura</span></div>'+
+      gr.map(r=>{
+        const d=r.dias_alerta||0,c=d>60?'#C0392B':d>30?'#D35400':d>15?'#C47A1A':'var(--ink)';
+        return '<div class="cob-row">'+
+          '<div><div class="dias-n" style="color:'+c+'">'+d+'d</div></div>'+
+          '<div><div style="font-size:10px;font-family:JetBrains Mono,monospace;color:var(--blue);font-weight:600">'+(r.folio||'—')+'</div>'+
+          '<div style="font-size:10px;color:var(--dim)">'+(r.vin||'—')+'</div></div>'+
+          '<div style="font-size:11px;font-weight:600">'+(fam(r.modelo))+'</div>'+
+          '<div style="font-size:10px;font-family:JetBrains Mono,monospace;color:var(--mut)">'+(r.f_factura||'—')+'</div>'+
+        '</div>'}).join('')+
+    '</div>';
+  });
+  document.getElementById('cob-body').innerHTML=html;
 }
 
 function buildBO(id){
