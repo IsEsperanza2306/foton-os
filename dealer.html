@@ -88,6 +88,28 @@ body{font-family:'Inter',sans-serif;background:var(--surf);color:var(--ink);min-
 .logout-btn{background:none;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer}
 .logout-btn:hover{background:rgba(255,255,255,.1)}
 .empty-msg{padding:24px;text-align:center;color:var(--dim);font-size:13px}
+
+/* ── ACORDEÓN ── */
+.acc-hd{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;cursor:pointer;border-bottom:1px solid var(--line);transition:background .12s;user-select:none}
+.acc-hd:hover{background:var(--ice)}
+.acc-title{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.8px;display:flex;align-items:center;gap:10px}
+.acc-meta{font-size:11px;color:var(--dim);font-weight:400;text-transform:none;letter-spacing:0;font-family:'Inter',sans-serif}
+.acc-arr{font-size:13px;color:var(--dim);transition:transform .22s}
+.acc-hd.open .acc-arr{transform:rotate(90deg)}
+.acc-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.acc-body.open{max-height:4000px}
+.acc-hd.open{border-bottom-color:var(--line2)}
+
+/* ── MODELOS: grid horizontal compacto ── */
+.mod-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:0;padding:0}
+.mod-card{border-right:1px solid var(--line2);padding:16px 8px 14px;text-align:center}
+.mod-card:last-child{border-right:0}
+.mod-name{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:var(--navy)}
+.mod-pct{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;margin-top:5px}
+.mod-bar{height:4px;background:var(--line);border-radius:2px;margin:7px 6px 5px;overflow:hidden}
+.mod-fill{height:100%;border-radius:2px}
+.mod-det{font-size:9.5px;color:var(--dim);line-height:1.5}
+
 @media(max-width:680px){
   .dp-kpis{grid-template-columns:1fr 1fr}
   .rk-hd,.rk-row{grid-template-columns:28px 1fr 60px 52px;gap:6px;padding:10px 12px}
@@ -156,17 +178,37 @@ body{font-family:'Inter',sans-serif;background:var(--surf);color:var(--ink);min-
     </div>
   </div>
   <div class="wrap">
-    <div class="sec-h"><h3>Cobertura por modelo</h3><div class="rule"></div></div>
-    <div class="panel"><div class="mod-grid" id="mod-grid"></div></div>
-    <div class="sec-h"><h3>Cobranza</h3><div class="rule"></div><span id="cob-sub"></span></div>
+    <!-- Cobertura -->
     <div class="panel">
-      <div class="cob-hd"><span>Días</span><span>Folio · VIN</span><span>Modelo</span><span>Estado</span></div>
-      <div id="cob-body"></div>
+      <div class="acc-hd open" onclick="togAcc(this)">
+        <div class="acc-title">Cobertura por modelo <span class="acc-meta" id="cov-meta"></span></div>
+        <span class="acc-arr">&#9656;</span>
+      </div>
+      <div class="acc-body open"><div class="mod-grid" id="mod-grid"></div></div>
     </div>
-    <div class="sec-h"><h3>Back order pendiente</h3><div class="rule"></div><span id="bo-sub"></span></div>
+
+    <!-- Cobranza -->
     <div class="panel">
-      <div class="bo-hd"><span>Días</span><span>Folio · Modelos</span><span>Solicitado</span></div>
-      <div id="bo-body"></div>
+      <div class="acc-hd" onclick="togAcc(this)">
+        <div class="acc-title">Cobranza <span class="acc-meta" id="cob-sub"></span></div>
+        <span class="acc-arr">&#9656;</span>
+      </div>
+      <div class="acc-body">
+        <div class="cob-hd"><span>Días</span><span>Folio · VIN</span><span>Modelo</span><span>Estado</span></div>
+        <div id="cob-body"></div>
+      </div>
+    </div>
+
+    <!-- Back order -->
+    <div class="panel">
+      <div class="acc-hd" onclick="togAcc(this)">
+        <div class="acc-title">Back order <span class="acc-meta" id="bo-sub"></span></div>
+        <span class="acc-arr">&#9656;</span>
+      </div>
+      <div class="acc-body">
+        <div class="bo-hd"><span>Días</span><span>Folio · Modelos</span><span>Solicitado</span></div>
+        <div id="bo-body"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -214,6 +256,9 @@ function buildRanking(){
     '</div>'}).join('');
 }
 
+// ACORDEÓN
+function togAcc(hd){hd.classList.toggle('open');hd.nextElementSibling.classList.toggle('open')}
+
 // AUTENTICACIÓN
 async function validarPin(){
   const pin=document.getElementById('pin-input').value.replace(/\D/g,'');
@@ -260,6 +305,11 @@ async function mostrarDealer(id){
 }
 
 function buildMods(id){
+  const ytdTot=FAC.filter(f=>f.distribuidor_id===id).reduce((s,f)=>s+f.unidades_facturadas,0);
+  const bpTot=BP.filter(b=>b.distribuidor_id===id).reduce((s,b)=>s+(b.unidades_bp||0),0);
+  const pTot=bpTot?Math.round(ytdTot/bpTot*100):0;
+  const metaEl=document.getElementById('cov-meta');
+  if(metaEl)metaEl.textContent=ytdTot+' fac · '+bpTot+' plan · '+pTot+'%';
   const ytdM={};FAC.filter(f=>f.distribuidor_id===id).forEach(f=>{ytdM[f.modelo]=(ytdM[f.modelo]||0)+f.unidades_facturadas});
   const bpM={};BP.filter(b=>b.distribuidor_id===id).forEach(b=>{bpM[b.modelo]=(bpM[b.modelo]||0)+(b.unidades_bp||0)});
   const boM={};BO.filter(r=>r.distribuidor_id===id).forEach(r=>{const f=r.modelo_familia||'otro';boM[f]=(boM[f]||0)+1});
