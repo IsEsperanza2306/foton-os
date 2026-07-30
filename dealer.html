@@ -168,7 +168,7 @@ body{font-family:'Inter',sans-serif;background:var(--surf);color:var(--ink);min-
         <span style="text-align:center">%BP</span>
         <span style="text-align:right">YTD</span>
         <span style="text-align:right">Plan</span>
-        <span style="text-align:right">Julio</span>
+        <span id="rk-mes-hd" style="text-align:right">Mes</span>
         <span style="text-align:center">↑↓</span>
       </div>
       <div id="ranking-body"></div>
@@ -261,8 +261,12 @@ function show(id){
 function setReg(r,el){curReg=r;document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');buildRanking()}
 function buildRanking(){
   const ids=Object.keys(DL).filter(id=>curReg==='all'||DL[id].region===curReg);
+  const MES_ACT=new Date().getMonth()+1, MES_ANT=MES_ACT===1?12:MES_ACT-1;
+  const MESES_N=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  const hMes=document.getElementById('rk-mes-hd');
+  if(hMes)hMes.textContent=MESES_N[MES_ACT-1];
   const ytd={},bp={},mes={},mesA={};
-  FAC.forEach(f=>{if(ids.includes(f.distribuidor_id)){ytd[f.distribuidor_id]=(ytd[f.distribuidor_id]||0)+f.unidades_facturadas;if(f.mes===7)mes[f.distribuidor_id]=(mes[f.distribuidor_id]||0)+f.unidades_facturadas;if(f.mes===6)mesA[f.distribuidor_id]=(mesA[f.distribuidor_id]||0)+f.unidades_facturadas}});
+  FAC.forEach(f=>{if(ids.includes(f.distribuidor_id)){ytd[f.distribuidor_id]=(ytd[f.distribuidor_id]||0)+f.unidades_facturadas;if(f.mes===MES_ACT)mes[f.distribuidor_id]=(mes[f.distribuidor_id]||0)+f.unidades_facturadas;if(f.mes===MES_ANT)mesA[f.distribuidor_id]=(mesA[f.distribuidor_id]||0)+f.unidades_facturadas}});
   BP.filter(b=>ids.includes(b.distribuidor_id)).forEach(b=>{bp[b.distribuidor_id]=(bp[b.distribuidor_id]||0)+(b.unidades_bp||0)});
   const rows=ids.map(id=>({id,nombre:DL[id].nombre,region:DL[id].region,ytd:ytd[id]||0,bp:bp[id]||0,pct:bp[id]?(ytd[id]||0)/bp[id]*100:null,mes:mes[id]||0,mesA:mesA[id]||0}))
     .sort((a,b)=>(b.pct==null?-1:b.pct)-(a.pct==null?-1:a.pct)||(b.ytd-a.ytd));
@@ -434,7 +438,7 @@ async function init(){
   try{
     const [dls,cob,bo,bp]=await Promise.all([
       q('/distribuidores?select=id,nombre,region&limit=50'),
-      q('/cobranza_2026?select=distribuidor_id,folio,vin,modelo,f_factura,estado,dias_alerta&anio=eq.2026&limit=2000'),
+      q('/cobranza_2026?select=distribuidor_id,folio,vin,modelo,f_factura,f_liberacion,estado,dias_alerta,dias_src&anio=eq.2026&limit=2000'),
       q('/back_order?select=distribuidor_id,modelo_familia,folio,fecha_solicitud,obs&limit=2000'),
       q('/bp_anual?select=distribuidor_id,modelo,unidades_bp&anio=eq.2026&limit=200')
     ]);
