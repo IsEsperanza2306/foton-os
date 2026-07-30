@@ -278,7 +278,13 @@ async function validarPin(){
   const found=arr[0];
   DL[found.id]=Object.assign(DL[found.id]||{},found);
   sessionStorage.setItem('foton_dealer',found.id);
-  mostrarDealer(found.id);
+  if(!initDone){
+    document.getElementById('pin-err').textContent='Cargando datos, un momento...';
+    const wait=()=>initDone?mostrarDealer(found.id):setTimeout(wait,200);
+    setTimeout(wait,200);
+  } else {
+    mostrarDealer(found.id);
+  }
 }
 
 document.getElementById('pin-input').addEventListener('keydown',e=>{if(e.key==='Enter')validarPin()});
@@ -375,6 +381,7 @@ function buildBO(id){
 }
 
 // ── INIT ──
+let initDone=false;
 async function init(){
   const [dls,cob,bo,bp]=await Promise.all([
     q('/distribuidores?select=id,nombre,region,pin'),
@@ -398,6 +405,7 @@ async function init(){
   FAC=Object.values(facMap);
   buildRanking();
   // Restaurar sesión
+  initDone=true;
   const saved=sessionStorage.getItem('foton_dealer');
   if(saved&&DL[saved])mostrarDealer(saved);
 }
