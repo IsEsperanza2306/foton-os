@@ -166,6 +166,7 @@ body{font-family:'Inter',sans-serif;background:var(--surf);color:var(--ink);min-
       <input class="access-input" id="pin-input" type="password" inputmode="numeric" maxlength="6" placeholder="······" autocomplete="off">
       <button class="access-btn" onclick="validarPin()">Entrar →</button>
       <div class="access-err" id="pin-err"></div>
+      <div id="debug-log" style="font-size:11px;color:#555;margin-top:12px;white-space:pre-wrap;font-family:monospace;max-height:200px;overflow:auto"></div>
     </div>
   </div>
 </div>
@@ -212,6 +213,12 @@ body{font-family:'Inter',sans-serif;background:var(--surf);color:var(--ink);min-
 </div>
 
 <script>
+function dbg(msg){
+  const el=document.getElementById('debug-log');
+  if(el)el.textContent+='\n'+new Date().toISOString().substr(11,8)+' '+msg;
+  console.log(msg);
+}
+
 const SB='https://gblwoaaitnqbgorxaydv.supabase.co/rest/v1';
 const ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdibHdvYWFpdG5xYmdvcnhheWR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxOTQ3NTMsImV4cCI6MjA5NTc3MDc1M30.o7zYCCfH2rHEs69o4U7Zc9dM4IvQi8GsXRlZFW_2kso';
 const H={'apikey':ANON,'Authorization':'Bearer '+ANON};
@@ -272,8 +279,10 @@ async function validarPin(){
   document.getElementById('pin-err').textContent='';
   if(pin.length!==6){document.getElementById('pin-err').textContent='El PIN tiene 6 dígitos';return}
   // Buscar directamente en Supabase para asegurar que el campo pin llegó
+  dbg('validando PIN: '+pin);
   const res=await fetch(SB+'/distribuidores?pin=eq.'+pin+'&select=id,nombre,region,pin',{headers:H});
   const arr=await res.json();
+  dbg('resultado: '+JSON.stringify(arr));
   if(!arr.length){document.getElementById('pin-err').textContent='PIN incorrecto, intenta de nuevo';return}
   const found=arr[0];
   DL[found.id]=Object.assign(DL[found.id]||{},found);
@@ -300,6 +309,7 @@ function logout(){
 
 // ── PANEL PERSONAL ──
 async function mostrarDealer(id){
+  dbg('mostrarDealer: '+id+' DL='+!!DL[id]+' COB='+COB.length+' BO='+BO.length+' BP='+BP.length);
   dealerSelf=id;
   const d=DL[id];
   document.getElementById('pane-public').style.display='none';
@@ -383,6 +393,7 @@ function buildBO(id){
 // ── INIT ──
 let initDone=false;
 async function init(){
+  dbg('init: arrancando...');
   const [dls,cob,bo,bp]=await Promise.all([
     q('/distribuidores?select=id,nombre,region,pin'),
     q('/cobranza_2026?select=distribuidor_id,folio,vin,modelo,f_factura,f_liberacion,estado,dias_alerta&anio=eq.2026'),
@@ -390,6 +401,7 @@ async function init(){
     q('/bp_anual?select=distribuidor_id,modelo,unidades_bp&anio=eq.2026')
   ]);
   dls.forEach(d=>{DL[d.id]=d});
+  dbg('init: '+dls.length+' dealers, '+cob.length+' cob, '+bo.length+' bo, '+bp.length+' bp');
   COB=cob; BO=bo; BP=bp;
   // Construir FAC desde cobranza agrupando por distribuidor+mes+modelo
   const facMap={};
@@ -406,6 +418,7 @@ async function init(){
   buildRanking();
   // Restaurar sesión
   initDone=true;
+  dbg('init: COMPLETO');
   const saved=sessionStorage.getItem('foton_dealer');
   if(saved&&DL[saved])mostrarDealer(saved);
 }
