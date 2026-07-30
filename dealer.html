@@ -149,9 +149,9 @@ body{font-family:'Inter',sans-serif;background:var(--surf);color:var(--ink);min-
       </div>
       <div class="rk-hd">
         <span>#</span><span>Distribuidor</span>
+        <span style="text-align:center">%BP</span>
         <span style="text-align:right">YTD</span>
         <span style="text-align:right">Plan</span>
-        <span style="text-align:center">%BP</span>
         <span style="text-align:right">Julio</span>
         <span style="text-align:center">Tend.</span>
       </div>
@@ -249,7 +249,7 @@ function buildRanking(){
     ytd:ytd[id]||0,bp:bp[id]||0,
     pct:bp[id]?(ytd[id]||0)/bp[id]*100:null,
     mes:mes[id]||0,mesAnt:mesAnt[id]||0
-  })).sort((a,b)=>b.ytd-a.ytd);
+  })).sort((a,b)=>(b.pct==null?-1:b.pct)-(a.pct==null?-1:a.pct)||(b.ytd-a.ytd));
 
   document.getElementById('ranking-body').innerHTML=rows.map((r,i)=>{
     const p=r.pct!==null?Math.round(r.pct):null;
@@ -259,11 +259,9 @@ function buildRanking(){
     return '<div class="rk-row">'+
       '<div class="rk-pos'+(i<3?' top':'')+'">'+( i<3?['①','②','③'][i]:(i+1))+'</div>'+
       '<div><div class="rk-name">'+r.nombre+'</div><div class="rk-reg">'+REGNAME[r.region]+'</div></div>'+
-      '<div class="rk-num" style="color:'+col+'">'+r.ytd+'</div>'+
-      '<div class="rk-bp">'+r.bp+'</div>'+
       '<div class="rk-pct"><div class="pct-lbl" style="color:'+col+'">'+(p!==null?p+'%':'—')+'</div>'+
         '<div class="pct-bar"><div class="pct-fill" style="width:'+Math.min(p||0,100)+'%;background:'+col+'"></div></div></div>'+
-      '<div class="rk-mes">'+r.mes+'</div>'+
+      '<div class="rk-num">'+r.ytd+'</div>'+'<div class="rk-bp">'+r.bp+'</div>'+'<div class="rk-mes">'+r.mes+'</div>'+
       '<div class="tend" style="color:'+tendCol+'">'+tend+'</div>'+
     '</div>'}).join('');
 }
