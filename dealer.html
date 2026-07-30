@@ -270,11 +270,15 @@ function buildRanking(){
 
 // ── AUTENTICACIÓN ──
 async function validarPin(){
-  const pin=document.getElementById('pin-input').value.trim();
+  const pin=document.getElementById('pin-input').value.replace(/\D/g,'').trim();
   document.getElementById('pin-err').textContent='';
   if(pin.length!==6){document.getElementById('pin-err').textContent='El PIN tiene 6 dígitos';return}
-  const found=Object.values(DL).find(d=>d.pin===pin);
-  if(!found){document.getElementById('pin-err').textContent='PIN incorrecto, intenta de nuevo';return}
+  // Buscar directamente en Supabase para asegurar que el campo pin llegó
+  const res=await fetch(SB+'/distribuidores?pin=eq.'+pin+'&select=id,nombre,region,pin',{headers:H});
+  const arr=await res.json();
+  if(!arr.length){document.getElementById('pin-err').textContent='PIN incorrecto, intenta de nuevo';return}
+  const found=arr[0];
+  DL[found.id]=Object.assign(DL[found.id]||{},found);
   sessionStorage.setItem('foton_dealer',found.id);
   mostrarDealer(found.id);
 }
