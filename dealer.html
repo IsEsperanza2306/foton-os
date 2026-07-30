@@ -2,296 +2,394 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Foton MDT/LDT — Red de Distribuidores 2026</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foton Distribuidores</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
-:root{--navy:#042C53;--blue:#1565C0;--red:#C62828;--green:#2E7D32;--orange:#E65100;--gold:#F9A825;--silver:#78909C;--bronze:#6D4C41;--ink:#1A1A2E;--mut:#64748B;--line:#E8EDF4;--bg:#F4F7FB;--white:#FFFFFF}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
-.header{background:var(--navy);padding:20px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.header-brand{display:flex;align-items:center;gap:14px}
-.header-logo{width:36px;height:36px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:18px;color:var(--navy)}
-.header-title h1{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;letter-spacing:.5px;color:#fff}
-.header-title p{font-size:11px;color:rgba(255,255,255,.6);margin-top:1px}
-.header-corte{font-size:12px;color:rgba(255,255,255,.5);background:rgba(255,255,255,.08);padding:6px 12px;border-radius:8px}
-.main{max-width:1100px;margin:0 auto;padding:32px 24px}
-.section-header{display:flex;align-items:baseline;gap:12px;margin-bottom:20px}
-.section-header h2{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800;text-transform:uppercase;color:var(--navy)}
-.section-header span{font-size:12px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.6px}
-.tabs{display:flex;gap:4px;background:var(--white);border:1.5px solid var(--line);border-radius:12px;padding:4px;margin-bottom:28px;width:fit-content}
-.tab{padding:8px 20px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;color:var(--mut);transition:.15s;font-family:'Inter',sans-serif}
-.tab.on{background:var(--navy);color:#fff}
-.ranking-card{background:var(--white);border:1.5px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:28px}
-.rank-header-row{display:grid;grid-template-columns:44px 1fr 80px 80px 140px 60px;gap:0;padding:10px 24px;background:#F0F4FA;border-bottom:1px solid var(--line)}
-.rank-header-row span{font-size:10px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;text-align:right}
-.rank-header-row span:nth-child(2){text-align:left}
-.rank-row{display:grid;grid-template-columns:44px 1fr 80px 80px 140px 60px;align-items:center;gap:0;padding:0 24px;border-bottom:1px solid var(--line);min-height:60px;cursor:pointer;transition:background .12s}
-.rank-row:last-child{border-bottom:none}
-.rank-row:hover{background:#F8FAFD}
-.rank-pos{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;color:var(--mut)}
-.rank-pos.gold{color:var(--gold)}.rank-pos.silver{color:var(--silver)}.rank-pos.bronze{color:var(--bronze)}
-.rank-name{font-size:13.5px;font-weight:600;color:var(--navy)}
-.rank-region{font-size:10px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
-.rank-ytd{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800;color:var(--navy);text-align:right}
-.rank-ytd-lbl{font-size:9px;color:var(--mut);font-weight:600;text-align:right}
-.rank-bp{font-size:12px;color:var(--mut);text-align:right}
-.rank-bar-col{padding:0 8px}
-.rank-bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin-bottom:3px}
-.rank-bar-fill{height:100%;border-radius:4px}
-.rank-pct{font-size:12px;font-weight:700;text-align:right}
-.rank-pct.over{color:var(--green)}.rank-pct.good{color:var(--blue)}.rank-pct.mid{color:var(--orange)}.rank-pct.low{color:var(--red)}
-.dealer-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:28px}
-.dealer-btn{background:var(--white);border:1.5px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;text-align:left;transition:.15s;font-family:'Inter',sans-serif;width:100%}
-.dealer-btn:hover{border-color:var(--blue);box-shadow:0 4px 16px rgba(4,44,83,.08);transform:translateY(-1px)}
-.dealer-btn-pos{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:var(--line);line-height:1}
-.dealer-btn-name{font-size:12px;font-weight:700;color:var(--navy);margin:4px 0 8px;line-height:1.3}
-.dealer-btn-ytd{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--navy)}
-.dealer-btn-lbl{font-size:10px;color:var(--mut);font-weight:600}
-.dealer-btn-bar{height:4px;background:var(--line);border-radius:2px;margin-top:10px;overflow:hidden}
-.dealer-btn-fill{height:100%;border-radius:2px}
-.back-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;background:var(--white);border:1.5px solid var(--line);font-size:13px;font-weight:600;color:var(--navy);cursor:pointer;margin-bottom:24px;font-family:'Inter',sans-serif;transition:.12s}
-.back-btn:hover{border-color:var(--navy)}
-.radio-hero{background:var(--navy);border-radius:16px;padding:28px 32px;margin-bottom:20px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:24px}
-.radio-hero-name{font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:800;color:#fff;line-height:1.1}
-.radio-hero-region{font-size:12px;color:rgba(255,255,255,.5);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
-.radio-hero-pos-n{font-family:'Barlow Condensed',sans-serif;font-size:72px;font-weight:900;color:rgba(255,255,255,.15);line-height:1;text-align:right}
-.radio-hero-pos-l{font-size:11px;color:rgba(255,255,255,.4);font-weight:600;text-transform:uppercase;text-align:right}
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-.kpi-card{background:var(--white);border:1.5px solid var(--line);border-radius:14px;padding:18px 20px}
-.kpi-n{font-family:'Barlow Condensed',sans-serif;font-size:44px;font-weight:900;line-height:1;color:var(--navy)}
-.kpi-n.green{color:var(--green)}.kpi-n.blue{color:var(--blue)}.kpi-n.orange{color:var(--orange)}.kpi-n.red{color:var(--red)}
-.kpi-l{font-size:11px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;margin-top:4px}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
-.card{background:var(--white);border:1.5px solid var(--line);border-radius:14px;overflow:hidden}
-.card-head{padding:14px 20px;border-bottom:1px solid var(--line);background:#FAFCFE}
-.card-head h4{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;text-transform:uppercase;color:var(--navy)}
-.card-body{padding:16px 20px}
-.monthly-bars{display:flex;align-items:flex-end;gap:6px;height:80px}
-.month-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
-.month-bar-wrap{flex:1;width:100%;display:flex;align-items:flex-end}
-.month-bar{width:100%;border-radius:4px 4px 0 0;min-height:2px;transition:height .3s}
-.month-lbl{font-size:9px;color:var(--mut);font-weight:600}
-.month-val{font-size:10px;font-weight:700;color:var(--navy)}
-.modelo-row{display:grid;grid-template-columns:48px 1fr 60px 50px;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
-.modelo-row:last-child{border-bottom:none}
-.modelo-tag{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--navy)}
-.modelo-bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden}
-.modelo-bar-fill{height:100%;border-radius:3px}
-.modelo-nums{font-size:10px;color:var(--mut);margin-top:2px}
-.modelo-pct{font-size:12px;font-weight:700;text-align:right}
-.cob-mini-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:12px}
-.cob-mini-row:last-child{border-bottom:none}
-.cob-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.cob-dot.critico{background:var(--red)}.cob-dot.urgente{background:var(--orange)}.cob-dot.anticipo{background:#7B1FA2}
-.cob-modelo{font-weight:700;color:var(--navy);flex:1}
-.cob-dias{font-weight:700;color:var(--mut)}
-.cob-estado{font-size:10px;color:var(--mut)}
-.empty-state{text-align:center;padding:32px;color:var(--green);font-size:13px;font-weight:600}
-.overlay{display:none;position:fixed;inset:0;background:rgba(4,44,83,.5);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center}
-.overlay.on{display:flex}
-.spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-@media(max-width:700px){.kpi-grid{grid-template-columns:1fr 1fr}.two-col{grid-template-columns:1fr}.radio-hero{grid-template-columns:1fr}.radio-hero-pos-n{font-size:48px}.rank-row,.rank-header-row{grid-template-columns:36px 1fr 70px 110px 50px}.rank-row>:nth-child(4),.rank-header-row>:nth-child(4){display:none}}
+:root{
+  --navy:#002870;--blue:#0B4FA8;--ice:#F0F4FB;--ink:#0D1B2A;
+  --mut:#5A7394;--dim:#8CA4BE;--line:#D8E5F2;--line2:#EBF2FA;
+  --grn:#1B7B3E;--grn-bg:#EAF5EF;--red:#C0392B;--red-bg:#FBEAE7;
+  --amb:#B56B0A;--amb-bg:#FDF3E3;--pur:#5B3BB5;--pur-bg:#F0EBFF;
+  --white:#fff;--surf:#F4F7FB;
+}
+body{font-family:'Inter',sans-serif;background:var(--surf);color:var(--ink);min-height:100vh}
+
+/* ── HEADER ── */
+.hdr{background:var(--navy);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between}
+.hdr-logo{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:#fff;letter-spacing:1px}
+.hdr-sub{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:1.5px;text-transform:uppercase;margin-top:1px}
+.hdr-right{font-size:12px;color:rgba(255,255,255,.5)}
+
+/* ── FRANJA HERO ── */
+.hero{background:linear-gradient(135deg,#0B4FA8 0%,#1D6FC4 100%);padding:32px 24px 28px;color:#fff}
+.hero-t{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;letter-spacing:.5px;line-height:1.1}
+.hero-s{font-size:13px;color:rgba(255,255,255,.7);margin-top:6px}
+
+/* ── RANKING ── */
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px}
+.sec-h{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.sec-h h3{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.8px;white-space:nowrap}
+.rule{flex:1;height:1px;background:var(--line)}
+.sec-h span{font-size:11px;color:var(--dim);white-space:nowrap}
+.panel{background:var(--white);border-radius:10px;border:1px solid var(--line);overflow:hidden}
+
+/* Tabs de región */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--line);background:var(--ice)}
+.tab{padding:10px 20px;font-size:12px;font-weight:600;color:var(--mut);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;letter-spacing:.4px;text-transform:uppercase}
+.tab.on{color:var(--blue);border-bottom-color:var(--blue);background:var(--white)}
+
+/* Tabla ranking */
+.rk-hd{display:grid;grid-template-columns:36px 1fr 64px 56px 72px 64px 80px;gap:10px;padding:9px 18px;background:var(--ice);border-bottom:1px solid var(--line);font-size:9.5px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.8px}
+.rk-row{display:grid;grid-template-columns:36px 1fr 64px 56px 72px 64px 80px;gap:10px;align-items:center;padding:11px 18px;border-bottom:1px solid var(--line2);transition:background .12s;cursor:pointer}
+.rk-row:last-child{border-bottom:0}
+.rk-row:hover{background:var(--ice)}
+.rk-pos{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:700;color:var(--dim);text-align:center}
+.rk-pos.top{color:var(--navy)}
+.rk-name{font-size:13px;font-weight:600;color:var(--ink);line-height:1.3}
+.rk-reg{font-size:10px;color:var(--dim)}
+.rk-num{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;text-align:right}
+.rk-bp{font-size:10px;color:var(--dim);text-align:right}
+.rk-pct{text-align:center}
+.pct-bar{height:6px;background:var(--line2);border-radius:3px;margin-top:4px;overflow:hidden}
+.pct-fill{height:100%;border-radius:3px;transition:width .4s}
+.pct-lbl{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700}
+.rk-mes{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;text-align:right;color:var(--blue)}
+.tend{font-size:16px;text-align:center}
+
+/* ── ACCESO ── */
+.access-card{background:var(--white);border-radius:12px;border:1px solid var(--line);padding:32px 28px;max-width:420px;margin:32px auto}
+.access-t{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.access-s{font-size:13px;color:var(--mut);margin-bottom:24px}
+.access-label{font-size:12px;font-weight:600;color:var(--mut);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+.access-input{width:100%;border:1.5px solid var(--line);border-radius:8px;padding:12px 16px;font-size:22px;font-family:'JetBrains Mono',monospace;font-weight:700;letter-spacing:6px;text-align:center;color:var(--navy);outline:none;transition:border-color .15s}
+.access-input:focus{border-color:var(--blue)}
+.access-btn{width:100%;margin-top:16px;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:.3px;transition:background .15s}
+.access-btn:hover{background:var(--navy)}
+.access-err{margin-top:10px;font-size:12px;color:var(--red);text-align:center;min-height:18px}
+
+/* ── PANEL PERSONAL ── */
+#pane-dealer{display:none}
+.dp-hero{background:linear-gradient(135deg,#002870 0%,#0B4FA8 100%);padding:28px 24px 24px;color:#fff}
+.dp-name{font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:800;letter-spacing:.5px}
+.dp-region{font-size:12px;color:rgba(255,255,255,.6);margin-top:4px;letter-spacing:1px;text-transform:uppercase}
+.dp-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px}
+.dp-kpi{background:rgba(255,255,255,.12);border-radius:8px;padding:12px 14px}
+.dp-kpi-n{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;line-height:1}
+.dp-kpi-l{font-size:10px;color:rgba(255,255,255,.6);margin-top:4px;letter-spacing:.5px;text-transform:uppercase}
+
+/* Cobertura por modelo */
+.mod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;padding:16px}
+.mod-card{background:var(--surf);border-radius:8px;border:1px solid var(--line);padding:14px 14px 12px;text-align:center}
+.mod-name{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--navy)}
+.mod-pct-lbl{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;margin-top:6px}
+.mod-bar{height:6px;background:var(--line);border-radius:3px;margin:8px 0 6px;overflow:hidden}
+.mod-fill{height:100%;border-radius:3px}
+.mod-detail{font-size:10px;color:var(--dim)}
+
+/* Cobranza dealer */
+.cob-hd{display:grid;grid-template-columns:56px 1fr 80px 80px 72px;gap:10px;padding:8px 16px;background:var(--ice);border-bottom:1px solid var(--line);font-size:9.5px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.8px}
+.cob-row{display:grid;grid-template-columns:56px 1fr 80px 80px 72px;gap:10px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line2);font-size:12px}
+.cob-row:last-child{border-bottom:0}
+.est{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;white-space:nowrap}
+.est.pagado{background:var(--grn-bg);color:var(--grn)}
+.est.urgente{background:var(--amb-bg);color:var(--amb)}
+.est.critico{background:var(--red-bg);color:var(--red)}
+.est.anticipo{background:var(--pur-bg);color:var(--pur)}
+.est.pendiente{background:#F0F3F7;color:var(--mut)}
+.dias-n{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700}
+
+/* BO dealer */
+.bo-dealer-hd{display:grid;grid-template-columns:52px 1fr 80px;gap:10px;padding:8px 16px;background:var(--ice);border-bottom:1px solid var(--line);font-size:9.5px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.8px}
+.bo-dealer-row{display:grid;grid-template-columns:52px 1fr 80px;gap:10px;align-items:start;padding:9px 16px;border-bottom:1px solid var(--line2);font-size:12px}
+.bo-dealer-row:last-child{border-bottom:0}
+.bo-fol{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--blue);font-weight:600}
+.bo-mod-chip{display:inline-block;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;background:var(--ice);color:var(--blue);padding:1px 6px;border-radius:4px;margin:1px 2px 1px 0}
+.bo-obs{font-size:11px;color:var(--mut);margin-top:3px}
+
+/* Logout */
+.logout-btn{background:none;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer}
+.logout-btn:hover{background:rgba(255,255,255,.1)}
+
+@media(max-width:700px){
+  .dp-kpis{grid-template-columns:1fr 1fr}
+  .rk-hd,.rk-row{grid-template-columns:28px 1fr 52px 60px;gap:8px}
+  .rk-row > :nth-child(5),.rk-row > :nth-child(6),.rk-row > :nth-child(7),
+  .rk-hd > :nth-child(5),.rk-hd > :nth-child(6),.rk-hd > :nth-child(7){display:none}
+  .cob-hd,.cob-row{grid-template-columns:48px 1fr 72px;gap:8px}
+  .cob-row>:nth-child(4),.cob-row>:nth-child(5),.cob-hd>:nth-child(4),.cob-hd>:nth-child(5){display:none}
+}
 </style>
 </head>
 <body>
-<header class="header">
-  <div class="header-brand">
-    <div class="header-logo">FT</div>
-    <div class="header-title">
-      <h1>Foton MDT/LDT — Red de Distribuidores</h1>
-      <p id="corte-lbl">Cargando datos...</p>
+
+<div class="hdr">
+  <div>
+    <div class="hdr-logo">FOTON DISTRIBUIDORES</div>
+  </div>
+  <div id="hdr-dealer-info" class="hdr-right" style="display:none"></div>
+</div>
+
+<!-- VISTA: Ranking + acceso -->
+<div id="pane-public">
+  <div class="hero">
+    <div class="hero-t">Red de distribuidores Foton México</div>
+    <div class="hero-s">Ranking actualizado · Reporte oficial LDR Solutions</div>
+  </div>
+
+  <div class="wrap">
+    <!-- Tabs región -->
+    <div class="panel" style="margin-bottom:24px">
+      <div class="tabs">
+        <div class="tab on" onclick="setReg('all',this)">Toda la red</div>
+        <div class="tab" onclick="setReg('israel',this)">Centro-Sur</div>
+        <div class="tab" onclick="setReg('marco',this)">Noroeste-Pacífico</div>
+      </div>
+      <div class="rk-hd">
+        <span>#</span><span>Distribuidor</span>
+        <span style="text-align:right">YTD</span>
+        <span style="text-align:right">Plan</span>
+        <span style="text-align:center">%BP</span>
+        <span style="text-align:right">Julio</span>
+        <span style="text-align:center">Tend.</span>
+      </div>
+      <div id="ranking-body"></div>
+    </div>
+
+    <!-- Acceso pin -->
+    <div class="access-card">
+      <div class="access-t">Acceder a mi panel</div>
+      <div class="access-s">Ingresa el PIN de 6 dígitos de tu distribuidora</div>
+      <div class="access-label">PIN</div>
+      <input class="access-input" id="pin-input" type="password" inputmode="numeric" maxlength="6" placeholder="······" autocomplete="off">
+      <button class="access-btn" onclick="validarPin()">Entrar →</button>
+      <div class="access-err" id="pin-err"></div>
     </div>
   </div>
-  <div class="header-corte">2026</div>
-</header>
-<div class="overlay" id="overlay"><div class="spinner"></div></div>
-<main class="main" id="main"></main>
+</div>
+
+<!-- VISTA: Panel personal -->
+<div id="pane-dealer">
+  <div class="dp-hero">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between">
+      <div>
+        <div class="dp-name" id="dp-name-text"></div>
+        <div class="dp-region" id="dp-region-text"></div>
+      </div>
+      <button class="logout-btn" onclick="logout()">Salir</button>
+    </div>
+    <div class="dp-kpis">
+      <div class="dp-kpi"><div class="dp-kpi-n" id="kpi-ytd">—</div><div class="dp-kpi-l">YTD 2026</div></div>
+      <div class="dp-kpi"><div class="dp-kpi-n" id="kpi-bp">—</div><div class="dp-kpi-l">Plan anual</div></div>
+      <div class="dp-kpi"><div class="dp-kpi-n" id="kpi-pct">—</div><div class="dp-kpi-l">% BP</div></div>
+      <div class="dp-kpi"><div class="dp-kpi-n" id="kpi-bo">—</div><div class="dp-kpi-l">Back order</div></div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <!-- Cobertura por modelo -->
+    <div class="sec-h"><h3>Cobertura por modelo</h3><div class="rule"></div></div>
+    <div class="panel" style="margin-bottom:24px">
+      <div class="mod-grid" id="mod-grid"></div>
+    </div>
+
+    <!-- Cobranza -->
+    <div class="sec-h"><h3>Cobranza</h3><div class="rule"></div><span id="cob-sub"></span></div>
+    <div class="panel" style="margin-bottom:24px">
+      <div class="cob-hd"><span>Días</span><span>Folio · VIN</span><span>Modelo</span><span>Factura</span><span>Estado</span></div>
+      <div id="cob-body"></div>
+    </div>
+
+    <!-- Back order -->
+    <div class="sec-h"><h3>Back order pendiente</h3><div class="rule"></div><span id="bo-sub"></span></div>
+    <div class="panel" style="margin-bottom:32px">
+      <div class="bo-dealer-hd"><span>Días</span><span>Folio · Modelos</span><span>Solicitud</span></div>
+      <div id="bo-body"></div>
+    </div>
+  </div>
+</div>
+
 <script>
 const SB='https://gblwoaaitnqbgorxaydv.supabase.co/rest/v1';
-const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdibHdvYWFpdG5xYmdvcnhheWR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxOTQ3NTMsImV4cCI6MjA5NTc3MDc1M30.o7zYCCfH2rHEs69o4U7Zc9dM4IvQi8GsXRlZFW_2kso';
-const H={apikey:KEY,Authorization:'Bearer '+KEY};
-const MESES=['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdibHdvYWFpdG5xYmdvcnhheWR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxOTQ3NTMsImV4cCI6MjA5NTc3MDc1M30.o7zYCCfH2rHEs69o4U7Zc9dM4IvQi8GsXRlZFW_2kso';
+const H={'apikey':ANON,'Authorization':'Bearer '+ANON};
+
+async function q(path){const r=await fetch(SB+path,{headers:H});if(!r.ok)throw new Error(r.status);return r.json()}
+
 const MODS=['S3','S5','S6','S8','S12'];
-let DEALERS=[],RANKING=[],FAC_MES=[],COBRANZA=[],BACK_ORDER=[],BP=[];
-const urlParams=new URLSearchParams(window.location.search);
-const DEALER_PARAM=urlParams.get('dealer');
+const REGNAME={israel:'Centro-Sur · Israel Esperanza',marco:'Noroeste-Pacífico · Marco Chagoya',daniel:'Nacional'};
+let DL={},COB=[],FAC=[],BO=[],BP=[],curReg='all',dealerSelf=null;
 
-async function q(path){const r=await fetch(SB+path,{headers:H});return r.json();}
+function pctColor(p){if(p>=100)return'#1B7B3E';if(p>=75)return'#1D6FC4';if(p>=50)return'#B56B0A';if(p>=25)return'#D35400';return'#C0392B'}
+function parseF(s){if(!s)return 0;const p=String(s).split('/');return p.length===3?new Date(+p[2],+p[1]-1,+p[0]).getTime():0}
+function dias(s){const t=parseF(s);return t?Math.round((Date.now()-t)/86400000):null}
 
-function fmtPct(p){
-  if(p>=100)return{cls:'over',txt:p.toFixed(1)+'%'};
-  if(p>=50)return{cls:'good',txt:p.toFixed(1)+'%'};
-  if(p>=25)return{cls:'mid',txt:p.toFixed(1)+'%'};
-  return{cls:'low',txt:p.toFixed(1)+'%'};
-}
-function barColor(p){
-  if(p>=100)return'#2E7D32';if(p>=50)return'#1565C0';if(p>=25)return'#E65100';return'#C62828';
-}
-
-async function cargar(){
-  document.getElementById('overlay').classList.add('on');
-  const[dealers,fac,cob,bo,bp]=await Promise.all([
-    q('/distribuidores?region=in.(israel,marco)&select=id,nombre,region&order=nombre'),
-    q('/facturado_ytd?anio=eq.2026&select=distribuidor_id,mes,modelo,unidades_facturadas'),
-    q('/cobranza_2026?anio=eq.2026&select=distribuidor_id,modelo,familia,estado,dias_alerta,folio&order=dias_alerta.desc'),
-    q('/back_order?select=distribuidor_id,modelo,modelo_familia,unidades,fecha_solicitud'),
-    q('/bp_anual?anio=eq.2026&select=distribuidor_id,modelo,unidades_bp'),
-  ]);
-  DEALERS=dealers;FAC_MES=fac;COBRANZA=cob;BACK_ORDER=bo;BP=bp;
-  RANKING=DEALERS.map(d=>{
-    const ytd=fac.filter(r=>r.distribuidor_id===d.id).reduce((s,r)=>s+r.unidades_facturadas,0);
-    const bpT=bp.filter(r=>r.distribuidor_id===d.id).reduce((s,r)=>s+r.unidades_bp,0);
-    return{...d,ytd,bp:bpT,pct:bpT>0?ytd/bpT*100:0};
-  }).sort((a,b)=>b.ytd-a.ytd);
-  const maxMes=Math.max(1,...fac.map(r=>r.mes).filter(Boolean));
-  document.getElementById('corte-lbl').textContent='Corte '+MESES[maxMes]+' 2026 · '+DEALERS.length+' distribuidores';
-  document.getElementById('overlay').classList.remove('on');
-  if(DEALER_PARAM){const d=DEALERS.find(x=>x.id===DEALER_PARAM);if(d){mostrarRadiografia({...d,...RANKING.find(x=>x.id===d.id)});return;}}
-  renderHome();
-}
-
-function renderHome(){
-  document.getElementById('main').innerHTML=`
-    <div class="section-header"><h2>Ranking de la Red</h2><span>Corte YTD 2026 · Unidades facturadas</span></div>
-    <div class="tabs">
-      <button class="tab on" onclick="filtrarRanking('all',this)">Toda la red</button>
-      <button class="tab" onclick="filtrarRanking('israel',this)">🟦 Israel</button>
-      <button class="tab" onclick="filtrarRanking('marco',this)">🟩 Marco</button>
-    </div>
-    <div id="ranking-wrap">${renderRanking('all')}</div>
-    <div class="section-header" style="margin-top:32px"><h2>Ver mi radiografía</h2><span>Selecciona tu distribuidor</span></div>
-    <div class="dealer-grid">${renderDealerGrid()}</div>`;
-}
-
-function filtrarRanking(region,btn){
+// ── RANKING ──
+function setReg(r,el){
+  curReg=r;
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
-  btn.classList.add('on');
-  document.getElementById('ranking-wrap').innerHTML=renderRanking(region);
+  el.classList.add('on');
+  buildRanking();
 }
 
-function renderRanking(region){
-  const lista=region==='all'?RANKING:RANKING.filter(d=>d.region===region);
-  const rows=lista.map((d,i)=>{
-    const pos=i+1;
-    const posCls=pos===1?'gold':pos===2?'silver':pos===3?'bronze':'';
-    const pctF=fmtPct(d.pct);
-    const pct=Math.min(100,d.pct);
-    return`<div class="rank-row" onclick="mostrarRadiografia(RANKING.find(x=>x.id==='${d.id}'))">
-      <div class="rank-pos ${posCls}">${pos}</div>
-      <div><div class="rank-name">${d.nombre}</div><div class="rank-region">${d.region==='israel'?'🟦 Centro-Sur':'🟩 Noroeste/Pacífico'}</div></div>
-      <div><div class="rank-ytd">${d.ytd}</div><div class="rank-ytd-lbl">unidades</div></div>
-      <div class="rank-bp">${d.bp} BP</div>
-      <div class="rank-bar-col">
-        <div class="rank-bar"><div class="rank-bar-fill" style="width:${pct}%;background:${barColor(d.pct)}"></div></div>
-        <div style="font-size:10px;color:var(--mut);text-align:right;margin-top:2px">${d.pct.toFixed(1)}% de meta</div>
-      </div>
-      <div class="rank-pct ${pctF.cls}">${pctF.txt}</div>
-    </div>`;
-  }).join('');
-  return`<div class="ranking-card">
-    <div class="rank-header-row"><span>#</span><span>Distribuidor</span><span>YTD</span><span>BP</span><span>Avance</span><span>%</span></div>
-    ${rows}</div>`;
+function buildRanking(){
+  const ids=Object.keys(DL).filter(id=>curReg==='all'||DL[id].region===curReg);
+  // YTD por dealer
+  const ytd={};FAC.forEach(f=>{if(ids.includes(f.distribuidor_id))ytd[f.distribuidor_id]=(ytd[f.distribuidor_id]||0)+f.unidades_facturadas});
+  const bp={};BP.filter(b=>ids.includes(b.distribuidor_id)).forEach(b=>{bp[b.distribuidor_id]=(bp[b.distribuidor_id]||0)+(b.bp_anual||0)});
+  // Mes actual (julio = mes 7)
+  const mes={};FAC.filter(f=>f.mes===7&&ids.includes(f.distribuidor_id)).forEach(f=>{mes[f.distribuidor_id]=(mes[f.distribuidor_id]||0)+f.unidades_facturadas});
+  // Mes anterior (junio)
+  const mesAnt={};FAC.filter(f=>f.mes===6&&ids.includes(f.distribuidor_id)).forEach(f=>{mesAnt[f.distribuidor_id]=(mesAnt[f.distribuidor_id]||0)+f.unidades_facturadas});
+
+  const rows=ids.map(id=>({
+    id,nombre:DL[id].nombre,region:DL[id].region,
+    ytd:ytd[id]||0,bp:bp[id]||0,
+    pct:bp[id]?(ytd[id]||0)/bp[id]*100:null,
+    mes:mes[id]||0,mesAnt:mesAnt[id]||0
+  })).sort((a,b)=>b.ytd-a.ytd);
+
+  document.getElementById('ranking-body').innerHTML=rows.map((r,i)=>{
+    const p=r.pct!==null?Math.round(r.pct):null;
+    const col=p!==null?pctColor(p):'#C3D2E0';
+    const tend=r.mes>r.mesAnt?'↑':r.mes<r.mesAnt?'↓':'→';
+    const tendCol=r.mes>r.mesAnt?'#1B7B3E':r.mes<r.mesAnt?'#C0392B':'#8CA4BE';
+    return '<div class="rk-row">'+
+      '<div class="rk-pos'+(i<3?' top':'')+'">'+( i<3?['①','②','③'][i]:(i+1))+'</div>'+
+      '<div><div class="rk-name">'+r.nombre+'</div><div class="rk-reg">'+REGNAME[r.region]+'</div></div>'+
+      '<div class="rk-num" style="color:'+col+'">'+r.ytd+'</div>'+
+      '<div class="rk-bp">'+r.bp+'</div>'+
+      '<div class="rk-pct"><div class="pct-lbl" style="color:'+col+'">'+(p!==null?p+'%':'—')+'</div>'+
+        '<div class="pct-bar"><div class="pct-fill" style="width:'+Math.min(p||0,100)+'%;background:'+col+'"></div></div></div>'+
+      '<div class="rk-mes">'+r.mes+'</div>'+
+      '<div class="tend" style="color:'+tendCol+'">'+tend+'</div>'+
+    '</div>'}).join('');
 }
 
-function renderDealerGrid(){
-  return RANKING.map((d,i)=>{
-    const pct=Math.min(100,d.pct);
-    return`<button class="dealer-btn" onclick="mostrarRadiografia(RANKING.find(x=>x.id==='${d.id}'))">
-      <div class="dealer-btn-pos">${String(i+1).padStart(2,'0')}</div>
-      <div class="dealer-btn-name">${d.nombre}</div>
-      <div class="dealer-btn-ytd">${d.ytd}</div>
-      <div class="dealer-btn-lbl">unidades YTD</div>
-      <div class="dealer-btn-bar"><div class="dealer-btn-fill" style="width:${pct}%;background:${barColor(d.pct)}"></div></div>
-    </button>`;
-  }).join('');
+// ── AUTENTICACIÓN ──
+async function validarPin(){
+  const pin=document.getElementById('pin-input').value.trim();
+  document.getElementById('pin-err').textContent='';
+  if(pin.length!==6){document.getElementById('pin-err').textContent='El PIN tiene 6 dígitos';return}
+  const found=Object.values(DL).find(d=>d.pin===pin);
+  if(!found){document.getElementById('pin-err').textContent='PIN incorrecto, intenta de nuevo';return}
+  sessionStorage.setItem('foton_dealer',found.id);
+  mostrarDealer(found.id);
 }
 
-function mostrarRadiografia(dealer){
-  const pos=RANKING.findIndex(d=>d.id===dealer.id)+1;
-  const did=dealer.id;
-  const porMes={};
-  FAC_MES.filter(r=>r.distribuidor_id===did).forEach(r=>{porMes[r.mes]=(porMes[r.mes]||0)+r.unidades_facturadas;});
-  const maxVal=Math.max(1,...Object.values(porMes));
-  const barras=[1,2,3,4,5,6,7,8,9,10,11,12].map(m=>{
-    const v=porMes[m]||0;const h=Math.round(v/maxVal*100);const futuro=m>7;
-    return`<div class="month-col">
-      <div class="month-val">${v||''}</div>
-      <div class="month-bar-wrap"><div class="month-bar" style="height:${h}%;background:${futuro?'var(--line)':'var(--blue)'}"></div></div>
-      <div class="month-lbl">${MESES[m]}</div>
-    </div>`;
-  }).join('');
-  const bpMap={},facMap={},boMap={};
-  BP.filter(r=>r.distribuidor_id===did).forEach(r=>{bpMap[r.modelo]=(bpMap[r.modelo]||0)+r.unidades_bp;});
-  FAC_MES.filter(r=>r.distribuidor_id===did).forEach(r=>{facMap[r.modelo]=(facMap[r.modelo]||0)+r.unidades_facturadas;});
-  BACK_ORDER.filter(r=>r.distribuidor_id===did).forEach(r=>{const m=r.modelo_familia||'S3';boMap[m]=(boMap[m]||0)+r.unidades;});
-  const modeloRows=MODS.map(m=>{
-    const bp=bpMap[m]||0;if(!bp)return'';
-    const fac=facMap[m]||0;const bo=boMap[m]||0;
-    const pct=Math.min(100,Math.round(fac/bp*100));
-    const pctF=fmtPct(fac/bp*100);
-    const gap=bp-fac;
-    return`<div class="modelo-row">
-      <div class="modelo-tag">${m}</div>
-      <div>
-        <div class="modelo-bar"><div class="modelo-bar-fill" style="width:${pct}%;background:${barColor(fac/bp*100)}"></div></div>
-        <div class="modelo-nums">Fac <b>${fac}</b> · BO <b>${bo}</b> · BP <b>${bp}</b></div>
-      </div>
-      <div class="modelo-pct ${pctF.cls}">${pctF.txt}</div>
-      <div style="font-size:11px;color:var(--red);text-align:right;font-weight:700">${gap>0?'-'+gap:''}</div>
-    </div>`;
-  }).join('');
-  const cobPend=COBRANZA.filter(r=>r.distribuidor_id===did&&['critico','urgente','anticipo'].includes(r.estado));
-  const cobRows=cobPend.length?cobPend.slice(0,8).map(r=>{
-    const lbl={critico:'Entregado sin pagar',urgente:'Liberado sin pagar',anticipo:'Anticipo pendiente'}[r.estado]||r.estado;
-    return`<div class="cob-mini-row">
-      <div class="cob-dot ${r.estado}"></div>
-      <div class="cob-modelo">${r.familia||r.modelo}</div>
-      <div class="cob-estado">${lbl}</div>
-      <div class="cob-dias">${r.dias_alerta}d</div>
-    </div>`;
-  }).join(''):`<div class="empty-state">✅ Sin adeudos pendientes</div>`;
-  const rankR=RANKING.filter(d=>d.region===dealer.region).findIndex(d=>d.id===did)+1;
-  const totR=RANKING.filter(d=>d.region===dealer.region).length;
-  const pctD=dealer.pct||0;
-  document.getElementById('main').innerHTML=`
-    <button class="back-btn" onclick="renderHome()">← Volver al ranking</button>
-    <div class="radio-hero">
-      <div>
-        <div class="radio-hero-name">${dealer.nombre}</div>
-        <div class="radio-hero-region">${dealer.region==='israel'?'🟦 Región Centro-Sur · Israel Esperanza':'🟩 Región Noroeste/Pacífico · Marco Chagoya'}</div>
-      </div>
-      <div>
-        <div class="radio-hero-pos-n">#${pos}</div>
-        <div class="radio-hero-pos-l">Posición en la red</div>
-      </div>
-    </div>
-    <div class="kpi-grid">
-      <div class="kpi-card"><div class="kpi-n blue">${dealer.ytd}</div><div class="kpi-l">Unidades YTD</div></div>
-      <div class="kpi-card"><div class="kpi-n">${dealer.bp}</div><div class="kpi-l">Business Plan 2026</div></div>
-      <div class="kpi-card"><div class="kpi-n ${pctD>=100?'green':pctD>=50?'blue':pctD>=25?'orange':'red'}">${pctD.toFixed(1)}%</div><div class="kpi-l">Avance vs BP</div></div>
-      <div class="kpi-card"><div class="kpi-n ${cobPend.length?'red':'green'}">${cobPend.length}</div><div class="kpi-l">Cobros pendientes</div></div>
-    </div>
-    <div class="card" style="margin-bottom:16px">
-      <div class="card-head"><h4>📅 Facturación mensual 2026</h4></div>
-      <div class="card-body"><div class="monthly-bars">${barras}</div></div>
-    </div>
-    <div class="two-col">
-      <div class="card">
-        <div class="card-head"><h4>📊 Avance por modelo</h4></div>
-        <div class="card-body">${modeloRows||'<div class="empty-state">Sin BP registrado</div>'}</div>
-      </div>
-      <div class="card">
-        <div class="card-head"><h4>💳 Cobranza pendiente</h4></div>
-        <div class="card-body">${cobRows}</div>
-      </div>
-    </div>
-    <div style="text-align:center;margin-top:16px;font-size:12px;color:var(--mut)">
-      Posición en región: <strong>${rankR}° de ${totR}</strong> · Posición en red: <strong>${pos}° de ${RANKING.length}</strong>
-    </div>`;
+document.getElementById('pin-input').addEventListener('keydown',e=>{if(e.key==='Enter')validarPin()});
+
+function logout(){
+  sessionStorage.removeItem('foton_dealer');
+  dealerSelf=null;
+  document.getElementById('pane-public').style.display='';
+  document.getElementById('pane-dealer').style.display='none';
+  document.getElementById('hdr-dealer-info').style.display='none';
+  document.getElementById('pin-input').value='';
 }
-cargar();
+
+// ── PANEL PERSONAL ──
+async function mostrarDealer(id){
+  dealerSelf=id;
+  const d=DL[id];
+  document.getElementById('pane-public').style.display='none';
+  document.getElementById('pane-dealer').style.display='';
+  document.getElementById('dp-name-text').textContent=d.nombre;
+  document.getElementById('dp-region-text').textContent=(REGNAME[d.region]||d.region).toUpperCase();
+  document.getElementById('hdr-dealer-info').style.display='';
+  document.getElementById('hdr-dealer-info').textContent=d.nombre;
+
+  // KPIs
+  const ytdTotal=FAC.filter(f=>f.distribuidor_id===id).reduce((s,f)=>s+f.unidades_facturadas,0);
+  const bpTotal=BP.filter(b=>b.distribuidor_id===id).reduce((s,b)=>s+(b.bp_anual||0),0);
+  const pct=bpTotal?Math.round(ytdTotal/bpTotal*100):0;
+  const boTotal=BO.filter(r=>r.distribuidor_id===id).length;
+  document.getElementById('kpi-ytd').textContent=ytdTotal;
+  document.getElementById('kpi-bp').textContent=bpTotal;
+  document.getElementById('kpi-pct').textContent=pct+'%';
+  document.getElementById('kpi-bo').textContent=boTotal;
+
+  buildMods(id);
+  buildCob(id);
+  buildBO(id);
+}
+
+function buildMods(id){
+  const ytdByMod={};FAC.filter(f=>f.distribuidor_id===id).forEach(f=>{ytdByMod[f.modelo]=(ytdByMod[f.modelo]||0)+f.unidades_facturadas});
+  const bpByMod={};BP.filter(b=>b.distribuidor_id===id).forEach(b=>{bpByMod[b.modelo]=(bpByMod[b.modelo]||0)+(b.bp_anual||0)});
+  const boByMod={};BO.filter(r=>r.distribuidor_id===id).forEach(r=>{boByMod[r.modelo_familia]=(boByMod[r.modelo_familia]||0)+1});
+
+  document.getElementById('mod-grid').innerHTML=MODS.map(m=>{
+    const fac=ytdByMod[m]||0, bp=bpByMod[m]||0, bo=boByMod[m]||0;
+    const p=bp?Math.round(fac/bp*100):null;
+    const col=p!==null?pctColor(p):'#C3D2E0';
+    return '<div class="mod-card">'+
+      '<div class="mod-name">'+m+'</div>'+
+      '<div class="mod-pct-lbl" style="color:'+col+'">'+(p!==null?p+'%':'—')+'</div>'+
+      '<div class="mod-bar"><div class="mod-fill" style="width:'+Math.min(p||0,100)+'%;background:'+col+'"></div></div>'+
+      '<div class="mod-detail">'+fac+' fac · '+bp+' plan · '+bo+' BO</div>'+
+    '</div>'}).join('');
+}
+
+function buildCob(id){
+  const rows=COB.filter(r=>r.distribuidor_id===id).sort((a,b)=>(b.dias_alerta||0)-(a.dias_alerta||0));
+  document.getElementById('cob-sub').textContent=rows.length+' unidades';
+  const LEST={pagado:'Pagado',urgente:'Liberada s/pago',critico:'Entregada s/pago',anticipo:'Anticipo',pendiente:'Pendiente'};
+  document.getElementById('cob-body').innerHTML=rows.length?rows.map(r=>{
+    const d=r.dias_alerta||0;
+    const col=d>90?'#C0392B':d>30?'#D35400':'var(--ink)';
+    return '<div class="cob-row">'+
+      '<div><div class="dias-n" style="color:'+col+'">'+d+'</div></div>'+
+      '<div><div style="font-size:11px;font-family:JetBrains Mono,monospace;color:#1D6FC4;font-weight:600">'+(r.folio||'—')+'</div>'+
+      '<div style="font-size:10px;color:var(--dim)">'+(r.vin||'—')+'</div></div>'+
+      '<div style="font-size:12px;font-weight:600">'+(r.familia||r.modelo||'')+'</div>'+
+      '<div style="font-size:11px;font-family:JetBrains Mono,monospace;color:var(--mut)">'+(r.f_factura||'')+'</div>'+
+      '<div><span class="est '+(r.estado||'pendiente')+'">'+( LEST[r.estado]||r.estado||'—')+'</span></div>'+
+    '</div>'}).join(''):'<div style="padding:20px;text-align:center;color:var(--dim);font-size:13px">Sin unidades en cobranza activa</div>';
+}
+
+function buildBO(id){
+  const rows=BO.filter(r=>r.distribuidor_id===id);
+  document.getElementById('bo-sub').textContent=rows.length+' unidades';
+  // Agrupar por folio
+  const G={};rows.forEach(r=>{
+    if(!G[r.folio||'?'])G[r.folio||'?']={folio:r.folio||'',fecha:r.fecha_solicitud||'',obs:r.obs||'',mods:[]};
+    const f=r.modelo_familia||'?';
+    const ex=G[r.folio||'?'].mods.find(x=>x.f===f);
+    if(ex)ex.q++;else G[r.folio||'?'].mods.push({f,q:1});
+    if(!G[r.folio||'?'].obs&&r.obs)G[r.folio||'?'].obs=r.obs;
+  });
+  const lista=Object.values(G).sort((a,b)=>(dias(b.fecha)||0)-(dias(a.fecha)||0));
+  document.getElementById('bo-body').innerHTML=lista.length?lista.map(p=>{
+    const d=dias(p.fecha),col=d>180?'#C0392B':d>90?'#D35400':d>30?'#B56B0A':'#185FA5';
+    const chips=p.mods.sort((a,b)=>MODS.indexOf(a.f)-MODS.indexOf(b.f)).map(m=>'<span class="bo-mod-chip">'+m.f+(m.q>1?' ×'+m.q:'')+'</span>').join('');
+    return '<div class="bo-dealer-row">'+
+      '<div><div class="dias-n" style="color:'+col+'">'+(d!==null?d:'—')+'</div><div style="font-size:9px;color:var(--dim)">DÍAS</div></div>'+
+      '<div><div class="bo-fol">'+p.folio+'</div><div style="margin-top:3px">'+chips+'</div>'+(p.obs?'<div class="bo-obs">'+p.obs+'</div>':'')+'</div>'+
+      '<div style="font-size:11px;font-family:JetBrains Mono,monospace;color:var(--mut)">'+p.fecha+'</div>'+
+    '</div>'}).join(''):'<div style="padding:20px;text-align:center;color:var(--dim);font-size:13px">Sin pedidos pendientes</div>';
+}
+
+// ── INIT ──
+async function init(){
+  const [dls,fac,bo,bp,cob]=await Promise.all([
+    q('/distribuidores?select=id,nombre,region,pin'),
+    q('/facturado_ytd?select=distribuidor_id,mes,modelo,unidades_facturadas&anio=eq.2026'),
+    q('/back_order?select=distribuidor_id,modelo_familia,folio,fecha_solicitud,obs,referencia,estatus_bo&limit=1000'),
+    q('/bp_anual?select=distribuidor_id,modelo,bp_anual&anio=eq.2026'),
+    q('/cobranza_2026?select=distribuidor_id,folio,vin,familia,modelo,f_factura,f_liberacion,estado,dias_alerta&anio=eq.2026')
+  ]);
+  dls.forEach(d=>{DL[d.id]=d});
+  FAC=fac; BO=bo; BP=bp; COB=cob;
+  buildRanking();
+  // Restaurar sesión
+  const saved=sessionStorage.getItem('foton_dealer');
+  if(saved&&DL[saved])mostrarDealer(saved);
+}
+
+init();
 </script>
 </body>
 </html>
