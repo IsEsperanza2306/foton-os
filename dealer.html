@@ -238,7 +238,7 @@ function buildRanking(){
   const ids=Object.keys(DL).filter(id=>curReg==='all'||DL[id].region===curReg);
   // YTD por dealer
   const ytd={};FAC.forEach(f=>{if(ids.includes(f.distribuidor_id))ytd[f.distribuidor_id]=(ytd[f.distribuidor_id]||0)+f.unidades_facturadas});
-  const bp={};BP.filter(b=>ids.includes(b.distribuidor_id)).forEach(b=>{bp[b.distribuidor_id]=(bp[b.distribuidor_id]||0)+(b.bp_anual||0)});
+  const bp={};BP.filter(b=>ids.includes(b.distribuidor_id)).forEach(b=>{bp[b.distribuidor_id]=(bp[b.distribuidor_id]||0)+(b.unidades_bp||0)});
   // Mes actual (julio = mes 7)
   const mes={};FAC.filter(f=>f.mes===7&&ids.includes(f.distribuidor_id)).forEach(f=>{mes[f.distribuidor_id]=(mes[f.distribuidor_id]||0)+f.unidades_facturadas});
   // Mes anterior (junio)
@@ -307,7 +307,7 @@ async function mostrarDealer(id){
 
   // KPIs
   const ytdTotal=FAC.filter(f=>f.distribuidor_id===id).reduce((s,f)=>s+f.unidades_facturadas,0);
-  const bpTotal=BP.filter(b=>b.distribuidor_id===id).reduce((s,b)=>s+(b.bp_anual||0),0);
+  const bpTotal=BP.filter(b=>b.distribuidor_id===id).reduce((s,b)=>s+(b.unidades_bp||0),0);
   const pct=bpTotal?Math.round(ytdTotal/bpTotal*100):0;
   const boTotal=BO.filter(r=>r.distribuidor_id===id).length;
   document.getElementById('kpi-ytd').textContent=ytdTotal;
@@ -322,7 +322,7 @@ async function mostrarDealer(id){
 
 function buildMods(id){
   const ytdByMod={};FAC.filter(f=>f.distribuidor_id===id).forEach(f=>{ytdByMod[f.modelo]=(ytdByMod[f.modelo]||0)+f.unidades_facturadas});
-  const bpByMod={};BP.filter(b=>b.distribuidor_id===id).forEach(b=>{bpByMod[b.modelo]=(bpByMod[b.modelo]||0)+(b.bp_anual||0)});
+  const bpByMod={};BP.filter(b=>b.distribuidor_id===id).forEach(b=>{bpByMod[b.modelo]=(bpByMod[b.modelo]||0)+(b.unidades_bp||0)});
   const boByMod={};BO.filter(r=>r.distribuidor_id===id).forEach(r=>{boByMod[r.modelo_familia]=(boByMod[r.modelo_familia]||0)+1});
 
   document.getElementById('mod-grid').innerHTML=MODS.map(m=>{
@@ -378,15 +378,26 @@ function buildBO(id){
 
 // ── INIT ──
 async function init(){
-  const [dls,fac,bo,bp,cob]=await Promise.all([
+  const [dls,cob,bo,bp]=await Promise.all([
     q('/distribuidores?select=id,nombre,region,pin'),
-    q('/facturado_ytd?select=distribuidor_id,mes,modelo,unidades_facturadas&anio=eq.2026'),
+    q('/cobranza_2026?select=distribuidor_id,folio,vin,modelo,f_factura,f_liberacion,estado,dias_alerta&anio=eq.2026'),
     q('/back_order?select=distribuidor_id,modelo_familia,folio,fecha_solicitud,obs,referencia,estatus_bo&limit=1000'),
-    q('/bp_anual?select=distribuidor_id,modelo,bp_anual&anio=eq.2026'),
-    q('/cobranza_2026?select=distribuidor_id,folio,vin,familia,modelo,f_factura,f_liberacion,estado,dias_alerta&anio=eq.2026')
+    q('/bp_anual?select=distribuidor_id,modelo,unidades_bp&anio=eq.2026')
   ]);
   dls.forEach(d=>{DL[d.id]=d});
-  FAC=fac; BO=bo; BP=bp; COB=cob;
+  COB=cob; BO=bo; BP=bp;
+  // Construir FAC desde cobranza agrupando por distribuidor+mes+modelo
+  const facMap={};
+  cob.forEach(r=>{
+    const mes=r.f_factura?parseInt(r.f_factura.split('/')[1]):0;
+    if(!mes)return;
+    const mod=r.modelo||'';
+    const fam=(['S12','S8','S6','S5','S3'].find(f=>mod.includes(f)))||'otro';
+    const k=r.distribuidor_id+'|'+mes+'|'+fam;
+    facMap[k]=(facMap[k]||{distribuidor_id:r.distribuidor_id,mes,modelo:fam,unidades_facturadas:0});
+    facMap[k].unidades_facturadas++;
+  });
+  FAC=Object.values(facMap);
   buildRanking();
   // Restaurar sesión
   const saved=sessionStorage.getItem('foton_dealer');
