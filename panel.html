@@ -330,12 +330,17 @@ main{padding:20px 24px 60px;max-width:1500px;margin:0 auto}
   <div class="htitle">
     <div class="t1">Panel Operativo 2026</div>
     <div class="t2" id="reglbl">CENTRO-SUR</div>
+    <div class="t2" id="seglbl" style="color:rgba(255,255,255,.45);font-size:8.5px;margin-top:2px">MDT/LDT</div>
   </div>
   <div class="hspace"></div>
-  <div class="rswitch">
+  <div class="rswitch" style="margin-right:8px">
     <button class="rbtn on" data-r="israel" onclick="setRegion('israel')">Centro-Sur</button>
     <button class="rbtn" data-r="marco" onclick="setRegion('marco')">Noroeste / Pac&iacute;fico</button>
     <button class="rbtn" data-r="all" onclick="setRegion('all')">Nacional</button>
+  </div>
+  <div class="rswitch" id="seg-switch">
+    <button class="rbtn on" data-s="mdt_ldt" onclick="setSegmento('mdt_ldt')">MDT / LDT</button>
+    <button class="rbtn" data-s="pv" onclick="setSegmento('pv')">Pick ups &amp; Vanes</button>
   </div>
   <div class="corte"><b id="corte1">&mdash;</b><span id="corte2">cargando</span></div>
   <button class="refresh" id="btnr" onclick="actualizar()">&#8635;</button>
@@ -363,12 +368,20 @@ main{padding:20px 24px 60px;max-width:1500px;margin:0 auto}
 const SB='https://gblwoaaitnqbgorxaydv.supabase.co/rest/v1';
 const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdibHdvYWFpdG5xYmdvcnhheWR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxOTQ3NTMsImV4cCI6MjA5NTc3MDc1M30.o7zYCCfH2rHEs69o4U7Zc9dM4IvQi8GsXRlZFW_2kso';
 const H={apikey:KEY,Authorization:'Bearer '+KEY};
-const MODS=['S3','S5','S6','S8','S12'];
+const MODS_MDT=['S3','S5','S6','S8','S12'];
+const MODS_PV=['Tunland','Toano','View','TM3'];
+let MODS=['S3','S5','S6','S8','S12'];
+const RLBL_MDT={israel:'CENTRO-SUR',marco:'NOROESTE / PAC\u00cdFICO',all:'RED NACIONAL'};
+const RLBL_PV={israel:'CENTRO / BAJÍO / SURESTE',marco:'NORTE / NORESTE',all:'RED NACIONAL P\u0026V'};
+const RSUB_MDT={israel:'Israel Esperanza',marco:'Marco Chagoya',all:'Daniel Alc\u00e1ntara'};
+const RSUB_PV={israel:'Geraldine Angulo + Jorge Heredia',marco:'Andr\u00e9s Arrangoiz',all:'Andrea Espinosa'};
+const RNOM_MDT={israel:'Centro-Sur',marco:'Noroeste / Pac\u00edfico',all:'La red nacional'};
+const RNOM_PV={israel:'la región Centro/Bajío/Sureste',marco:'la región Norte/Noreste',all:'la red nacional P\u0026V'};
 const RLBL={israel:'CENTRO-SUR',marco:'NOROESTE / PAC\u00cdFICO',all:'RED NACIONAL'};
-const RSUB={israel:'Israel Esperanza',marco:'Marco Chagoya',all:'Daniel Alc\u00e1ntara'};
-const RNOM={israel:'Centro-Sur',marco:'Noroeste / Pac\u00edfico',all:'La red nacional'};
+// RSUB movido arriba
+// RNOM movido arriba
 
-let REG='israel', TAB='cob';
+let REG='israel', TAB='cob', SEG='mdt_ldt';
 let DL={}, COB=[], BOR=[], BP=[], FAC=[], MATRIX=[];
 
 async function q(p){const r=await fetch(SB+p,{headers:H});if(!r.ok)throw new Error(r.status);return r.json()}
@@ -399,14 +412,15 @@ function covBg(p){
 function diasColor(d){ if(d>=60)return'#C0392B'; if(d>=31)return'#D35400'; if(d>=16)return'#C47A1A'; return'#185FA5' }
 
 async function cargar(){
+  const seg=SEG;
   const [dls,cob,bo,bp,fac]=await Promise.all([
-    q('/distribuidores?region=in.(israel,marco)&select=id,nombre,region'),
-    q('/cobranza_2026?anio=eq.2026&select=distribuidor_id,region,folio,vin,modelo,familia,f_factura,f_liberacion,f_entrega,estado,dias_alerta,dias_src&order=dias_alerta.desc'),
-    q('/back_order?select=distribuidor_id,modelo,modelo_familia,unidades,fecha_solicitud,folio,plaza,obs,estatus_bo,referencia'),
-    q('/bp_anual?anio=eq.2026&select=distribuidor_id,modelo,unidades_bp'),
-    q('/facturado_ytd?anio=eq.2026&select=distribuidor_id,mes,modelo,unidades_facturadas')
+    q('/distribuidores?region=in.(israel,marco)&select=id,nombre,region,regional_pv'),
+    q('/cobranza_2026?anio=eq.2026&segmento=eq.'+seg+'&select=distribuidor_id,region,folio,vin,modelo,familia,f_factura,f_liberacion,f_entrega,estado,dias_alerta,dias_src&order=dias_alerta.desc'),
+    q('/back_order?segmento=eq.'+seg+'&select=distribuidor_id,modelo,modelo_familia,unidades,fecha_solicitud,folio,plaza,obs,estatus_bo,referencia'),
+    q('/bp_anual?anio=eq.2026&segmento=eq.'+seg+'&select=distribuidor_id,modelo,unidades_bp'),
+    q('/facturado_ytd?anio=eq.2026&segmento=eq.'+seg+'&select=distribuidor_id,mes,modelo,unidades_facturadas')
   ]);
-  DL={}; dls.forEach(d=>DL[d.id]={nombre:d.nombre,region:d.region});
+  DL={}; dls.forEach(d=>DL[d.id]={nombre:d.nombre,region:d.region,regional_pv:d.regional_pv});
   COB=cob; BOR=bo; BP=bp; FAC=fac;
   const mx=cob.reduce((a,r)=>{const p=(r.f_factura||'').split('/');if(p.length!==3)return a;
     const t=new Date(+p[2],+p[1]-1,+p[0]).getTime();return t>a.t?{t,s:r.f_factura}:a},{t:0,s:''});
@@ -415,8 +429,29 @@ async function cargar(){
   render();
 }
 
-function dealersReg(){return Object.keys(DL).filter(id=>REG==='all'||DL[id].region===REG)}
-function rMatch(did){return REG==='all'||(DL[did]&&DL[did].region===REG)}
+function dealersReg(){
+  return Object.keys(DL).filter(id=>{
+    if(SEG==='pv'){
+      if(REG==='all') return DL[id].regional_pv!=null;
+      // para P&V los regionales son geraldine_angulo, jorge_heredia, andres_arrangoiz, andrea_espinosa
+      const PV_REG={israel:['geraldine_angulo','jorge_heredia'],marco:['andres_arrangoiz'],all:null};
+      if(REG==='all') return DL[id].regional_pv!=null;
+      const valid=PV_REG[REG];
+      return valid&&valid.includes(DL[id].regional_pv);
+    }
+    return REG==='all'||DL[id].region===REG;
+  });
+}
+function rMatch(did){
+  if(SEG==='pv'){
+    if(!DL[did]) return false;
+    if(REG==='all') return DL[did].regional_pv!=null;
+    const PV_REG={israel:['geraldine_angulo','jorge_heredia'],marco:['andres_arrangoiz']};
+    const valid=PV_REG[REG];
+    return valid&&valid.includes(DL[did].regional_pv);
+  }
+  return REG==='all'||(DL[did]&&DL[did].region===REG);
+}
 
 function buildMatrix(){
   const ids=dealersReg(), bpM={},facM={},boM={},boF={};
@@ -445,14 +480,14 @@ function renderStrip(){
   const s=document.getElementById('strip');
   if(TAB==='cob'){
     const al=COB.filter(r=>rMatch(r.distribuidor_id)&&['critico','urgente','anticipo'].includes(r.estado));
-    if(!al.length){s.innerHTML='<div class="strip-txt"><div class="strip-main">'+RNOM[REG]+
+    if(!al.length){s.innerHTML='<div class="strip-txt"><div class="strip-main">'+(SEG==='pv'?RNOM_PV:RNOM_MDT)[REG]+
       ' sin adeudos pendientes</div><div class="strip-sub">Toda la cartera est\u00e1 al corriente.</div></div>';return}
     const prom=Math.round(al.reduce((a,r)=>a+r.dias_alerta,0)/al.length);
     const viejo=al.reduce((m,r)=>Math.max(m,r.dias_alerta),0);
     const b4=al.filter(r=>r.dias_alerta>60).length;
     const nD=new Set(al.map(r=>r.distribuidor_id)).size;
     s.innerHTML='<div class="strip-txt">'+
-      '<div class="strip-main"><em>'+al.length+'</em> unidades sin pago en '+RNOM[REG]+
+      '<div class="strip-main"><em>'+al.length+'</em> unidades sin pago en '+(SEG==='pv'?RNOM_PV:RNOM_MDT)[REG]+
       (b4?' &mdash; <em>'+b4+'</em> rebasan 60 d\u00edas':'')+'</div>'+
       '<div class="strip-sub">Concentradas en <b>'+nD+' distribuidores</b> &middot; promedio de <b>'+prom+
       ' d\u00edas</b> sin cobrar</div></div>'+
@@ -475,7 +510,7 @@ function renderStrip(){
       tot[m]={bp,cov:bp?((x.reduce((a,r)=>a+r.fac,0)+x.reduce((a,r)=>a+r.bo,0))/bp*100):0}});
     const peor=MODS.filter(m=>tot[m].bp>0).sort((a,b)=>tot[a].cov-tot[b].cov)[0];
     s.innerHTML='<div class="strip-txt">'+
-      '<div class="strip-main">'+RNOM[REG]+' tiene <em>'+Math.round(TC)+'%</em> de su plan cubierto'+
+      '<div class="strip-main">'+(SEG==='pv'?RNOM_PV:RNOM_MDT)[REG]+' tiene <em>'+Math.round(TC)+'%</em> de su plan cubierto'+
       (peor?' &mdash; <em>'+peor+'</em> es el hueco m\u00e1s grande':'')+'</div>'+
       '<div class="strip-sub">Quedan <b>'+TG+' unidades</b> por colocar contra un plan de <b>'+TB+'</b>'+
       (peor?' &middot; '+peor+' solo tiene <b>'+Math.round(tot[peor].cov)+'%</b> cubierto':'')+'</div></div>'+
@@ -773,9 +808,22 @@ function setTab(t){TAB=t;
   document.getElementById('pane-bo').style.display=t==='bo'?'':'none';
   renderStrip();
 }
+function setSegmento(s){SEG=s;
+  MODS=s==='pv'?MODS_PV:MODS_MDT;
+  document.querySelectorAll('#seg-switch .rbtn').forEach(b=>b.classList.toggle('on',b.dataset.s===s));
+  // Título en header
+  const lbl=s==='pv'?'P\u0026V':'MDT/LDT';
+  document.getElementById('seglbl').textContent=lbl;
+  const rl=s==='pv'?RLBL_PV:RLBL_MDT;
+  const rs=s==='pv'?RSUB_PV:RSUB_MDT;
+  document.getElementById('reglbl').textContent=rl[REG]+' \u00b7 '+rs[REG];
+  cargar();window.scrollTo({top:0,behavior:'smooth'});
+}
 function setRegion(r){REG=r;
-  document.querySelectorAll('.rbtn').forEach(b=>b.classList.toggle('on',b.dataset.r===r));
-  document.getElementById('reglbl').textContent=RLBL[r]+' \u00b7 '+RSUB[r];
+  document.querySelectorAll('.rswitch:first-of-type .rbtn').forEach(b=>b.classList.toggle('on',b.dataset.r===r));
+  const rl=SEG==='pv'?RLBL_PV:RLBL_MDT;
+  const rs=SEG==='pv'?RSUB_PV:RSUB_MDT;
+  document.getElementById('reglbl').textContent=rl[r]+' \u00b7 '+rs[r];
   render();window.scrollTo({top:0,behavior:'smooth'});
 }
 async function actualizar(){
@@ -785,7 +833,7 @@ async function actualizar(){
   finally{document.getElementById('ov').classList.remove('on');b.classList.remove('load')}
 }
 
-document.getElementById('reglbl').textContent=RLBL.israel+' \u00b7 '+RSUB.israel;
+document.getElementById('reglbl').textContent=RLBL_MDT.israel+' \u00b7 '+RSUB_MDT.israel;
 document.getElementById('ov').classList.add('on');
 cargar().then(()=>document.getElementById('ov').classList.remove('on'))
   .catch(e=>{document.getElementById('ov').classList.remove('on');toast('Error: '+e.message,1)});
