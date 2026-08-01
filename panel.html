@@ -372,11 +372,11 @@ const MODS_MDT=['S3','S5','S6','S8','S12'];
 const MODS_PV=['Tunland','Toano','View','TM3'];
 let MODS=['S3','S5','S6','S8','S12'];
 const RLBL_MDT={israel:'CENTRO-SUR',marco:'NOROESTE / PAC\u00cdFICO',all:'RED NACIONAL'};
-const RLBL_PV={israel:'CENTRO / BAJÍO / SURESTE',marco:'NORTE / NORESTE',all:'RED NACIONAL P\u0026V'};
+const RLBL_PV={israel:'CENTRO / BAJÍO / OCCIDENTE',marco:'SURESTE / CARIBE / NORTE',all:'RED NACIONAL P\u0026V'};
 const RSUB_MDT={israel:'Israel Esperanza',marco:'Marco Chagoya',all:'Daniel Alc\u00e1ntara'};
-const RSUB_PV={israel:'Geraldine Angulo + Jorge Heredia',marco:'Andr\u00e9s Arrangoiz',all:'Andrea Espinosa'};
+const RSUB_PV={israel:'Jorge Heredia',marco:'Geraldine Angulo + Andr\u00e9s Arrangoiz',all:'Andrea Espinosa'};
 const RNOM_MDT={israel:'Centro-Sur',marco:'Noroeste / Pac\u00edfico',all:'La red nacional'};
-const RNOM_PV={israel:'la región Centro/Bajío/Sureste',marco:'la región Norte/Noreste',all:'la red nacional P\u0026V'};
+const RNOM_PV={israel:'la región Centro/Bajío/Occidente',marco:'la región Sureste/Caribe/Norte',all:'la red nacional P\u0026V'};
 const RLBL={israel:'CENTRO-SUR',marco:'NOROESTE / PAC\u00cdFICO',all:'RED NACIONAL'};
 // RSUB movido arriba
 // RNOM movido arriba
@@ -414,7 +414,7 @@ function diasColor(d){ if(d>=60)return'#C0392B'; if(d>=31)return'#D35400'; if(d>
 async function cargar(){
   const seg=SEG;
   const [dls,cob,bo,bp,fac]=await Promise.all([
-    q('/distribuidores?region=in.(israel,marco)&select=id,nombre,region,regional_pv'),
+    q('/distribuidores?select=id,nombre,region,regional_pv'),
     q('/cobranza_2026?anio=eq.2026&segmento=eq.'+seg+'&select=distribuidor_id,region,folio,vin,modelo,familia,f_factura,f_liberacion,f_entrega,estado,dias_alerta,dias_src&order=dias_alerta.desc'),
     q('/back_order?segmento=eq.'+seg+'&select=distribuidor_id,modelo,modelo_familia,unidades,fecha_solicitud,folio,plaza,obs,estatus_bo,referencia'),
     q('/bp_anual?anio=eq.2026&segmento=eq.'+seg+'&select=distribuidor_id,modelo,unidades_bp'),
@@ -433,20 +433,19 @@ function dealersReg(){
   return Object.keys(DL).filter(id=>{
     if(SEG==='pv'){
       if(REG==='all') return DL[id].regional_pv!=null;
-      // para P&V los regionales son geraldine_angulo, jorge_heredia, andres_arrangoiz, andrea_espinosa
-      const PV_REG={israel:['geraldine_angulo','jorge_heredia'],marco:['andres_arrangoiz'],all:null};
-      if(REG==='all') return DL[id].regional_pv!=null;
+      // israel → jorge_heredia | marco → geraldine_angulo + andres_arrangoiz | all → todos con regional_pv
+      const PV_REG={israel:['jorge_heredia'],marco:['geraldine_angulo','andres_arrangoiz']};
       const valid=PV_REG[REG];
       return valid&&valid.includes(DL[id].regional_pv);
     }
-    return REG==='all'||DL[id].region===REG;
+    return REG==='all'||(DL[id].region===REG);
   });
 }
 function rMatch(did){
   if(SEG==='pv'){
     if(!DL[did]) return false;
     if(REG==='all') return DL[did].regional_pv!=null;
-    const PV_REG={israel:['geraldine_angulo','jorge_heredia'],marco:['andres_arrangoiz']};
+    const PV_REG={israel:['jorge_heredia'],marco:['geraldine_angulo','andres_arrangoiz']};
     const valid=PV_REG[REG];
     return valid&&valid.includes(DL[did].regional_pv);
   }
