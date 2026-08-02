@@ -585,8 +585,13 @@ function tog(el){el.nextElementSibling.classList.toggle('open')}
 /* ══ BACK ORDER ══ */
 function renderBO(){
   const rows=MATRIX.filter(r=>r.bp>0);
-  if(!rows.length){document.getElementById('pane-bo').innerHTML=
-    '<div class="panel"><div class="empty"><b>Sin Business Plan cargado</b>No hay BP registrado para esta regi\u00f3n.</div></div>';return}
+  if(!rows.length){
+    // Si es P&V (sin BP aún), mostrar solo BO pendiente directamente
+    document.getElementById('pane-bo').innerHTML=
+      '<div class="panel"><div class="empty"><b>Sin Business Plan cargado</b>No hay BP registrado para esta región.</div></div>'+
+      renderBOPend();
+    return;
+  }
   const act=MATRIX.filter(r=>r.bp>0||r.fac>0||r.bo>0);
   const tot={};
   MODS.forEach(m=>{const s=act.filter(r=>r.modelo===m);
