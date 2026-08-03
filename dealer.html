@@ -563,12 +563,15 @@ function buildCob(id){
       '<div class="cob-hd"><span>Días</span><span>Folio · VIN</span><span>Modelo</span><span>F. Factura</span></div>'+
       gr.map(r=>{
         const d=r.dias_alerta||0,c=d>60?'#C0392B':d>30?'#D35400':d>15?'#C47A1A':'var(--ink)';
+        const entBadge=r.entrega_mu==='Entregado'?'<span style="background:#EAF5EF;color:#1B7B3E;font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:4px">Entregado</span>':'';
+        const pagBadge=r.pago==='Pagado'?'<span style="background:#EDF3FF;color:#1D6FC4;font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:4px">Pagado</span>':'<span style="background:#FBEAE7;color:#C0392B;font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;margin-left:4px">Sin pago</span>';
         return '<div class="cob-row">'+
           '<div><div class="dias-n" style="color:'+c+'">'+d+'d</div></div>'+
           '<div><div style="font-size:10px;font-family:JetBrains Mono,monospace;color:var(--blue);font-weight:600">'+(r.folio||'—')+'</div>'+
           '<div style="font-size:10px;color:var(--dim)">'+(r.vin||'—')+'</div></div>'+
-          '<div style="font-size:11px;font-weight:600">'+(fam(r.modelo))+'</div>'+
-          '<div style="font-size:10px;font-family:JetBrains Mono,monospace;color:var(--mut)">'+(r.f_factura||'—')+'</div>'+
+          '<div><div style="font-size:11px;font-weight:600">'+(fam(r.modelo))+'</div>'+
+          '<div style="margin-top:2px">'+pagBadge+entBadge+'</div></div>'+
+          '<div style="font-size:10px;font-family:JetBrains Mono,monospace;color:var(--mut)">'+(r.f_factura||'—')+'<br>'+(r.f_entrega?'Ent: '+r.f_entrega:'')+'</div>'+
         '</div>'}).join('')+
       '</div>'+
     '</div>';
@@ -640,7 +643,7 @@ async function init(){
   try{
     const [dls,cob,bo,bp]=await Promise.all([
       q('/distribuidores?select=id,nombre,region&limit=50'),
-      q('/cobranza_2026?select=distribuidor_id,folio,vin,modelo,f_factura,f_liberacion,estado,dias_alerta,dias_src&anio=eq.2026&limit=2000'),
+      q('/cobranza_2026?select=distribuidor_id,folio,vin,modelo,familia,f_factura,f_liberacion,f_entrega,pago,entrega_mu,estado,dias_alerta,dias_src&anio=eq.2026&segmento=eq.mdt_ldt&limit=5000'),
       q('/back_order?select=distribuidor_id,modelo_familia,folio,fecha_solicitud,obs&limit=2000'),
       q('/bp_anual?select=distribuidor_id,modelo,unidades_bp&anio=eq.2026&limit=200')
     ]);
