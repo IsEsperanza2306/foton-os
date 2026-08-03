@@ -557,3 +557,58 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--navy-deep);col
     color:var(--ice);text-align:center;line-height:1.4;letter-spacing:.5px;
     text-transform:uppercase;
 }
+
+/* ══════════════════════════════════════
+   PRINT / PDF STYLESHEET
+══════════════════════════════════════ */
+@media print {
+    /* Ocultar chrome de navegación */
+    .site-header, #fsBtn, .slide-counter,
+    .prog-track, .scroll-cue, #particles-js { display:none !important; }
+
+    html, body { overflow:visible !important; background:#05101F !important; }
+
+    .deck {
+        height:auto !important;
+        overflow:visible !important;
+        scroll-snap-type:none !important;
+    }
+
+    .slide {
+        height:100vh !important;
+        width:100vw !important;
+        page-break-after: always;
+        break-after: page;
+        overflow:hidden !important;
+        position:relative !important;
+    }
+
+    /* Forzar animaciones en estado final */
+    .anim-fade, .anim-up { opacity:1 !important; transform:none !important; }
+    .rule, .hero-rule { width:120px !important; }
+    .rule.center { width:180px !important; }
+
+    /* Fuentes más grandes para impresión */
+    .slide-title { font-size:2.8rem !important; }
+    .hero-title  { font-size:4.5rem !important; }
+    .body-text   { font-size:1.1rem !important; line-height:1.9 !important; }
+    .eyebrow     { font-size:0.85rem !important; }
+    .kpi-item strong { font-size:1rem !important; }
+    .pilar-name  { font-size:0.9rem !important; }
+    .valor-num   { font-size:3.5rem !important; }
+    .valor-name  { font-size:1.1rem !important; }
+    .valor-desc  { font-size:0.85rem !important; }
+    .alianza-title { font-size:1.4rem !important; }
+    .alianza-desc  { font-size:0.9rem !important; }
+    .stat-val    { font-size:1.3rem !important; }
+    .clients-cta { font-size:1rem !important; }
+    .closing-tagline { font-size:3rem !important; }
+
+    /* Slide 04 — fix espacio muerto, imagen más grande */
+    .slide-infra { padding:60px 8% 0 !important; }
+    .infra-bottom { min-height:55vh !important; }
+
+    /* Slide 09 — pilares más grandes */
+    .pilar-icon-wrap { width:90px !important; height:90px !important; }
+    .pilares-grid { padding:24px 0 !important; gap:16px !important; }
+}
