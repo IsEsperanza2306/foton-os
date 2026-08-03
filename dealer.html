@@ -708,26 +708,39 @@ function renderInv() {
   var rows = INV_EST==='todos' ? INV_DATA : INV_DATA.filter(function(u){return u.estatus===INV_EST});
   var body = document.getElementById('inv-body');
   if(!rows.length){
-    body.innerHTML='<div class="inv-empty">'+(INV_DATA.length?'Sin unidades con ese estatus.':'Sin unidades en inventario. Agrega con el botón +')+'</div>';
+    body.innerHTML='<div class="inv-empty">'+(INV_DATA.length?'Sin unidades con ese estatus.':'Sin unidades en inventario. Agrega con el bot\u00f3n +')+'</div>';
     return;
   }
-  var html='<div style="overflow-x:auto"><table class="inv-tbl"><thead><tr><th>Modelo</th><th>VIN</th><th>Color</th><th>Año</th><th>Factura</th><th>Estatus</th><th></th></tr></thead><tbody>';
+  window._invMap = {};
+  INV_DATA.forEach(function(u){ window._invMap[u.id]=u; });
+  var html='<div style="overflow-x:auto"><table class="inv-tbl"><thead><tr><th>Modelo</th><th>VIN</th><th>Color</th><th>A\u00f1o</th><th>Factura</th><th>Estatus</th><th></th></tr></thead><tbody>';
   rows.forEach(function(u){
     var ec='est-'+(u.estatus||'disponible');
-    var el={disponible:'Disponible',reservado:'Reservado',vendido:'Vendido'}[u.estatus]||u.estatus;
-    var btn=u.estatus==='disponible'?'<button class="btn-retail" onclick='abrirRetail('+JSON.stringify(u)+')'>Vender</button>':'';
-    html+='<tr>'+
-      '<td><b style="font-size:13px">'+u.modelo+'</b><div style="font-size:10px;color:var(--mut)">'+(u.modelo_familia||'')+'</div></td>'+
-      '<td style="font-family:JetBrains Mono,monospace;font-size:11px;color:var(--blue)">'+(u.vin||'—')+'</td>'+
-      '<td>'+(u.color||'—')+'</td>'+
-      '<td>'+(u.anio||'—')+'</td>'+
-      '<td style="font-size:11px;color:var(--mut)">'+(u.fecha_factura||'—')+'</td>'+
-      '<td><span class="est-badge '+ec+'">'+el+'</span></td>'+
-      '<td>'+btn+'</td></tr>';
+    var etq={disponible:'Disponible',reservado:'Reservado',vendido:'Vendido'}[u.estatus]||u.estatus;
+    var safeId=String(u.id).replace(/'/g,'');
+    var btn=u.estatus==='disponible'
+      ? '<button class="btn-retail" onclick="abrirRetailById(\'' + safeId + '\')">Vender</button>'
+      : '';
+    html+='<tr>'
+      +'<td><b style="font-size:13px">'+u.modelo+'</b><div style="font-size:10px;color:var(--mut)">'+(u.modelo_familia||'')+'</div></td>'
+      +'<td style="font-family:JetBrains Mono,monospace;font-size:11px;color:var(--blue)">'+(u.vin||'&mdash;')+'</td>'
+      +'<td>'+(u.color||'&mdash;')+'</td>'
+      +'<td>'+(u.anio||'&mdash;')+'</td>'
+      +'<td style="font-size:11px;color:var(--mut)">'+(u.fecha_factura||'&mdash;')+'</td>'
+      +'<td><span class="est-badge '+ec+'">'+etq+'</span></td>'
+      +'<td>'+btn+'</td>'
+      +'</tr>';
   });
   html+='</tbody></table></div>';
   body.innerHTML=html;
 }
+
+function abrirRetailById(id) {
+  var u = window._invMap && window._invMap[id];
+  if(!u){ alert('Unidad no encontrada'); return; }
+  abrirRetail(u);
+}
+
 
 // ============================================================
 // MODAL NUEVA UNIDAD
