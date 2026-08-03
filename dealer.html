@@ -559,6 +559,14 @@ function logout(){
 
 // PANEL PERSONAL
 async function mostrarDealer(id){
+  CURRENT_DEALER_ID = id;
+  // Resetear tabs a Mi Panel
+  document.querySelectorAll('.main-tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.main-pane').forEach(p=>p.classList.remove('on'));
+  const panelTab = document.querySelector('[data-tab="panel"]');
+  if(panelTab) panelTab.classList.add('on');
+  const panelPane = document.getElementById('pane-panel');
+  if(panelPane) panelPane.classList.add('on');
   show('dealer');
   const d=DL[id]||{nombre:id,region:''};
   document.getElementById('dp-name').textContent=d.nombre;
@@ -998,19 +1006,7 @@ async function loadRed() {
   }
 }
 
-// ============================================================
-// PATCH mostrarDealer para guardar ID y cargar inventario
-// ============================================================
-const _origMostrarDealer = mostrarDealer;
-mostrarDealer = async function(id) {
-  CURRENT_DEALER_ID = id;
-  await _origMostrarDealer(id);
-  // Resetear a tab Mi Panel
-  document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('on'));
-  document.querySelectorAll('.main-pane').forEach(p => p.classList.remove('on'));
-  document.querySelector('[data-tab="panel"]').classList.add('on');
-  document.getElementById('pane-panel').classList.add('on');
-};
+// mostrarDealer patch removed — integrated directly
 
 </script>
 </body>
