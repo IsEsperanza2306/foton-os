@@ -500,7 +500,7 @@ function show(id){
 }
 
 // RANKING
-function setReg(r,el){curReg=r;document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');buildRanking()}
+function setReg(r,el){curReg=r;document.querySelectorAll('#vista-publica .tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');buildRanking()}
 function buildRanking(){
   const ids=Object.keys(DL).filter(id=>curReg==='all'||DL[id].region===curReg);
   const MES_ACT=new Date().getMonth()+1, MES_ANT=MES_ACT===1?12:MES_ACT-1;
@@ -751,13 +751,14 @@ async function init(){
     document.getElementById('pin-err').textContent='Error cargando datos: '+e.message;
   }
 }
+let CURRENT_DEALER_ID = null;
+let INV = [], INV_FILTER = 'todos';
 init();
 
 // ============================================================
 // TABS PRINCIPALES
 // ============================================================
-let CURRENT_DEALER_ID = null;
-let INV = [], INV_FILTER = 'todos';
+// declaraciones movidas antes de init
 
 function switchTab(tab, el) {
   document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('on'));
