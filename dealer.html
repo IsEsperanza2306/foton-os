@@ -154,6 +154,66 @@ body{font-family:'Inter',sans-serif;background:var(--surf);color:var(--ink);min-
   .rk-hd>:nth-child(5),.rk-hd>:nth-child(6),.rk-hd>:nth-child(7),
   .rk-row>:nth-child(5),.rk-row>:nth-child(6),.rk-row>:nth-child(7){display:none}
 }
+
+/* MAIN TABS */
+.main-tabs{display:flex;background:var(--navy);padding:0 24px;gap:0;border-bottom:2px solid rgba(255,255,255,.08)}
+.main-tab{padding:14px 20px;font-size:11px;font-weight:700;color:rgba(255,255,255,.45);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;letter-spacing:.8px;text-transform:uppercase;transition:all .15s}
+.main-tab.on{color:#fff;border-bottom-color:#fff}
+.main-tab:hover{color:rgba(255,255,255,.8)}
+.main-pane{display:none}.main-pane.on{display:block}
+
+/* INVENTARIO */
+.inv-toolbar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line)}
+.inv-filters{display:flex;gap:8px;flex-wrap:wrap}
+.inv-filter{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--line);color:var(--mut);background:var(--white);transition:all .15s}
+.inv-filter.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.btn-add{background:var(--blue);color:#fff;border:0;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.btn-add:hover{background:var(--navy)}
+.inv-table{width:100%;border-collapse:collapse}
+.inv-table th{background:var(--ice);font-size:10px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;padding:8px 14px;text-align:left;white-space:nowrap}
+.inv-table td{padding:10px 14px;font-size:12px;border-bottom:1px solid var(--line);vertical-align:middle}
+.inv-table tr:last-child td{border-bottom:0}
+.inv-table tr:hover td{background:#FAFCFE}
+.est-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.est-disponible{background:#EAF5EF;color:#1B7B3E}
+.est-reservado{background:#EDF3FF;color:#1D6FC4}
+.est-vendido{background:#F7F7F7;color:#8CA4BE}
+.inv-empty{padding:40px;text-align:center;color:var(--mut);font-size:13px}
+.btn-retail{background:#1B7B3E;color:#fff;border:0;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn-retail:hover{background:#155f30}
+.btn-sm{background:var(--ice);color:var(--blue);border:1px solid var(--line);border-radius:6px;padding:4px 9px;font-size:11px;font-weight:600;cursor:pointer}
+
+/* RED DE INVENTARIO */
+.red-dealer-block{margin-bottom:8px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.red-dealer-hd{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--ice);cursor:pointer}
+.red-dealer-name{font-size:13px;font-weight:700;color:var(--navy)}
+.red-dealer-cnt{font-size:11px;color:var(--mut)}
+.red-dealer-body{display:none;border-top:1px solid var(--line)}
+.red-dealer-block.open .red-dealer-body{display:block}
+.red-my{border-color:var(--blue)!important}
+.red-my .red-dealer-hd{background:#EDF3FF}
+.red-my .red-dealer-name{color:var(--blue)}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
+.modal-bg.hidden{display:none}
+.modal{background:#fff;border-radius:14px;width:100%;max-width:520px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--line)}
+.modal-hd h3{font-size:16px;font-weight:700;color:var(--navy);margin:0}
+.modal-close{background:none;border:0;font-size:22px;cursor:pointer;color:var(--mut);line-height:1}
+.modal-body{padding:20px 24px}
+.form-row{margin-bottom:14px}
+.form-label{font-size:11px;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;display:block}
+.form-input{width:100%;border:1.5px solid var(--line);border-radius:8px;padding:10px 12px;font-size:14px;color:var(--ink);outline:none;transition:border-color .15s;box-sizing:border-box}
+.form-input:focus{border-color:var(--blue)}
+.form-select{width:100%;border:1.5px solid var(--line);border-radius:8px;padding:10px 12px;font-size:14px;color:var(--ink);outline:none;background:#fff;box-sizing:border-box}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end}
+.btn-cancel{background:var(--ice);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer}
+.btn-save{background:var(--blue);color:#fff;border:0;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer}
+.btn-save:hover{background:var(--navy)}
+.btn-save:disabled{opacity:.5;cursor:default}
+.form-note{font-size:11px;color:var(--mut);margin-top:4px}
 </style>
 </head>
 <body>
@@ -215,6 +275,15 @@ body{font-family:'Inter',sans-serif;background:var(--surf);color:var(--ink);min-
       <div class="dp-kpi"><div class="dp-kpi-n" id="kpi-bo">—</div><div class="dp-kpi-l">Back order</div></div>
     </div>
   </div>
+  <!-- MAIN TABS -->
+  <div class="main-tabs">
+    <div class="main-tab on" data-tab="panel" onclick="switchTab('panel',this)">Mi Panel</div>
+    <div class="main-tab" data-tab="inventario" onclick="switchTab('inventario',this)">Inventario</div>
+    <div class="main-tab" data-tab="red" onclick="switchTab('red',this)">Red Foton</div>
+  </div>
+
+  <!-- PANE: MI PANEL -->
+  <div class="main-pane on" id="pane-panel">
   <div class="wrap">
     <!-- Cobertura -->
     <div class="panel">
@@ -246,6 +315,167 @@ body{font-family:'Inter',sans-serif;background:var(--surf);color:var(--ink);min-
       <div class="acc-body">
         <div id="bo-body"></div>
       </div>
+    </div>
+  </div>
+  </div><!-- /pane-panel -->
+
+  <!-- PANE: INVENTARIO -->
+  <div class="main-pane" id="pane-inventario">
+  <div class="wrap">
+    <div class="panel">
+      <div class="inv-toolbar">
+        <div class="inv-filters">
+          <div class="inv-filter on" data-est="todos" onclick="filterInv('todos',this)">Todos</div>
+          <div class="inv-filter" data-est="disponible" onclick="filterInv('disponible',this)">Disponibles</div>
+          <div class="inv-filter" data-est="reservado" onclick="filterInv('reservado',this)">Reservados</div>
+          <div class="inv-filter" data-est="vendido" onclick="filterInv('vendido',this)">Vendidos</div>
+        </div>
+        <button class="btn-add" onclick="abrirModalNuevaUnidad()">+ Agregar unidad</button>
+      </div>
+      <div id="inv-body"><div class="inv-empty">Cargando inventario...</div></div>
+    </div>
+  </div>
+  </div><!-- /pane-inventario -->
+
+  <!-- PANE: RED FOTON -->
+  <div class="main-pane" id="pane-red">
+  <div class="wrap">
+    <div class="panel">
+      <div style="padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:12px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.5px">Inventario disponible en la red</div>
+        <div id="red-total" style="font-size:11px;color:var(--mut)"></div>
+      </div>
+      <div id="red-body" style="padding:16px"><div class="inv-empty">Cargando red...</div></div>
+    </div>
+  </div>
+  </div><!-- /pane-red -->
+
+</div><!-- /vista-dealer -->
+
+<!-- MODAL: NUEVA UNIDAD -->
+<div class="modal-bg hidden" id="modal-nueva-unidad">
+  <div class="modal">
+    <div class="modal-hd">
+      <h3>Agregar unidad al inventario</h3>
+      <button class="modal-close" onclick="cerrarModal('modal-nueva-unidad')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row-2">
+        <div class="form-row">
+          <label class="form-label">Modelo *</label>
+          <input class="form-input" id="nu-modelo" placeholder="Ej. S5 AMT">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Familia</label>
+          <select class="form-select" id="nu-familia">
+            <option value="">— selecciona —</option>
+            <option>S3</option><option>S5</option><option>S6</option><option>S8</option><option>S12</option>
+            <option>Tunland</option><option>Toano</option><option>View</option><option>TM3</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">VIN / Número de serie</label>
+        <input class="form-input" id="nu-vin" placeholder="Opcional — puedes completarlo después">
+      </div>
+      <div class="form-row-2">
+        <div class="form-row">
+          <label class="form-label">Color</label>
+          <input class="form-input" id="nu-color" placeholder="Ej. Blanco Ártico">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Año</label>
+          <input class="form-input" id="nu-anio" type="number" placeholder="2026" min="2020" max="2030">
+        </div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-row">
+          <label class="form-label">Fecha de factura</label>
+          <input class="form-input" id="nu-fecha-fac" type="date">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Precio lista (MXN)</label>
+          <input class="form-input" id="nu-precio" type="number" placeholder="Opcional">
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Folio de factura</label>
+        <input class="form-input" id="nu-folio" placeholder="Opcional">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="cerrarModal('modal-nueva-unidad')">Cancelar</button>
+      <button class="btn-save" id="btn-save-unidad" onclick="guardarUnidad()">Guardar unidad</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: RETAIL -->
+<div class="modal-bg hidden" id="modal-retail">
+  <div class="modal">
+    <div class="modal-hd">
+      <h3>Registrar venta retail</h3>
+      <button class="modal-close" onclick="cerrarModal('modal-retail')">×</button>
+    </div>
+    <div class="modal-body">
+      <div id="retail-unidad-info" style="background:var(--ice);border-radius:8px;padding:12px;margin-bottom:16px;font-size:12px;color:var(--navy);font-weight:600"></div>
+      <div class="form-row">
+        <label class="form-label">Nombre completo del cliente *</label>
+        <input class="form-input" id="r-nombre" placeholder="Nombre y apellidos">
+      </div>
+      <div class="form-row-2">
+        <div class="form-row">
+          <label class="form-label">RFC *</label>
+          <input class="form-input" id="r-rfc" placeholder="XAXX010101000" style="text-transform:uppercase">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Teléfono *</label>
+          <input class="form-input" id="r-tel" type="tel" placeholder="55 0000 0000">
+        </div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-row">
+          <label class="form-label">Uso de la unidad *</label>
+          <select class="form-select" id="r-uso">
+            <option value="">— selecciona —</option>
+            <option value="particular">Particular</option>
+            <option value="empresa">Empresa</option>
+            <option value="gobierno">Gobierno</option>
+            <option value="arrendamiento">Arrendamiento</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">¿Con financiamiento? *</label>
+          <select class="form-select" id="r-fin">
+            <option value="">— selecciona —</option>
+            <option value="false">No — contado</option>
+            <option value="true">Sí</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row" id="r-inst-row" style="display:none">
+        <label class="form-label">Institución financiera</label>
+        <input class="form-input" id="r-inst" placeholder="Ej. Banorte, Atlas, TIP">
+      </div>
+      <div class="form-row-2">
+        <div class="form-row">
+          <label class="form-label">Fecha de venta</label>
+          <input class="form-input" id="r-fecha" type="date">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Precio de venta (MXN)</label>
+          <input class="form-input" id="r-precio" type="number" placeholder="Opcional">
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Notas adicionales</label>
+        <textarea class="form-input" id="r-notas" rows="2" placeholder="Opcional"></textarea>
+      </div>
+      <div class="form-note">* Campos obligatorios. Sin estos datos no se puede registrar el retail.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="cerrarModal('modal-retail')">Cancelar</button>
+      <button class="btn-save" id="btn-save-retail" onclick="guardarRetail()">Registrar venta</button>
     </div>
   </div>
 </div>
@@ -514,6 +744,274 @@ async function init(){
   }
 }
 init();
+
+// ============================================================
+// TABS PRINCIPALES
+// ============================================================
+let CURRENT_DEALER_ID = null;
+let INV = [], INV_FILTER = 'todos';
+
+function switchTab(tab, el) {
+  document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.main-pane').forEach(p => p.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('pane-' + tab).classList.add('on');
+  if (tab === 'inventario' && CURRENT_DEALER_ID) loadInventario(CURRENT_DEALER_ID);
+  if (tab === 'red') loadRed();
+}
+
+// ============================================================
+// INVENTARIO — MI PANEL
+// ============================================================
+async function loadInventario(id) {
+  const body = document.getElementById('inv-body');
+  body.innerHTML = '<div class="inv-empty">Cargando...</div>';
+  try {
+    const data = await q('/inventario_unidades?distribuidor_id=eq.' + id + '&order=created_at.desc&limit=200');
+    INV = data;
+    renderInventario();
+  } catch(e) {
+    body.innerHTML = '<div class="inv-empty">Error al cargar: ' + e.message + '</div>';
+  }
+}
+
+function filterInv(est, el) {
+  INV_FILTER = est;
+  document.querySelectorAll('.inv-filter').forEach(f => f.classList.remove('on'));
+  el.classList.add('on');
+  renderInventario();
+}
+
+function renderInventario() {
+  const rows = INV_FILTER === 'todos' ? INV : INV.filter(u => u.estatus === INV_FILTER);
+  const body = document.getElementById('inv-body');
+  if (!rows.length) {
+    body.innerHTML = '<div class="inv-empty">' + (INV.length ? 'Sin unidades con ese estatus' : 'Sin unidades en inventario.<br>Agrega tu primera unidad con el botón +') + '</div>';
+    return;
+  }
+  body.innerHTML = '<div style="overflow-x:auto"><table class="inv-table"><thead><tr>' +
+    '<th>Modelo</th><th>VIN</th><th>Color / Año</th><th>Factura</th><th>Estatus</th><th>Acciones</th>' +
+    '</tr></thead><tbody>' +
+    rows.map(u => {
+      const estClass = 'est-' + (u.estatus || 'disponible');
+      const estLabel = {disponible:'Disponible', reservado:'Reservado', vendido:'Vendido'}[u.estatus] || u.estatus;
+      const acciones = u.estatus === 'disponible'
+        ? '<button class="btn-retail" onclick="abrirRetail(' + JSON.stringify(u).replace(/"/g,'&quot;') + ')">Registrar venta</button>'
+        : (u.estatus === 'vendido' ? '<span style="color:var(--mut);font-size:11px">Vendido</span>' : '');
+      return '<tr>' +
+        '<td><div style="font-weight:700;font-size:13px">' + (u.modelo||'—') + '</div>' +
+        '<div style="font-size:10px;color:var(--mut)">' + (u.modelo_familia||'') + '</div></td>' +
+        '<td style="font-family:JetBrains Mono,monospace;font-size:11px;color:var(--blue)">' + (u.vin||'—') + '</td>' +
+        '<td><div style="font-size:12px">' + (u.color||'—') + '</div>' +
+        '<div style="font-size:10px;color:var(--mut)">' + (u.anio||'') + '</div></td>' +
+        '<td style="font-size:11px;font-family:JetBrains Mono,monospace;color:var(--mut)">' + (u.fecha_factura||'—') + '</td>' +
+        '<td><span class="est-badge ' + estClass + '">' + estLabel + '</span></td>' +
+        '<td>' + acciones + '</td>' +
+        '</tr>';
+    }).join('') + '</tbody></table></div>';
+}
+
+// ============================================================
+// MODAL: NUEVA UNIDAD
+// ============================================================
+function abrirModalNuevaUnidad() {
+  document.getElementById('modal-nueva-unidad').classList.remove('hidden');
+  // Set fecha default hoy
+  const hoy = new Date().toISOString().split('T')[0];
+  document.getElementById('nu-fecha-fac').value = hoy;
+  document.getElementById('nu-anio').value = new Date().getFullYear();
+}
+
+function cerrarModal(id) {
+  document.getElementById(id).classList.add('hidden');
+}
+
+async function guardarUnidad() {
+  const modelo = document.getElementById('nu-modelo').value.trim();
+  if (!modelo) { alert('El modelo es obligatorio'); return; }
+  const btn = document.getElementById('btn-save-unidad');
+  btn.disabled = true; btn.textContent = 'Guardando...';
+  try {
+    const AK_SR = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdibHdvYWFpdG5xYmdvcnhheWR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxOTQ3NTMsImV4cCI6MjA5NTc3MDc1M30.o7zYCCfH2rHEs69o4U7Zc9dM4IvQi8GsXRlZFW_2kso';
+    const payload = {
+      distribuidor_id: CURRENT_DEALER_ID,
+      modelo,
+      modelo_familia: document.getElementById('nu-familia').value || null,
+      vin: document.getElementById('nu-vin').value.trim() || null,
+      color: document.getElementById('nu-color').value.trim() || null,
+      anio: parseInt(document.getElementById('nu-anio').value) || null,
+      fecha_factura: document.getElementById('nu-fecha-fac').value || null,
+      precio_lista: parseFloat(document.getElementById('nu-precio').value) || null,
+      folio_factura: document.getElementById('nu-folio').value.trim() || null,
+      origen: 'manual',
+      estatus: 'disponible',
+      segmento: 'mdt_ldt'
+    };
+    const r = await fetch(SB + '/inventario_unidades', {
+      method: 'POST',
+      headers: { 'apikey': AK_SR, 'Authorization': 'Bearer ' + AK_SR, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify(payload)
+    });
+    if (!r.ok) throw new Error(await r.text());
+    cerrarModal('modal-nueva-unidad');
+    // Limpiar form
+    ['nu-modelo','nu-vin','nu-color','nu-folio','nu-precio'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('nu-familia').value = '';
+    await loadInventario(CURRENT_DEALER_ID);
+  } catch(e) {
+    alert('Error al guardar: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Guardar unidad';
+  }
+}
+
+// ============================================================
+// MODAL: RETAIL
+// ============================================================
+let RETAIL_UNIT = null;
+
+function abrirRetail(unidad) {
+  RETAIL_UNIT = unidad;
+  document.getElementById('modal-retail').classList.remove('hidden');
+  document.getElementById('retail-unidad-info').innerHTML =
+    '📦 ' + unidad.modelo + (unidad.vin ? ' · VIN: ' + unidad.vin : '') + (unidad.color ? ' · ' + unidad.color : '');
+  const hoy = new Date().toISOString().split('T')[0];
+  document.getElementById('r-fecha').value = hoy;
+  // Resetear campos
+  ['r-nombre','r-rfc','r-tel','r-inst','r-notas','r-precio'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('r-uso').value = '';
+  document.getElementById('r-fin').value = '';
+  document.getElementById('r-inst-row').style.display = 'none';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const finSel = document.getElementById('r-fin');
+  if (finSel) finSel.addEventListener('change', e => {
+    document.getElementById('r-inst-row').style.display = e.target.value === 'true' ? 'block' : 'none';
+  });
+});
+
+async function guardarRetail() {
+  const nombre = document.getElementById('r-nombre').value.trim();
+  const rfc = document.getElementById('r-rfc').value.trim().toUpperCase();
+  const tel = document.getElementById('r-tel').value.trim();
+  const uso = document.getElementById('r-uso').value;
+  const fin = document.getElementById('r-fin').value;
+  if (!nombre || !rfc || !tel || !uso || fin === '') {
+    alert('Completa todos los campos obligatorios (*)');
+    return;
+  }
+  const btn = document.getElementById('btn-save-retail');
+  btn.disabled = true; btn.textContent = 'Registrando...';
+  try {
+    const AK_SR = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdibHdvYWFpdG5xYmdvcnhheWR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxOTQ3NTMsImV4cCI6MjA5NTc3MDc1M30.o7zYCCfH2rHEs69o4U7Zc9dM4IvQi8GsXRlZFW_2kso';
+    const H2 = { 'apikey': AK_SR, 'Authorization': 'Bearer ' + AK_SR, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' };
+    // 1. Registrar retail
+    const retailPayload = {
+      inventario_id: RETAIL_UNIT.id,
+      distribuidor_id: CURRENT_DEALER_ID,
+      vin: RETAIL_UNIT.vin || null,
+      modelo: RETAIL_UNIT.modelo,
+      nombre_cliente: nombre,
+      rfc,
+      telefono: tel,
+      uso,
+      financiamiento: fin === 'true',
+      institucion_financiera: fin === 'true' ? document.getElementById('r-inst').value.trim() || null : null,
+      fecha_retail: document.getElementById('r-fecha').value || null,
+      precio_venta: parseFloat(document.getElementById('r-precio').value) || null,
+      notas: document.getElementById('r-notas').value.trim() || null
+    };
+    const r1 = await fetch(SB + '/retail_clientes', { method: 'POST', headers: H2, body: JSON.stringify(retailPayload) });
+    if (!r1.ok) throw new Error(await r1.text());
+    // 2. Actualizar estatus de la unidad
+    const r2 = await fetch(SB + '/inventario_unidades?id=eq.' + RETAIL_UNIT.id, {
+      method: 'PATCH',
+      headers: H2,
+      body: JSON.stringify({ estatus: 'vendido', updated_at: new Date().toISOString() })
+    });
+    if (!r2.ok) throw new Error(await r2.text());
+    cerrarModal('modal-retail');
+    await loadInventario(CURRENT_DEALER_ID);
+    // Mostrar confirmación
+    const conf = document.createElement('div');
+    conf.style.cssText = 'position:fixed;top:20px;right:20px;background:#1B7B3E;color:#fff;padding:14px 20px;border-radius:10px;font-weight:700;font-size:14px;z-index:200;box-shadow:0 4px 20px rgba(0,0,0,.2)';
+    conf.textContent = '✓ Venta registrada correctamente';
+    document.body.appendChild(conf);
+    setTimeout(() => conf.remove(), 3000);
+  } catch(e) {
+    alert('Error al registrar: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Registrar venta';
+  }
+}
+
+// ============================================================
+// RED DE INVENTARIO
+// ============================================================
+async function loadRed() {
+  const body = document.getElementById('red-body');
+  const totalEl = document.getElementById('red-total');
+  body.innerHTML = '<div class="inv-empty">Cargando red...</div>';
+  try {
+    const data = await q('/inventario_unidades?estatus=eq.disponible&order=distribuidor_id.asc&limit=1000');
+    if (!data.length) {
+      body.innerHTML = '<div class="inv-empty">Sin unidades disponibles en la red actualmente</div>';
+      return;
+    }
+    // Agrupar por dealer
+    const byDealer = {};
+    data.forEach(u => {
+      if (!byDealer[u.distribuidor_id]) byDealer[u.distribuidor_id] = [];
+      byDealer[u.distribuidor_id].push(u);
+    });
+    totalEl.textContent = data.length + ' unidades disponibles en la red';
+    let html = '';
+    // Mi dealer primero
+    const dealers = Object.keys(byDealer).sort(a => a === CURRENT_DEALER_ID ? -1 : 1);
+    dealers.forEach(did => {
+      const units = byDealer[did];
+      const dName = DL[did] ? DL[did].nombre : did;
+      const isMine = did === CURRENT_DEALER_ID;
+      html += '<div class="red-dealer-block' + (isMine ? ' open red-my' : '') + '">' +
+        '<div class="red-dealer-hd" onclick="this.parentElement.classList.toggle('open')">' +
+          '<div>' +
+            '<div class="red-dealer-name">' + (isMine ? '⭐ ' : '') + dName + '</div>' +
+            '<div class="red-dealer-cnt">' + units.length + ' unidades disponibles</div>' +
+          '</div>' +
+          '<span style="color:var(--mut);font-size:18px">›</span>' +
+        '</div>' +
+        '<div class="red-dealer-body"><div style="overflow-x:auto">' +
+        '<table class="inv-table"><thead><tr><th>Modelo</th><th>VIN</th><th>Color</th><th>Año</th></tr></thead><tbody>' +
+        units.map(u => '<tr>' +
+          '<td><div style="font-weight:700">' + u.modelo + '</div><div style="font-size:10px;color:var(--mut)">' + (u.modelo_familia||'') + '</div></td>' +
+          '<td style="font-family:JetBrains Mono,monospace;font-size:11px;color:var(--blue)">' + (u.vin||'—') + '</td>' +
+          '<td style="font-size:12px">' + (u.color||'—') + '</td>' +
+          '<td style="font-size:12px">' + (u.anio||'—') + '</td>' +
+          '</tr>').join('') +
+        '</tbody></table></div></div>' +
+        '</div>';
+    });
+    body.innerHTML = html;
+  } catch(e) {
+    body.innerHTML = '<div class="inv-empty">Error: ' + e.message + '</div>';
+  }
+}
+
+// ============================================================
+// PATCH mostrarDealer para guardar ID y cargar inventario
+// ============================================================
+const _origMostrarDealer = mostrarDealer;
+mostrarDealer = async function(id) {
+  CURRENT_DEALER_ID = id;
+  await _origMostrarDealer(id);
+  // Resetear a tab Mi Panel
+  document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.main-pane').forEach(p => p.classList.remove('on'));
+  document.querySelector('[data-tab="panel"]').classList.add('on');
+  document.getElementById('pane-panel').classList.add('on');
+};
+
 </script>
 </body>
 </html>
