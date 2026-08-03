@@ -829,22 +829,43 @@ function cargarRed() {
       var byD={};
       data.forEach(function(u){if(!byD[u.distribuidor_id])byD[u.distribuidor_id]=[];byD[u.distribuidor_id].push(u);});
       var ids=Object.keys(byD).sort(function(a,b){return a===DEALER_ID?-1:b===DEALER_ID?1:0;});
-      var html='';
+      body.innerHTML='';
       ids.forEach(function(did){
-        var us=byD[did], dn=DL[did]?DL[did].nombre:did, mine=did===DEALER_ID;
-        html+='<div class="red-blk'+(mine?' red-mine abierto':'')+'">';
-        html+='<div class="red-blk-hd" onclick="this.parentElement.classList.toggle('abierto')">';
-        html+='<div><div class="red-blk-name">'+(mine?'⭐ ':'')+dn+'</div>';
-        html+='<div class="red-blk-cnt">'+us.length+' disponibles</div></div>';
-        html+='<span style="color:var(--mut);font-size:18px">›</span></div>';
-        html+='<div class="red-blk-body"><div style="overflow-x:auto"><table class="inv-tbl"><thead><tr><th>Modelo</th><th>VIN</th><th>Color</th><th>Año</th></tr></thead><tbody>';
-        us.forEach(function(u){html+='<tr><td><b>'+u.modelo+'</b></td><td style="font-family:JetBrains Mono,monospace;font-size:11px;color:var(--blue)">'+(u.vin||'—')+'</td><td>'+(u.color||'—')+'</td><td>'+(u.anio||'—')+'</td></tr>';});
-        html+='</tbody></table></div></div></div>';
+        var us=byD[did];
+        var dn=DL[did]?DL[did].nombre:did;
+        var mine=did===DEALER_ID;
+        var blk=document.createElement('div');
+        blk.className='red-blk'+(mine?' red-mine':'');
+        var hd=document.createElement('div');
+        hd.className='red-blk-hd';
+        hd.innerHTML='<div><div class="red-blk-name">'+(mine?'&#11088; ':'')+dn+'</div>'
+          +'<div class="red-blk-cnt">'+us.length+' disponibles</div></div>'
+          +'<span style="color:var(--mut);font-size:18px">&#8250;</span>';
+        hd.onclick=function(){blk.classList.toggle('abierto');};
+        var bd=document.createElement('div');
+        bd.className='red-blk-body';
+        var tbl='<div style="overflow-x:auto"><table class="inv-tbl"><thead><tr>'
+          +'<th>Modelo</th><th>VIN</th><th>Color</th><th>A&ntilde;o</th>'
+          +'</tr></thead><tbody>';
+        us.forEach(function(u){
+          tbl+='<tr>'
+            +'<td><b>'+u.modelo+'</b></td>'
+            +'<td style="font-family:JetBrains Mono,monospace;font-size:11px;color:var(--blue)">'+(u.vin||'&mdash;')+'</td>'
+            +'<td>'+(u.color||'&mdash;')+'</td>'
+            +'<td>'+(u.anio||'&mdash;')+'</td>'
+            +'</tr>';
+        });
+        tbl+='</tbody></table></div>';
+        bd.innerHTML=tbl;
+        blk.appendChild(hd);
+        blk.appendChild(bd);
+        if(mine)blk.classList.add('abierto');
+        body.appendChild(blk);
       });
-      body.innerHTML=html;
     })
     .catch(function(e){body.innerHTML='<div class="inv-empty">Error: '+e.message+'</div>';});
 }
+
 
 // ============================================================
 // TOAST
