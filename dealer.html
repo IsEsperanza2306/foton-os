@@ -307,7 +307,10 @@ body{font-family:'Inter',sans-serif;background:var(--surf);color:var(--ink);min-
             <div class="inv-filter" onclick="filtroInv('reservado',this)">Reservados</div>
             <div class="inv-filter" onclick="filtroInv('vendido',this)">Vendidos</div>
           </div>
-          <button class="btn-add" onclick="abrirNuevaUnidad()">+ Agregar unidad</button>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div id="inv-update-lbl" style="font-size:10px;color:var(--mut)"></div>
+            <button class="btn-add" onclick="abrirNuevaUnidad()">+ Agregar unidad</button>
+          </div>
         </div>
         <div id="inv-body"><div class="inv-empty">Selecciona esta tab para cargar el inventario.</div></div>
       </div>
@@ -316,9 +319,15 @@ body{font-family:'Inter',sans-serif;background:var(--surf);color:var(--ink);min-
   <div class="main-pane" id="pane-red">
     <div class="wrap">
       <div class="panel">
-        <div style="padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between">
-          <div style="font-size:12px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.5px">Inventario disponible en la red</div>
-          <div id="red-total" style="font-size:11px;color:var(--mut)"></div>
+        <div style="padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px">
+          <div>
+            <div style="font-size:12px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.5px">Inventario disponible en la red</div>
+            <div id="red-update-lbl" style="font-size:10px;color:var(--mut);margin-top:2px"></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div id="red-total" style="font-size:11px;color:var(--mut)"></div>
+            <div id="red-freshness" style="font-size:10px;padding:3px 10px;border-radius:20px;font-weight:700"></div>
+          </div>
         </div>
         <div id="red-body" style="padding:16px"><div class="inv-empty">Selecciona esta tab para cargar la red.</div></div>
       </div>
@@ -696,7 +705,20 @@ function cargarInventario() {
   if(!DEALER_ID) return;
   document.getElementById('inv-body').innerHTML='<div class="inv-empty">Cargando...</div>';
   q('/inventario_unidades?distribuidor_id=eq.'+DEALER_ID+'&order=created_at.desc&limit=500')
-    .then(function(data){ INV_DATA=data; renderInv(); })
+    .then(function(data){
+      INV_DATA=data;
+      renderInv();
+      // Fecha de última actualización en Mi Inventario
+      var lbl=document.getElementById('inv-update-lbl');
+      if(lbl&&data.length){
+        var fechas=data.map(function(u){return u.updated_at||u.created_at;}).filter(Boolean).sort().reverse();
+        if(fechas.length){
+          var ultima=new Date(fechas[0]);
+          var opts={day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'};
+          lbl.textContent='Actualizado: '+ultima.toLocaleDateString('es-MX',opts);
+        }
+      }
+    })
     .catch(function(e){ document.getElementById('inv-body').innerHTML='<div class="inv-empty">Error: '+e.message+'</div>'; });
 }
 
@@ -825,10 +847,39 @@ function guardarRetail() {
 function cargarRed() {
   var body=document.getElementById('red-body');
   body.innerHTML='<div class="inv-empty">Cargando...</div>';
-  q('/inventario_unidades?estatus=eq.disponible&order=distribuidor_id.asc&limit=1000')
+  q('/inventario_unidades?estatus=eq.disponible&order=distribuidor_id.asc&limit=1000&select=*')
     .then(function(data){
       if(!data.length){body.innerHTML='<div class="inv-empty">Sin unidades disponibles en la red.</div>';return;}
       document.getElementById('red-total').textContent=data.length+' unidades disponibles';
+      
+      // Calcular fecha de última actualización
+      var fechas=data.map(function(u){return u.updated_at||u.created_at;}).filter(Boolean).sort().reverse();
+      if(fechas.length){
+        var ultima=new Date(fechas[0]);
+        var ahora=new Date();
+        var diffH=Math.round((ahora-ultima)/3600000);
+        var diffD=Math.floor(diffH/24);
+        var lbl='';
+        var color='';
+        var bgColor='';
+        if(diffH<24){
+          lbl='Actualizado hoy';color='#1B7B3E';bgColor='#EAF5EF';
+        } else if(diffD===1){
+          lbl='Actualizado ayer';color='#C47A1A';bgColor='#FDF3E3';
+        } else if(diffD<=7){
+          lbl='Hace '+diffD+' días';color='#C47A1A';bgColor='#FDF3E3';
+        } else {
+          lbl='Hace '+diffD+' días';color='#C0392B';bgColor='#FBEAE7';
+        }
+        document.getElementById('red-freshness').textContent=lbl;
+        document.getElementById('red-freshness').style.background=bgColor;
+        document.getElementById('red-freshness').style.color=color;
+        
+        // Fecha exacta debajo del título
+        var opts={weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'};
+        document.getElementById('red-update-lbl').textContent=
+          'Última actualización: '+ultima.toLocaleDateString('es-MX',opts);
+      }
       var byD={};
       data.forEach(function(u){if(!byD[u.distribuidor_id])byD[u.distribuidor_id]=[];byD[u.distribuidor_id].push(u);});
       var ids=Object.keys(byD).sort(function(a,b){return a===DEALER_ID?-1:b===DEALER_ID?1:0;});
