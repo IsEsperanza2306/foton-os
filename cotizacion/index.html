@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cotización · Foton México</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#E8E8E8;font-family:'Archivo',Helvetica,Arial,sans-serif;color:#0A0A0A;padding:24px 16px 64px}
+.mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums}
+.lbl{font-size:7.5px;letter-spacing:2.6px;font-weight:600;text-transform:uppercase}
+
+/* ---------- toolbar ---------- */
+.bar{max-width:216mm;margin:0 auto 16px;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.bar button{display:inline-flex;align-items:center;gap:6px;border:1px solid #0A0A0A;background:#fff;color:#0A0A0A;
+  font-family:'Archivo',sans-serif;font-size:12px;font-weight:600;letter-spacing:.3px;padding:9px 16px;cursor:pointer}
+.bar button:hover{background:#0A0A0A;color:#fff}
+.bar button.p{background:#0A0A0A;color:#fff}
+.bar button.p:hover{background:#333;border-color:#333}
+.hint{max-width:216mm;margin:0 auto 12px;font-size:11px;color:#6E6E6E;letter-spacing:.2px}
+
+/* ---------- page ---------- */
+.pg{width:216mm;min-height:279mm;margin:0 auto;background:#fff;position:relative;display:flex;flex-direction:column;
+  box-shadow:0 2px 16px rgba(0,0,0,.14)}
+
+/* ---------- editable fields ---------- */
+.f{font:inherit;color:inherit;letter-spacing:inherit;background:transparent;border:none;outline:none;width:100%;
+  padding:1px 3px;margin:-1px -3px;border-radius:2px}
+.f:hover{background:rgba(0,0,0,.055)}
+.f:focus{background:rgba(0,0,0,.085);box-shadow:inset 0 -1.5px 0 #0A0A0A}
+.dk .f:hover{background:rgba(255,255,255,.11)}
+.dk .f:focus{background:rgba(255,255,255,.16);box-shadow:inset 0 -1.5px 0 #fff}
+.f::placeholder{color:#C0C0C0;font-weight:400}
+.dk .f::placeholder{color:#5A5A5A}
+.f.r{text-align:right}
+select.f{appearance:none;-webkit-appearance:none;cursor:pointer}
+textarea.f{resize:none;overflow:hidden;display:block}
+
+/* ---------- header ---------- */
+.hd{background:#0A0A0A;color:#fff;padding:22px 26px 20px;position:relative;overflow:hidden}
+.hd-pat{position:absolute;top:-12px;right:-30px;width:320px;height:200px;opacity:.16}
+.hd-row{display:flex;justify-content:space-between;align-items:flex-start;position:relative;gap:20px}
+.lg{display:flex;align-items:center;gap:11px;flex-shrink:0}
+.hd-r{text-align:right;min-width:170px}
+.hd-r .lbl{color:#7C7C7C}
+.folio{font-size:21px;font-weight:600;letter-spacing:.5px;margin-top:4px}
+.hd-bt{display:flex;align-items:flex-end;justify-content:space-between;margin-top:22px;position:relative;gap:20px}
+.ttl{font-size:34px;font-weight:800;letter-spacing:-1.6px;line-height:.9}
+.hd-dt{display:flex;gap:20px;flex-shrink:0}
+.hd-dt .lbl{color:#7C7C7C}
+.hd-dt .v{font-size:10.5px;font-weight:600;margin-top:3px;letter-spacing:.3px}
+.hd-dt .v .f{width:auto;min-width:64px}
+
+/* ---------- client strip ---------- */
+.cli{display:grid;grid-template-columns:1.6fr 1fr .85fr;border-bottom:1px solid #0A0A0A}
+.cli-c{padding:13px 18px 13px 0;border-right:.5px solid #D4D4D4}
+.cli-c:first-child{padding-left:26px}
+.cli-c:last-child{border-right:none;padding-right:26px}
+.cli .lbl{color:#8A8A8A}
+.cli-v{font-size:12.5px;font-weight:700;letter-spacing:-.2px;margin-top:5px;line-height:1.2}
+.cli-s{font-size:9px;color:#6E6E6E;margin-top:4px;line-height:1.45}
+
+/* ---------- units ---------- */
+.sec{padding:20px 26px 0}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2px}
+.sec-t{font-size:9.5px;letter-spacing:3.4px;font-weight:700}
+.sec-c{font-size:8px;letter-spacing:1.8px;color:#8A8A8A;font-weight:600}
+.grid{display:grid;grid-template-columns:26px 1fr 34px 88px 84px 74px 96px 22px}
+.cols{border-top:2px solid #0A0A0A;border-bottom:.5px solid #C4C4C4;padding:6px 0}
+.cols span{font-size:7px;letter-spacing:1.5px;color:#8A8A8A;font-weight:600;text-transform:uppercase}
+.cols span.r{text-align:right}
+.row{border-bottom:.5px solid #E0E0E0;padding:11px 0 12px;align-items:start}
+.ix{font-size:11px;font-weight:600;color:#B4B4B4;letter-spacing:.5px;padding-top:4px}
+.mod{font-size:20px;font-weight:800;letter-spacing:-.9px;line-height:1;padding-right:8px}
+.mod .f{padding:0 3px}
+.spec{font-size:8px;letter-spacing:1.3px;color:#8A8A8A;font-weight:600;margin-top:5px;text-transform:uppercase;
+  display:flex;align-items:center;gap:4px;padding-right:8px}
+.spec .f{text-transform:uppercase;letter-spacing:1.3px}
+.spec .g{white-space:nowrap}
+.carr{display:flex;gap:8px;margin-top:7px;padding-right:12px}
+.carr-b{width:2px;background:#0A0A0A;flex-shrink:0}
+.carr-t{font-size:9.5px;color:#3C3C3C;line-height:1.5;flex:1}
+.carr-t .k{font-weight:700;color:#0A0A0A;letter-spacing:1.2px;font-size:7.5px;display:block;margin-bottom:2px;text-transform:uppercase}
+.n{text-align:right;font-size:11px;font-weight:500;padding-top:5px;letter-spacing:-.2px}
+.n.q{font-size:15px;font-weight:600;padding-top:2px}
+.n.mu{color:#9A9A9A}
+.n.im{font-size:13px;font-weight:600;padding-top:4px}
+.del{border:none;background:transparent;color:#C8C8C8;cursor:pointer;font-size:15px;line-height:1;padding:5px 0 0 6px;font-family:'Archivo',sans-serif}
+.del:hover{color:#0A0A0A}
+.add{margin-top:10px;border:1px dashed #C4C4C4;background:transparent;width:100%;padding:8px;cursor:pointer;
+  font-family:'Archivo',sans-serif;font-size:9px;letter-spacing:2.2px;font-weight:600;color:#8A8A8A;text-transform:uppercase}
+.add:hover{border-color:#0A0A0A;color:#0A0A0A}
+
+/* ---------- total ---------- */
+.tot{background:#0A0A0A;color:#fff;margin-top:22px;padding:20px 26px;position:relative;overflow:hidden}
+.tot-pat{position:absolute;bottom:-42px;left:-20px;width:260px;height:170px;opacity:.13}
+.tot-in{display:grid;grid-template-columns:1fr 1.15fr;gap:34px;position:relative;align-items:end}
+.tot-l .r{display:flex;justify-content:space-between;padding:5px 0;border-bottom:.5px solid #333;font-size:10px}
+.tot-l .r:last-child{border-bottom:none}
+.tot-l .k{color:#9A9A9A}
+.tot-l .v{font-weight:500;letter-spacing:-.2px}
+.tot-r{text-align:right}
+.tot-r .lbl{color:#9A9A9A}
+.tot-big{font-size:40px;font-weight:600;letter-spacing:-2.4px;line-height:.92;margin-top:6px}
+.tot-mn{font-size:7px;letter-spacing:2.4px;color:#9A9A9A;font-weight:600;margin-top:8px}
+
+/* ---------- conditions ---------- */
+.cond{padding:20px 26px 0;display:grid;grid-template-columns:88px 1fr;gap:16px;align-items:start}
+.cond .lbl{color:#8A8A8A;padding-top:2px}
+.cond-b{font-size:9.5px;color:#3C3C3C;line-height:1.65;border-left:.5px solid #D4D4D4;padding-left:16px}
+
+/* ---------- signatures ---------- */
+.firm{display:grid;grid-template-columns:1fr 1fr;gap:52px;padding:30px 26px 20px;margin-top:auto}
+.fl{border-top:1.5px solid #0A0A0A;padding-top:7px}
+.fn{font-size:10.5px;font-weight:700;letter-spacing:-.1px}
+.fc{font-size:7.5px;color:#7C7C7C;letter-spacing:1.4px;margin-top:3px;text-transform:uppercase;font-weight:600}
+.fc .f{text-transform:uppercase;letter-spacing:1.4px}
+.fblank{font-size:10.5px;font-weight:700;color:#C4C4C4}
+
+/* ---------- footer ---------- */
+.ft{background:#0A0A0A;color:#fff;padding:14px 26px 13px;clip-path:polygon(0 22px,38px 0,100% 0,100% 100%,0 100%)}
+.ft-in{display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
+.ft-a{font-size:8.5px;color:#9A9A9A;line-height:1.6}
+.ft-a b{color:#fff;font-weight:700;letter-spacing:1.6px;font-size:8px;display:block;margin-bottom:3px;text-transform:uppercase}
+.ft-r{text-align:right;flex-shrink:0}
+.ft-w{font-size:12px;font-weight:700;letter-spacing:.5px}
+.ft-c{font-size:7px;letter-spacing:2.2px;color:#7C7C7C;font-weight:600;margin-top:4px}
+
+/* ---------- print ---------- */
+@page{size:letter;margin:0}
+@media print{
+  body{background:#fff;padding:0}
+  .bar,.hint,.add,.del{display:none!important}
+  .pg{width:100%;min-height:auto;box-shadow:none;margin:0}
+  .f{background:transparent!important;box-shadow:none!important}
+  .f::placeholder{color:transparent}
+  .hd,.tot,.ft{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <button onclick="nuevoFolio()">Nuevo folio</button>
+  <button onclick="limpiar()">Limpiar</button>
+  <button class="p" onclick="window.print()">Imprimir / PDF</button>
+</div>
+<div class="hint">Haz clic sobre cualquier dato para editarlo. Los importes se calculan solos. Tu nombre y cargo quedan guardados en este navegador.</div>
+
+<div class="pg">
+
+  <!-- HEADER -->
+  <div class="hd dk">
+    <svg class="hd-pat" viewBox="0 0 320 200" aria-hidden="true">
+      <defs><pattern id="tp" width="52" height="45" patternUnits="userSpaceOnUse">
+        <path d="M0 45 L26 0 L52 45 M26 0 L26 45 M-26 0 L0 45 L26 0" fill="none" stroke="#fff" stroke-width="1"/>
+      </pattern></defs>
+      <rect width="320" height="200" fill="url(#tp)"/>
+    </svg>
+    <div class="hd-row">
+      <div class="lg">
+        <svg width="34" height="34" viewBox="0 0 364 364" fill="#fff" aria-hidden="true"><path fill-rule="evenodd" d="M160.3,362.9C99.7,355.8 45.4,317.4 18.5,262.5C-26.2,171.2 12.7,60.4 104.5,17.4C219.7,-36.4 353.3,41.9 362.9,168.8C371.6,282.5 273.8,376.1 160.3,362.9ZM194.5,347.9C306.5,338.2 377.0,225.3 336.2,121.0C308.7,50.7 233.7,6.9 159.0,17.5C46.2,33.6 -17.7,154.9 33.2,256.4C59.2,308.2 110.1,342.8 167.9,348.0C180.5,349.1 181.4,349.1 194.5,347.9ZM174.6,317.8C173.2,316.5 166.4,307.7 159.5,298.1C147.5,281.5 146.9,280.4 147.2,276.3C147.5,272.3 152.8,264.7 210.5,185.0C255.0,123.6 274.3,97.8 276.2,96.9C281.6,94.6 283.0,95.9 298.9,117.9C312.4,136.6 314.0,139.2 314.0,142.8C314.0,146.6 309.8,152.7 253.0,230.7C219.4,276.8 190.8,315.7 189.4,317.2C186.0,320.9 178.4,321.2 174.6,317.8ZM114.2,235.8C99.5,215.7 98.0,213.3 98.0,209.6C98.0,205.8 100.9,201.6 135.0,154.6C155.3,126.6 173.0,102.6 174.2,101.2C178.8,96.2 180.6,96.0 214.8,96.0C245.8,96.0 246.7,96.1 248.6,98.1C251.1,100.9 255.2,94.8 192.0,182.0C138.4,255.8 136.7,258.0 133.6,258.0C130.5,258.0 129.5,256.9 114.2,235.8ZM81.9,190.8C80.2,189.4 52.1,150.9 50.2,147.3C47.4,142.2 48.5,140.0 63.6,119.2C76.1,102.0 78.7,98.9 82.1,97.6C87.2,95.5 149.8,95.2 151.8,97.2C154.6,100.0 152.0,104.1 120.8,147.1C87.1,193.5 86.3,194.3 81.9,190.8Z"/></svg>
+        <svg width="106" height="13" viewBox="0 0 727 92" fill="#fff" aria-hidden="true"><path fill-rule="evenodd" d="M0.2,51.8C0.5,6.2 0.4,6.9 8.8,2.2C12.8,0.0 12.9,0.0 66.9,0.0L121.0,0.0L121.0,10.5L121.0,21.0L73.0,21.0L25.0,21.0L24.5,23.3C24.2,24.5 24.0,29.1 24.2,33.5L24.5,41.5L61.2,41.8L98.0,42.0L98.0,52.0L98.0,62.0L61.0,62.0L24.0,62.0L24.0,77.0L24.0,92.0L12.0,92.0L-0.1,92.0L0.2,51.8ZM157.5,90.4C147.4,85.2 147.0,83.5 147.0,46.0C147.0,9.8 147.3,8.5 155.1,3.3L159.4,0.5L211.7,0.2C270.8,-0.1 269.7,-0.2 275.6,7.6L278.5,11.3L278.8,44.4C279.0,62.6 278.8,78.5 278.5,79.7C277.7,83.0 272.0,89.1 268.3,90.6C263.1,92.8 161.7,92.6 157.5,90.4ZM349.8,56.8L349.5,21.5L325.2,21.2L301.0,21.0L301.0,10.5L301.0,0.0L362.5,0.0L424.0,0.0L424.0,10.5L424.0,21.0L399.2,21.2L374.5,21.5L374.2,56.8L374.0,92.0L362.0,92.0L350.0,92.0L349.8,56.8ZM455.5,90.4C445.2,84.9 444.9,83.2 445.2,44.4L445.5,12.3L448.2,8.3C453.8,-0.2 452.6,0.0 510.8,0.0C566.0,0.0 566.2,0.0 571.8,5.3C576.9,10.1 577.0,10.6 577.0,46.1C577.0,83.4 576.9,83.8 569.3,89.0L565.6,91.5L512.1,91.7C464.7,91.9 458.2,91.8 455.5,90.4ZM605.0,46.0L605.0,-0.0L660.8,0.2L716.7,0.5L720.4,3.4C727.0,8.4 727.0,8.5 727.0,52.5L727.0,92.0L715.0,92.0L703.0,92.0L702.8,56.8L702.5,21.5L665.8,21.2L629.0,21.0L629.0,56.5L629.0,92.0L617.0,92.0L605.0,92.0L605.0,46.0ZM254.5,46.0L254.5,21.5L213.0,21.5L171.5,21.5L171.2,45.0C171.1,57.9 171.2,69.0 171.5,69.7C171.8,70.8 180.4,71.0 213.2,70.8L254.5,70.5L254.5,46.0ZM552.5,46.0L552.5,21.5L511.6,21.2C479.5,21.0 470.5,21.2 469.8,22.2C468.9,23.8 468.7,69.4 469.7,70.3C470.1,70.7 488.8,70.9 511.4,70.8L552.5,70.5L552.5,46.0Z"/></svg>
+      </div>
+      <div class="hd-r">
+        <div class="lbl">Folio</div>
+        <div class="folio mono"><input class="f mono r" id="folio" value="COT-2026-001"></div>
+      </div>
+    </div>
+    <div class="hd-bt">
+      <div class="ttl">Cotización</div>
+      <div class="hd-dt">
+        <div>
+          <div class="lbl">Emisión</div>
+          <div class="v mono"><input class="f mono" id="femision" style="width:74px"></div>
+        </div>
+        <div>
+          <div class="lbl">Vigencia</div>
+          <div class="v mono"><input class="f mono" id="fvigencia" value="15 DÍAS" style="width:62px"></div>
+        </div>
+        <div>
+          <div class="lbl">Segmento</div>
+          <div class="v mono"><input class="f mono" id="fsegmento" value="MDT / LDT" style="width:74px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLIENT -->
+  <div class="cli">
+    <div class="cli-c">
+      <div class="lbl">Cliente</div>
+      <div class="cli-v"><input class="f" id="cempresa" placeholder="Razón social del cliente"></div>
+      <div class="cli-s"><input class="f" id="crfc" placeholder="RFC · Giro o sector"></div>
+    </div>
+    <div class="cli-c" style="padding-left:18px">
+      <div class="lbl">Atención</div>
+      <div class="cli-v"><input class="f" id="ccontacto" placeholder="Nombre del contacto"></div>
+      <div class="cli-s"><input class="f" id="ccontacto2" placeholder="Teléfono · Correo"></div>
+    </div>
+    <div class="cli-c" style="padding-left:18px">
+      <div class="lbl">Distribuidor</div>
+      <div class="cli-v"><input class="f" id="cdist" placeholder="Distribuidor"></div>
+      <div class="cli-s"><input class="f" id="cplaza" placeholder="Plaza"></div>
+    </div>
+  </div>
+
+  <!-- UNITS -->
+  <div class="sec">
+    <div class="sec-h">
+      <span class="sec-t">UNIDADES</span>
+      <span class="sec-c" id="conteo">0 UNIDADES</span>
+    </div>
+    <div class="grid cols">
+      <span></span><span>Modelo y configuración</span>
+      <span class="r">Cant</span><span class="r">Precio lista</span>
+      <span class="r">Carrocería</span><span class="r">Desc.</span>
+      <span class="r">Importe</span><span></span>
+    </div>
+    <div id="filas"></div>
+    <button class="add" onclick="agregar()">+ Agregar unidad</button>
+  </div>
+
+  <!-- TOTAL -->
+  <div class="tot">
+    <svg class="tot-pat" viewBox="0 0 260 170" aria-hidden="true">
+      <defs><pattern id="tp2" width="52" height="45" patternUnits="userSpaceOnUse">
+        <path d="M0 45 L26 0 L52 45 M26 0 L26 45 M-26 0 L0 45 L26 0" fill="none" stroke="#fff" stroke-width="1"/>
+      </pattern></defs>
+      <rect width="260" height="170" fill="url(#tp2)"/>
+    </svg>
+    <div class="tot-in">
+      <div class="tot-l">
+        <div class="r"><span class="k">Unidades</span><span class="v mono" id="tUni">$0</span></div>
+        <div class="r"><span class="k">Carrocería</span><span class="v mono" id="tCar">$0</span></div>
+        <div class="r"><span class="k">Descuento</span><span class="v mono" id="tDes">$0</span></div>
+        <div class="r"><span class="k">Subtotal</span><span class="v mono" id="tSub">$0</span></div>
+        <div class="r"><span class="k">IVA 16%</span><span class="v mono" id="tIva">$0</span></div>
+      </div>
+      <div class="tot-r">
+        <div class="lbl">Inversión total</div>
+        <div class="tot-big mono" id="tTot">$0</div>
+        <div class="tot-mn">MONEDA NACIONAL · IVA INCLUIDO</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONDITIONS -->
+  <div class="cond">
+    <div class="lbl">Condiciones<br>y garantía</div>
+    <div class="cond-b"><textarea class="f" id="cond" rows="3"></textarea></div>
+  </div>
+
+  <!-- SIGNATURES -->
+  <div class="firm">
+    <div class="fl">
+      <div class="fn"><input class="f" id="aNombre" placeholder="Nombre de quien cotiza"></div>
+      <div class="fc"><input class="f" id="aCargo" placeholder="Cargo"></div>
+      <div class="fc"><input class="f" id="aEmpresa" value="Foton México · LDR Solutions S.A. de C.V."></div>
+    </div>
+    <div class="fl">
+      <div class="fblank">&nbsp;</div>
+      <div class="fc">Aceptación del cliente</div>
+      <div class="fc">Nombre, firma y sello</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="ft dk">
+    <div class="ft-in">
+      <div class="ft-a">
+        <b>Foton México · LDR Solutions S.A. de C.V.</b>
+        Prol. Paseo de la Reforma 1015, Piso 24, Santa Fe, Contadero,<br>Cuajimalpa de Morelos, C.P. 05348, Ciudad de México
+      </div>
+      <div class="ft-r">
+        <div class="ft-w">www.foton.mx</div>
+        <div class="ft-c mono" id="folioPie">COT-2026-001</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const MODELOS=[
+ {n:"S3 MT",p:704800,g:"250,000 km"},
+ {n:"S3 AMT",p:817000,g:"250,000 km"},
+ {n:"S5 MT",p:908800,g:"250,000 km"},
+ {n:"S5 AMT",p:954700,g:"250,000 km"},
+ {n:"S6 MT",p:1005720,g:"250,000 km"},
+ {n:"S8 AMT",p:null,g:"300,000 km"},
+ {n:"S12 AMT",p:1582517,g:"300,000 km"},
+ {n:"Miler RS Euro VI",p:642600,g:"250,000 km"},
+ {n:"TM3",p:336700,g:"250,000 km"}
+];
+
+let filas=[];
+const fmt=n=>'$'+Math.round(n).toLocaleString('es-MX');
+const num=s=>parseFloat(String(s||'').replace(/[$,%\s]/g,''))||0;
+const $=id=>document.getElementById(id);
+
+function fechaHoy(){
+  const d=new Date(),z=x=>String(x).padStart(2,'0');
+  return z(d.getDate())+'.'+z(d.getMonth()+1)+'.'+d.getFullYear();
+}
+function nuevoFolio(){
+  const f='COT-'+new Date().getFullYear()+'-'+String(Math.floor(Math.random()*900)+100);
+  $('folio').value=f; $('folioPie').textContent=f;
+}
+
+function agregar(){ filas.push(Date.now()+Math.random()); render(); }
+function borrar(id){ filas=filas.filter(x=>x!==id); render(); calcular(); }
+
+function render(){
+  const c=$('filas'); c.innerHTML='';
+  filas.forEach((id,i)=>{
+    const opts=MODELOS.map((m,j)=>`<option value="${j}">${m.n}</option>`).join('');
+    const d=document.createElement('div');
+    d.className='grid row';
+    d.innerHTML=`
+      <div class="ix mono">${String(i+1).padStart(2,'0')}</div>
+      <div>
+        <div class="mod">
+          <select class="f" id="m${id}" onchange="setModelo('${id}')">
+            <option value="">Modelo</option>${opts}
+          </select>
+        </div>
+        <div class="spec">
+          <input class="f" id="e${id}" placeholder="Color / especificación" style="flex:1">
+          <span class="g">· GARANTÍA 5 AÑOS / <span id="g${id}">250,000 KM</span></span>
+        </div>
+        <div class="carr">
+          <div class="carr-b"></div>
+          <div class="carr-t">
+            <span class="k">Carrocería</span>
+            <textarea class="f" id="c${id}" rows="2" placeholder="Descripción de la carrocería o conversión"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="n q"><input class="f mono r" id="q${id}" value="1" oninput="calcular()"></div>
+      <div class="n"><input class="f mono r" id="p${id}" placeholder="$0" oninput="calcular()"></div>
+      <div class="n"><input class="f mono r" id="k${id}" placeholder="$0" oninput="calcular()"></div>
+      <div class="n mu"><input class="f mono r" id="d${id}" placeholder="0% o $0" oninput="calcular()"></div>
+      <div class="n im mono" id="i${id}">$0</div>
+      <button class="del" onclick="borrar(${id})" title="Eliminar">&times;</button>`;
+    c.appendChild(d);
+  });
+  document.querySelectorAll('textarea.f').forEach(autoGrow);
+  calcular();
+}
+
+function setModelo(id){
+  const s=$('m'+id); if(s.value===''){return;}
+  const m=MODELOS[+s.value];
+  $('p'+id).value = m.p ? fmt(m.p) : '';
+  if(!m.p) $('p'+id).placeholder='Por confirmar';
+  $('g'+id).textContent = m.g.toUpperCase();
+  calcular();
+}
+
+function calcular(){
+  let uni=0,car=0,des=0,cant=0,confs=0;
+  const g250=[],g300=[];
+  filas.forEach(id=>{
+    const q=Math.max(0,Math.round(num($('q'+id)?.value)||0));
+    const p=num($('p'+id)?.value), k=num($('k'+id)?.value);
+    const raw=($('d'+id)?.value||'').trim();
+    const base=q*p+q*k;
+    const dv = raw.includes('%') ? base*(num(raw)/100) : num(raw);
+    uni+=q*p; car+=q*k; des+=dv; cant+=q;
+    const el=$('i'+id); if(el) el.textContent=fmt(base-dv);
+    const dEl=$('d'+id); if(dEl) dEl.style.color = dv>0 ? '#9A9A9A' : '';
+    const s=$('m'+id);
+    if(s && s.value!==''){
+      confs++;
+      const m=MODELOS[+s.value];
+      (m.g.startsWith('300')?g300:g250).includes(m.n)||(m.g.startsWith('300')?g300:g250).push(m.n);
+    }
+  });
+  const sub=uni+car-des, iva=sub*0.16;
+  $('tUni').textContent=fmt(uni);
+  $('tCar').textContent=fmt(car);
+  $('tDes').textContent = des>0 ? '−'+fmt(des) : '$0';
+  $('tSub').textContent=fmt(sub);
+  $('tIva').textContent=fmt(iva);
+  $('tTot').textContent=fmt(sub+iva);
+  $('conteo').textContent = cant+' UNIDAD'+(cant===1?'':'ES')+' · '+confs+' CONFIGURACI'+(confs===1?'ÓN':'ONES');
+
+  let g=[];
+  if(g250.length) g.push('5 años / 250,000 km ('+g250.join(', ')+')');
+  if(g300.length) g.push('5 años / 300,000 km ('+g300.join(', ')+')');
+  const gt = g.length ? g.join(' · ') : '5 años';
+  $('cond').value='Garantía de fábrica: '+gt+'. Precios expresados en moneda nacional. Vigencia de esta cotización: '
+    +($('fvigencia').value||'15 días').toLowerCase()+' naturales a partir de la fecha de emisión. Precios sujetos a cambio sin previo aviso.';
+  autoGrow($('cond'));
+}
+
+function autoGrow(t){ if(!t)return; t.style.height='auto'; t.style.height=t.scrollHeight+'px'; }
+document.addEventListener('input',e=>{ if(e.target.tagName==='TEXTAREA') autoGrow(e.target); });
+
+$('folio').addEventListener('input',e=>{ $('folioPie').textContent=e.target.value; });
+
+['aNombre','aCargo','aEmpresa'].forEach(k=>{
+  const el=$(k);
+  try{ const v=localStorage.getItem('foton_'+k); if(v) el.value=v; }catch(e){}
+  el.addEventListener('input',()=>{ try{ localStorage.setItem('foton_'+k, el.value); }catch(e){} });
+});
+
+function limpiar(){
+  ['cempresa','crfc','ccontacto','ccontacto2','cdist','cplaza'].forEach(k=>$(k).value='');
+  filas=[]; agregar(); nuevoFolio();
+}
+
+$('femision').value=fechaHoy();
+nuevoFolio();
+agregar();
+</script>
+</body>
+</html>
