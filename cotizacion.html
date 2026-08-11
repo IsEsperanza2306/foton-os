@@ -414,7 +414,15 @@ function limpiar(){
   filas=[]; agregar(); nuevoFolio();
 }
 
-$('femision').value=fechaHoy();
+// Fecha de emisión: siempre hoy al abrir
+const hoyStr=fechaHoy();
+$('femision').value=hoyStr;
+
+// Si el usuario vuelve al día siguiente con la página abierta, actualiza
+setInterval(()=>{
+  const nuevo=fechaHoy();
+  if($('femision').value===hoyStr && nuevo!==hoyStr) $('femision').value=nuevo;
+},60000);
 nuevoFolio();
 agregar();
 </script>
