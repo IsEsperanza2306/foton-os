@@ -56,7 +56,7 @@ textarea.f{resize:none;overflow:hidden;display:block}
 
 /* ---------- client strip ---------- */
 .cli{display:grid;grid-template-columns:1.6fr 1fr .85fr;border-bottom:1px solid #0A0A0A}
-.cli-c{padding:13px 18px 13px 0;border-right:.5px solid #D4D4D4}
+.cli-c{padding:13px 18px 13px 0;border-right:.5px solid #D4D4D4;flex:1}
 .cli-c:first-child{padding-left:26px}
 .cli-c:last-child{border-right:none;padding-right:26px}
 .cli .lbl{color:#8A8A8A}
@@ -84,6 +84,8 @@ textarea.f{resize:none;overflow:hidden;display:block}
 .carr-b{width:2px;background:#0A0A0A;flex-shrink:0}
 .carr-t{font-size:9.5px;color:#3C3C3C;line-height:1.5;flex:1}
 .carr-t .k{font-weight:700;color:#0A0A0A;letter-spacing:1.2px;font-size:7.5px;display:block;margin-bottom:2px;text-transform:uppercase}
+.mod-img-wrap{width:118px;flex-shrink:0;align-items:center;justify-content:center;padding-top:2px}
+.mod-img-wrap img{width:100%;height:auto;max-height:78px;object-fit:contain;filter:drop-shadow(0 4px 7px rgba(0,0,0,.16))}
 .n{text-align:right;font-size:11px;font-weight:500;padding-top:5px;letter-spacing:-.2px}
 .n.q{font-size:15px;font-weight:600;padding-top:2px}
 .n.mu{color:#9A9A9A}
@@ -136,8 +138,9 @@ textarea.f{resize:none;overflow:hidden;display:block}
   .bar,.hint,.add,.del{display:none!important}
   .pg{width:100%;min-height:auto;box-shadow:none;margin:0}
   .f{background:transparent!important;box-shadow:none!important}
-  .f::placeholder{color:transparent}
+  .f::placeholder,.f::-webkit-input-placeholder{color:transparent!important;opacity:0!important}
   .hd,.tot,.ft{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .cli-c:empty-check{display:none}
 }
 </style>
 </head>
@@ -146,7 +149,7 @@ textarea.f{resize:none;overflow:hidden;display:block}
 <div class="bar">
   <button onclick="nuevoFolio()">Nuevo folio</button>
   <button onclick="limpiar()">Limpiar</button>
-  <button class="p" onclick="window.print()">Imprimir / PDF</button>
+  <button class="p" onclick="prepararImpresion()">Imprimir / PDF</button>
 </div>
 <div class="hint">Haz clic sobre cualquier dato para editarlo. Los importes se calculan solos. Tu nombre y cargo quedan guardados en este navegador.</div>
 
@@ -190,7 +193,7 @@ textarea.f{resize:none;overflow:hidden;display:block}
   </div>
 
   <!-- CLIENT -->
-  <div class="cli">
+  <div class="cli" id="cliStrip">
     <div class="cli-c">
       <div class="lbl">Cliente</div>
       <div class="cli-v"><input class="f" id="cempresa" placeholder="Razón social del cliente"></div>
@@ -302,7 +305,7 @@ const MODELOS=[
  {n:"S5 MT",p:908800,g:"250,000 km"},
  {n:"S5 AMT",p:954700,g:"250,000 km"},
  {n:"S6 MT",p:1005720,g:"250,000 km"},
- {n:"S8 AMT",p:null,g:"300,000 km"},
+ {n:"S8 AMT",p:1326062,g:"300,000 km"},
  {n:"S12 AMT",p:1582517,g:"300,000 km"},
  {n:"Miler RS Euro VI",p:642600,g:"250,000 km"},
  {n:"TM3",p:336700,g:"250,000 km"}
@@ -333,22 +336,27 @@ function render(){
     d.className='grid row'; d.style.position='relative';
     d.innerHTML=`
       <div class="ix mono">${String(i+1).padStart(2,'0')}</div>
-      <div>
-        <div class="mod">
-          <select class="f" id="m${id}" onchange="setModelo('${id}')">
-            <option value="">Modelo</option>${opts}
-          </select>
-        </div>
-        <div class="spec">
-          <input class="f" id="e${id}" placeholder="Color / especificación" style="flex:1">
-          <span class="g">· GARANTÍA 5 AÑOS / <span id="g${id}">250,000 KM</span></span>
-        </div>
-        <div class="carr">
-          <div class="carr-b"></div>
-          <div class="carr-t">
-            <span class="k">Carrocería</span>
-            <textarea class="f" id="c${id}" rows="2" placeholder="Descripción de la carrocería o conversión"></textarea>
+      <div style="display:flex;gap:14px;align-items:flex-start;min-width:0">
+        <div style="flex:1;min-width:0">
+          <div class="mod">
+            <select class="f" id="m${id}" onchange="setModelo('${id}')">
+              <option value="">Modelo</option>${opts}
+            </select>
           </div>
+          <div class="spec">
+            <input class="f" id="e${id}" placeholder="Color / especificación" style="flex:1">
+            <span class="g">· GARANTÍA 5 AÑOS / <span id="g${id}">250,000 KM</span></span>
+          </div>
+          <div class="carr" id="carrwrap${id}">
+            <div class="carr-b"></div>
+            <div class="carr-t">
+              <span class="k">Carrocería</span>
+              <textarea class="f" id="c${id}" rows="2" placeholder="Descripción de la carrocería o conversión"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="mod-img-wrap" id="imgwrap${id}" style="display:none">
+          <img id="ti${id}" src="" alt="">
         </div>
       </div>
       <div class="n q"><input class="f mono r" id="q${id}" value="1" oninput="calcular()"></div>
@@ -358,11 +366,6 @@ function render(){
       <div class="n im mono" id="i${id}">$0</div>
       <button class="del" onclick="borrar(${id})" title="Eliminar">&times;</button>`;
     c.appendChild(d);
-    // truck image element
-    var ti=document.createElement('img');
-    ti.id='ti'+id; ti.alt='';
-    ti.style.cssText='display:none;position:absolute;right:10px;bottom:10px;height:82px;object-fit:contain;filter:drop-shadow(0 3px 8px rgba(0,0,0,.18));pointer-events:none';
-    d.appendChild(ti);
   });
   document.querySelectorAll('textarea.f').forEach(autoGrow);
   calcular();
@@ -374,7 +377,12 @@ function setModelo(id){
   $('p'+id).value = m.p ? fmt(m.p) : '';
   if(!m.p) $('p'+id).placeholder='Por confirmar';
   $('g'+id).textContent = m.g.toUpperCase();
-  const ti=$('ti'+id);if(ti){var src=TRUCK_IMGS[m.n]||'';ti.src=src;ti.style.display=src?'block':'none';}
+  const ti=$('ti'+id), wrap=$('imgwrap'+id);
+  if(ti && wrap){
+    const src=TRUCK_IMGS[m.n]||'';
+    ti.src=src;
+    wrap.style.display=src?'flex':'none';
+  }
   calcular();
 }
 
@@ -425,6 +433,47 @@ $('folio').addEventListener('input',e=>{ $('folioPie').textContent=e.target.valu
   try{ const v=localStorage.getItem('foton_'+k); if(v) el.value=v; }catch(e){}
   el.addEventListener('input',()=>{ try{ localStorage.setItem('foton_'+k, el.value); }catch(e){} });
 });
+
+function prepararImpresion(){
+  // Oculta bloques de cliente vacíos para no dejar huecos ni imprimir placeholders
+  const cliBlocks=[...document.querySelectorAll('.cli-c')];
+  const estados=cliBlocks.map(c=>{
+    const inputs=c.querySelectorAll('input');
+    return [...inputs].some(i=>i.value.trim());
+  });
+  const algunoLleno = estados.some(Boolean);
+  document.getElementById('cliStrip').style.display = algunoLleno ? '' : 'none';
+  cliBlocks.forEach((c,i)=>{ c.style.display = estados[i] ? '' : 'none'; });
+  // Si queda solo 1 o 2 columnas visibles, usar flex para que no se vean huecos de grid
+  const visibles = estados.filter(Boolean).length;
+  document.getElementById('cliStrip').style.display = algunoLleno ? (visibles<3?'flex':'grid') : 'none';
+  // Oculta "Color/especificación" vacío
+  filas.forEach(id=>{
+    const e=$('e'+id);
+    if(e && !e.value.trim()){
+      const g=e.nextElementSibling;
+      e.style.display='none';
+      if(g) g.style.marginLeft='0';
+    } else if(e){
+      e.style.display='';
+    }
+  });
+  // Oculta bloque de carrocería si está vacío
+  filas.forEach(id=>{
+    const c=$('c'+id), wrap=$('carrwrap'+id);
+    if(c && wrap) wrap.style.display = c.value.trim() ? '' : 'none';
+  });
+  window.print();
+}
+
+window.onafterprint = function(){
+  document.getElementById('cliStrip').style.display='';
+  document.querySelectorAll('.cli-c').forEach(c=>{ c.style.display=''; });
+  filas.forEach(id=>{
+    const e=$('e'+id); if(e) e.style.display='';
+    const wrap=$('carrwrap'+id); if(wrap) wrap.style.display='';
+  });
+};
 
 function limpiar(){
   ['cempresa','crfc','ccontacto','ccontacto2','cdist','cplaza'].forEach(k=>$(k).value='');
