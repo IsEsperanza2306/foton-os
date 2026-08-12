@@ -330,7 +330,7 @@ function render(){
   filas.forEach((id,i)=>{
     const opts=MODELOS.map((m,j)=>`<option value="${j}">${m.n}</option>`).join('');
     const d=document.createElement('div');
-    d.className='grid row';
+    d.className='grid row'; d.style.position='relative';
     d.innerHTML=`
       <div class="ix mono">${String(i+1).padStart(2,'0')}</div>
       <div>
@@ -358,6 +358,11 @@ function render(){
       <div class="n im mono" id="i${id}">$0</div>
       <button class="del" onclick="borrar(${id})" title="Eliminar">&times;</button>`;
     c.appendChild(d);
+    // truck image element
+    var ti=document.createElement('img');
+    ti.id='ti'+id; ti.alt='';
+    ti.style.cssText='display:none;position:absolute;right:10px;bottom:10px;height:82px;object-fit:contain;filter:drop-shadow(0 3px 8px rgba(0,0,0,.18));pointer-events:none';
+    d.appendChild(ti);
   });
   document.querySelectorAll('textarea.f').forEach(autoGrow);
   calcular();
