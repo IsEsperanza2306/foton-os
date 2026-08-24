@@ -302,28 +302,28 @@ const TRUCK_IMGS = {
 };
 
 const MODELOS=[
- {n:"S3 MT",p:704800,g:"250,000 km"},
- {n:"S3 AMT",p:817000,g:"250,000 km"},
- {n:"S5 MT",p:908800,g:"250,000 km"},
- {n:"S5 AMT",p:954700,g:"250,000 km"},
- {n:"S6 MT",p:1005720,g:"250,000 km"},
- {n:"S8 AMT",p:1326062,g:"300,000 km"},
- {n:"S12 AMT",p:1582517,g:"300,000 km"},
- {n:"Miler RS Diesel",p:642600,g:"250,000 km"},
- {n:"EST-S38 AMT",p:1954830,g:"300,000 km"},
- {n:"EST-A AMT",p:2602530,g:"300,000 km"},
- {n:"EST-A CNG",p:3484830,g:"300,000 km"},
- {n:"Galaxy X13 AMT",p:2979930,g:"300,000 km"},
- {n:"TM3",p:336700,g:"250,000 km"},
- {n:"Wonder DC",p:302500,g:"100,000 km"},
- {n:"View CS2 Pasaje",p:701556,g:"100,000 km"},
- {n:"View CS2 Panel",p:638316,g:"100,000 km"},
- {n:"Hi Van Pasaje (Toano)",p:904536,g:"100,000 km"},
- {n:"Hi Van Panel HR (Toano)",p:893316,g:"100,000 km"},
- {n:"Tunland G7 4x2 Chasis cabina",p:413437,g:"100,000 km"},
- {n:"Tunland G7 4x2",p:434419,g:"100,000 km"},
- {n:"Tunland V7 4x2",p:656093,g:"100,000 km"},
- {n:"Tunland V7 4x4",p:685832,g:"100,000 km"}
+ {n:"S3 MT",p:704800,g:"250,000 km",ga:"5"},
+ {n:"S3 AMT",p:817000,g:"250,000 km",ga:"5"},
+ {n:"S5 MT",p:908800,g:"250,000 km",ga:"5"},
+ {n:"S5 AMT",p:954700,g:"250,000 km",ga:"5"},
+ {n:"S6 MT",p:1005720,g:"250,000 km",ga:"5"},
+ {n:"S8 AMT",p:1326062,g:"300,000 km",ga:"5"},
+ {n:"S12 AMT",p:1582517,g:"300,000 km",ga:"5"},
+ {n:"Miler RS Diesel",p:642600,g:"250,000 km",ga:"5"},
+ {n:"EST-S38 AMT",p:1954830,g:"300,000 km",ga:"5"},
+ {n:"EST-A AMT",p:2602530,g:"300,000 km",ga:"5"},
+ {n:"EST-A CNG",p:3484830,g:"300,000 km",ga:"5"},
+ {n:"Galaxy X13 AMT",p:2979930,g:"600,000 km",ga:"5"},
+ {n:"TM3",p:336700,g:"100,000 km",ga:"3"},
+ {n:"Wonder DC",p:302500,g:"100,000 km",ga:"3"},
+ {n:"View CS2 Pasaje",p:701556,g:"100,000 km",ga:"3"},
+ {n:"View CS2 Panel",p:638316,g:"100,000 km",ga:"3"},
+ {n:"Hi Van Pasaje (Toano)",p:904536,g:"250,000 km",ga:"5"},
+ {n:"Hi Van Panel HR (Toano)",p:893316,g:"250,000 km",ga:"5"},
+ {n:"Tunland G7 4x2 Chasis cabina",p:413437,g:"200,000 km",ga:"10"},
+ {n:"Tunland G7 4x2",p:434419,g:"200,000 km",ga:"10"},
+ {n:"Tunland V7 4x2",p:656093,g:"200,000 km",ga:"10"},
+ {n:"Tunland V7 4x4",p:685832,g:"200,000 km",ga:"10"}
 ];
 
 let filas=[];
@@ -360,7 +360,7 @@ function render(){
           </div>
           <div class="spec">
             <input class="f" id="e${id}" placeholder="Color / especificación" style="flex:1">
-            <span class="g">· GARANTÍA 5 AÑOS / <span id="g${id}">250,000 KM</span></span>
+            <span class="g">· GARANTÍA <span id="ga${id}">5</span> AÑOS / <span id="g${id}">250,000 KM</span></span>
           </div>
           <div class="carr" id="carrwrap${id}">
             <div class="carr-b"></div>
@@ -392,6 +392,7 @@ function setModelo(id){
   $('p'+id).value = m.p ? fmt(m.p) : '';
   if(!m.p) $('p'+id).placeholder='Por confirmar';
   $('g'+id).textContent = m.g.toUpperCase();
+  const gaEl=$('ga'+id); if(gaEl) gaEl.textContent = m.ga || '5';
   const ti=$('ti'+id), wrap=$('imgwrap'+id);
   if(ti && wrap){
     const src=TRUCK_IMGS[m.n]||'';
@@ -417,8 +418,9 @@ function calcular(){
     if(s && s.value!==''){
       confs++;
       const m=MODELOS[+s.value];
-      if(!gGrupos[m.g]) gGrupos[m.g]=[];
-      if(!gGrupos[m.g].includes(m.n)) gGrupos[m.g].push(m.n);
+      const key=(m.ga||'5')+'|'+m.g;
+      if(!gGrupos[key]) gGrupos[key]=[];
+      if(!gGrupos[key].includes(m.n)) gGrupos[key].push(m.n);
     }
   });
   const tot=uni+car-des, sub=tot/1.16, iva=tot-sub;
@@ -431,8 +433,9 @@ function calcular(){
   $('conteo').textContent = cant+' UNIDAD'+(cant===1?'':'ES')+' · '+confs+' CONFIGURACI'+(confs===1?'ÓN':'ONES');
 
   let g=[];
-  Object.keys(gGrupos).forEach(km=>{
-    g.push('5 años / '+km+' ('+gGrupos[km].join(', ')+')');
+  Object.keys(gGrupos).forEach(key=>{
+    const [anios,km]=key.split('|');
+    g.push(anios+' años / '+km+' ('+gGrupos[key].join(', ')+')');
   });
   const gt = g.length ? g.join(' · ') : '5 años';
   $('cond').value='Garantía de fábrica: '+gt+'. Precios expresados en moneda nacional. Vigencia de esta cotización: '
