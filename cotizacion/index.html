@@ -309,16 +309,21 @@ const MODELOS=[
  {n:"S6 MT",p:1005720,g:"250,000 km"},
  {n:"S8 AMT",p:1326062,g:"300,000 km"},
  {n:"S12 AMT",p:1582517,g:"300,000 km"},
+ {n:"Miler RS Diesel",p:642600,g:"250,000 km"},
+ {n:"EST-S38 AMT",p:1954830,g:"300,000 km"},
+ {n:"EST-A AMT",p:2602530,g:"300,000 km"},
+ {n:"EST-A CNG",p:3484830,g:"300,000 km"},
+ {n:"Galaxy X13 AMT",p:2979930,g:"300,000 km"},
  {n:"TM3",p:336700,g:"250,000 km"},
- {n:"Wonder DC",p:275000,g:"100,000 km"},
- {n:"View CS2 Pasaje",p:630360,g:"100,000 km"},
- {n:"View CS2 Panel",p:553403,g:"100,000 km"},
- {n:"Hi Van Pasaje (Toano)",p:812940,g:"100,000 km"},
- {n:"Hi Van Panel HR (Toano)",p:752062,g:"100,000 km"},
- {n:"Tunland G7 4x2 Chasis cabina",p:372093,g:"100,000 km"},
- {n:"Tunland G7 4x2",p:387106,g:"100,000 km"},
- {n:"Tunland V7 4x2",p:569232,g:"100,000 km"},
- {n:"Tunland V7 4x4",p:592506,g:"100,000 km"}
+ {n:"Wonder DC",p:302500,g:"100,000 km"},
+ {n:"View CS2 Pasaje",p:701556,g:"100,000 km"},
+ {n:"View CS2 Panel",p:638316,g:"100,000 km"},
+ {n:"Hi Van Pasaje (Toano)",p:904536,g:"100,000 km"},
+ {n:"Hi Van Panel HR (Toano)",p:893316,g:"100,000 km"},
+ {n:"Tunland G7 4x2 Chasis cabina",p:413437,g:"100,000 km"},
+ {n:"Tunland G7 4x2",p:434419,g:"100,000 km"},
+ {n:"Tunland V7 4x2",p:656093,g:"100,000 km"},
+ {n:"Tunland V7 4x4",p:685832,g:"100,000 km"}
 ];
 
 let filas=[];
@@ -416,13 +421,13 @@ function calcular(){
       if(!gGrupos[m.g].includes(m.n)) gGrupos[m.g].push(m.n);
     }
   });
-  const sub=uni+car-des, iva=sub*0.16;
+  const tot=uni+car-des, sub=tot/1.16, iva=tot-sub;
   $('tUni').textContent=fmt(uni);
   $('tCar').textContent=fmt(car);
   $('tDes').textContent = des>0 ? '−'+fmt(des) : '$0';
   $('tSub').textContent=fmt(sub);
   $('tIva').textContent=fmt(iva);
-  $('tTot').textContent=fmt(sub+iva);
+  $('tTot').textContent=fmt(tot);
   $('conteo').textContent = cant+' UNIDAD'+(cant===1?'':'ES')+' · '+confs+' CONFIGURACI'+(confs===1?'ÓN':'ONES');
 
   let g=[];
