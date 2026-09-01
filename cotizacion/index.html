@@ -74,9 +74,14 @@ textarea.f{resize:none;overflow:hidden;display:block}
 .cols span.r{text-align:right}
 .row{border-bottom:.5px solid #E0E0E0;padding:11px 0 12px;align-items:start}
 .ix{font-size:11px;font-weight:600;color:#B4B4B4;letter-spacing:.5px;padding-top:4px}
-.mod{font-size:20px;font-weight:800;letter-spacing:-.9px;line-height:1;padding-right:8px;overflow:hidden}
+.mod{font-size:20px;font-weight:800;letter-spacing:-.9px;line-height:1;padding-right:8px}
 .mod select.f{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
 .mod .f{padding:0 3px}
+.yr-toggle{display:flex;flex-shrink:0;border:1px solid #0A0A0A;border-radius:4px;overflow:hidden}
+.yr-btn{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.3px;
+  background:#fff;color:#0A0A0A;border:none;padding:3px 7px;cursor:pointer;border-right:1px solid #0A0A0A}
+.yr-btn:last-child{border-right:none}
+.yr-btn.sel{background:#0A0A0A;color:#fff}
 .spec{font-size:8px;letter-spacing:1.3px;color:#8A8A8A;font-weight:600;margin-top:5px;text-transform:uppercase;
   display:flex;align-items:center;gap:4px;padding-right:8px}
 .spec .f{text-transform:uppercase;letter-spacing:1.3px}
@@ -318,29 +323,55 @@ const TRUCK_IMGS = {
 };
 
 const MODELOS=[
- {n:"S3 MT",p:704800,g:"250,000 km",ga:"5"},
- {n:"S3 AMT",p:817000,g:"250,000 km",ga:"5"},
- {n:"S5 MT",p:908800,g:"250,000 km",ga:"5"},
- {n:"S5 AMT",p:954700,g:"250,000 km",ga:"5"},
- {n:"S6 MT",p:1005720,g:"250,000 km",ga:"5"},
- {n:"S8 AMT",p:1326062,g:"300,000 km",ga:"5"},
- {n:"S12 AMT",p:1582517,g:"300,000 km",ga:"5"},
- {n:"Miler RS Diesel",p:642600,g:"250,000 km",ga:"5"},
- {n:"EST-S38 AMT",p:1954830,g:"300,000 km",ga:"5"},
- {n:"EST-A AMT",p:2602530,g:"300,000 km",ga:"5"},
- {n:"EST-A CNG",p:3484830,g:"300,000 km",ga:"5"},
- {n:"Galaxy X13 AMT",p:2979930,g:"600,000 km",ga:"5"},
- {n:"TM3",p:336700,g:"100,000 km",ga:"3"},
- {n:"Wonder DC",p:302500,g:"100,000 km",ga:"3"},
- {n:"View CS2 Pasaje",p:701556,g:"100,000 km",ga:"3"},
- {n:"View CS2 Panel",p:638316,g:"100,000 km",ga:"3"},
- {n:"Hi Van Pasaje (Toano)",p:904536,g:"250,000 km",ga:"5"},
- {n:"Hi Van Panel HR (Toano)",p:893316,g:"250,000 km",ga:"5"},
- {n:"Tunland G7 4x2 Chasis cabina",p:413437,g:"200,000 km",ga:"10"},
- {n:"Tunland G7 4x2",p:434419,g:"200,000 km",ga:"10"},
- {n:"Tunland V7 4x2",p:656093,g:"200,000 km",ga:"10"},
- {n:"Tunland V7 4x4",p:685832,g:"200,000 km",ga:"10"}
+ {n:"S2 MT",y:{"2027":695800}},
+ {n:"S3 MT",y:{"2026":704800,"2027":718896}},
+ {n:"S3 AMT",y:{"2026":817000,"2027":760000}},
+ {n:"S5 MT",y:{"2026":908800,"2027":926976}},
+ {n:"S5 AMT",y:{"2026":954700,"2027":967000}},
+ {n:"S6 MT",y:{"2026":1005720,"2027":1025834}},
+ {n:"S8 AMT",y:{"2026":1326062,"2027":1339323}},
+ {n:"S12 AMT",y:{"2026":1582517,"2027":1598342}},
+ {n:"Miler RS Diesel",y:{"2026":642600}},
+ {n:"EST-S38 AMT",y:{"2026":1954830,"2027":1984152}},
+ {n:"EST-A AMT",y:{"2026":2602530}},
+ {n:"EST-A CNG",y:{"2026":3484830}},
+ {n:"Galaxy X13 AMT",y:{"2026":2979930,"2027":2820000}},
+ {n:"TM3",y:{"2026":336700}},
+ {n:"Wonder DC",y:{"2026":302500}},
+ {n:"View CS2 Pasaje",y:{"2026":701556}},
+ {n:"View CS2 Panel",y:{"2026":638316}},
+ {n:"Hi Van Pasaje (Toano)",y:{"2026":904536,"2027":850000}},
+ {n:"Hi Van Panel HR (Toano)",y:{"2026":893316}},
+ {n:"Tunland G7 4x2 Chasis cabina",y:{"2026":413437,"2027":414042}},
+ {n:"Tunland G7 4x2",y:{"2026":434419,"2027":443108}},
+ {n:"Tunland V7 4x2",y:{"2026":656093,"2027":565000}},
+ {n:"Tunland V7 4x4",y:{"2026":685832,"2027":615000}}
 ];
+const GARANTIAS={
+ "S2 MT":{g:"250,000 km",ga:"5"},
+ "S3 MT":{g:"250,000 km",ga:"5"},
+ "S3 AMT":{g:"250,000 km",ga:"5"},
+ "S5 MT":{g:"250,000 km",ga:"5"},
+ "S5 AMT":{g:"250,000 km",ga:"5"},
+ "S6 MT":{g:"250,000 km",ga:"5"},
+ "S8 AMT":{g:"300,000 km",ga:"5"},
+ "S12 AMT":{g:"300,000 km",ga:"5"},
+ "Miler RS Diesel":{g:"250,000 km",ga:"5"},
+ "EST-S38 AMT":{g:"300,000 km",ga:"5"},
+ "EST-A AMT":{g:"300,000 km",ga:"5"},
+ "EST-A CNG":{g:"300,000 km",ga:"5"},
+ "Galaxy X13 AMT":{g:"600,000 km",ga:"5"},
+ "TM3":{g:"100,000 km",ga:"3"},
+ "Wonder DC":{g:"100,000 km",ga:"3"},
+ "View CS2 Pasaje":{g:"100,000 km",ga:"3"},
+ "View CS2 Panel":{g:"100,000 km",ga:"3"},
+ "Hi Van Pasaje (Toano)":{g:"250,000 km",ga:"5"},
+ "Hi Van Panel HR (Toano)":{g:"250,000 km",ga:"5"},
+ "Tunland G7 4x2 Chasis cabina":{g:"200,000 km",ga:"10"},
+ "Tunland G7 4x2":{g:"200,000 km",ga:"10"},
+ "Tunland V7 4x2":{g:"200,000 km",ga:"10"},
+ "Tunland V7 4x4":{g:"200,000 km",ga:"10"}
+};
 
 let filas=[];
 const fmt=n=>'$'+Math.round(n).toLocaleString('es-MX');
@@ -369,10 +400,14 @@ function render(){
       <div class="ix mono">${String(i+1).padStart(2,'0')}</div>
       <div style="display:flex;gap:14px;align-items:flex-start;min-width:0">
         <div style="flex:1;min-width:0">
-          <div class="mod">
-            <select class="f" id="m${id}" onchange="setModelo('${id}')">
+          <div class="mod" style="display:flex;align-items:baseline;gap:8px">
+            <select class="f" id="m${id}" onchange="setModelo('${id}')" style="flex:1">
               <option value="">Modelo</option>${opts}
             </select>
+            <div class="yr-toggle" id="yrwrap${id}" style="display:none">
+              <button type="button" class="yr-btn" id="yr26_${id}" onclick="setAnio('${id}','2026')">26</button>
+              <button type="button" class="yr-btn" id="yr27_${id}" onclick="setAnio('${id}','2027')">27</button>
+            </div>
           </div>
           <div class="spec">
             <input class="f" id="e${id}" placeholder="Color / especificación" style="flex:1">
@@ -405,12 +440,24 @@ function render(){
 function setModelo(id){
   const s=$('m'+id); if(s.value===''){return;}
   const m=MODELOS[+s.value];
-  $('p'+id).value = m.p ? fmt(m.p) : '';
-  if(!m.p) $('p'+id).placeholder='Por confirmar';
-  $('g'+id).textContent = m.g.toUpperCase();
-  const gaEl=$('ga'+id); if(gaEl) gaEl.textContent = m.ga || '5';
+  const anios=Object.keys(m.y).sort().reverse(); // most recent first
+  const yrwrap=$('yrwrap'+id);
+  const b26=$('yr26_'+id), b27=$('yr27_'+id);
+  const has26 = m.y['2026']!==undefined, has27 = m.y['2027']!==undefined;
+  if(has26 && has27){
+    yrwrap.style.display='flex';
+    b26.style.display='';
+    b27.style.display='';
+  } else {
+    yrwrap.style.display='none';
+  }
+  // default to most recent year available
+  const defaultYear = has27 ? '2027' : '2026';
+  s.dataset.anio = defaultYear;
+  aplicarAnio(id, m, defaultYear);
+
   const modBox=s.closest('.mod');
-  if(modBox) modBox.style.fontSize = m.n.length>16 ? '13.5px' : (m.n.length>11 ? '16px' : '20px');
+  if(modBox) modBox.querySelector('select').style.fontSize = m.n.length>16 ? '13.5px' : (m.n.length>11 ? '16px' : '20px');
   const ti=$('ti'+id), wrap=$('imgwrap'+id);
   if(ti && wrap){
     const src=TRUCK_IMGS[m.n]||'';
@@ -418,6 +465,27 @@ function setModelo(id){
     wrap.classList.toggle('on', !!src);
   }
   calcular();
+}
+
+function setAnio(id, anio){
+  const s=$('m'+id); if(!s || s.value==='') return;
+  const m=MODELOS[+s.value];
+  if(m.y[anio]===undefined) return;
+  s.dataset.anio = anio;
+  aplicarAnio(id, m, anio);
+  calcular();
+}
+
+function aplicarAnio(id, m, anio){
+  const p = m.y[anio];
+  $('p'+id).value = p ? fmt(p) : '';
+  if(!p) $('p'+id).placeholder='Por confirmar';
+  const gar = GARANTIAS[m.n] || {g:'250,000 km',ga:'5'};
+  $('g'+id).textContent = gar.g.toUpperCase();
+  const gaEl=$('ga'+id); if(gaEl) gaEl.textContent = gar.ga;
+  const b26=$('yr26_'+id), b27=$('yr27_'+id);
+  if(b26) b26.classList.toggle('sel', anio==='2026');
+  if(b27) b27.classList.toggle('sel', anio==='2027');
 }
 
 function calcular(){
@@ -436,7 +504,8 @@ function calcular(){
     if(s && s.value!==''){
       confs++;
       const m=MODELOS[+s.value];
-      const key=(m.ga||'5')+'|'+m.g;
+      const gar = GARANTIAS[m.n] || {g:'250,000 km',ga:'5'};
+      const key=gar.ga+'|'+gar.g;
       if(!gGrupos[key]) gGrupos[key]=[];
       if(!gGrupos[key].includes(m.n)) gGrupos[key].push(m.n);
     }
