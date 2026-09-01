@@ -77,11 +77,11 @@ textarea.f{resize:none;overflow:hidden;display:block}
 .mod{font-size:20px;font-weight:800;letter-spacing:-.9px;line-height:1;padding-right:8px}
 .mod select.f{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
 .mod .f{padding:0 3px}
-.yr-toggle{display:flex;flex-shrink:0;border:1px solid #0A0A0A;border-radius:4px;overflow:hidden}
-.yr-btn{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.3px;
-  background:#fff;color:#0A0A0A;border:none;padding:3px 7px;cursor:pointer;border-right:1px solid #0A0A0A}
-.yr-btn:last-child{border-right:none}
-.yr-btn.sel{background:#0A0A0A;color:#fff}
+.yr-toggle{display:flex;align-items:center;flex-shrink:0;gap:5px;margin-right:6px;padding-right:6px;border-right:1px solid #D8D8D8}
+.yr-lbl{font-size:7px;letter-spacing:1.5px;color:#B4B4B4;font-weight:700}
+.yr-btn{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;letter-spacing:.2px;
+  background:#fff;color:#8A8A8A;border:1px solid #D8D8D8;border-radius:3px;padding:2px 6px;cursor:pointer}
+.yr-btn.sel{background:#0A0A0A;color:#fff;border-color:#0A0A0A}
 .spec{font-size:8px;letter-spacing:1.3px;color:#8A8A8A;font-weight:600;margin-top:5px;text-transform:uppercase;
   display:flex;align-items:center;gap:4px;padding-right:8px}
 .spec .f{text-transform:uppercase;letter-spacing:1.3px}
@@ -400,17 +400,18 @@ function render(){
       <div class="ix mono">${String(i+1).padStart(2,'0')}</div>
       <div style="display:flex;gap:14px;align-items:flex-start;min-width:0">
         <div style="flex:1;min-width:0">
-          <div class="mod" style="display:flex;align-items:baseline;gap:8px">
-            <select class="f" id="m${id}" onchange="setModelo('${id}')" style="flex:1">
+          <div class="mod">
+            <select class="f" id="m${id}" onchange="setModelo('${id}')">
               <option value="">Modelo</option>${opts}
             </select>
-            <div class="yr-toggle" id="yrwrap${id}" style="display:none">
-              <button type="button" class="yr-btn" id="yr26_${id}" onclick="setAnio('${id}','2026')">26</button>
-              <button type="button" class="yr-btn" id="yr27_${id}" onclick="setAnio('${id}','2027')">27</button>
-            </div>
           </div>
           <div class="spec">
             <input class="f" id="e${id}" placeholder="Color / especificación" style="flex:1">
+            <div class="yr-toggle" id="yrwrap${id}" style="display:none">
+              <span class="yr-lbl">AÑO</span>
+              <button type="button" class="yr-btn" id="yr26_${id}" onclick="setAnio('${id}','2026')">2026</button>
+              <button type="button" class="yr-btn" id="yr27_${id}" onclick="setAnio('${id}','2027')">2027</button>
+            </div>
             <span class="g">· GARANTÍA <span id="ga${id}">5</span> AÑOS / <span id="g${id}">250,000 KM</span></span>
           </div>
           <div class="carr" id="carrwrap${id}">
