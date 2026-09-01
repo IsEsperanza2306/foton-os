@@ -120,9 +120,10 @@ textarea.f{resize:none;overflow:hidden;display:block}
 .tot-mn{font-size:7px;letter-spacing:2.4px;color:#9A9A9A;font-weight:600;margin-top:8px}
 
 /* ---------- conditions ---------- */
-.cond{padding:20px 26px 0;display:grid;grid-template-columns:88px 1fr;gap:16px;align-items:start}
-.cond .lbl{color:#8A8A8A;padding-top:2px}
-.cond-b{font-size:9.5px;color:#3C3C3C;line-height:1.65;border-left:.5px solid #D4D4D4;padding-left:16px}
+.cond{padding:26px 26px 0}
+.cond-box{background:#F8F8F6;border:1px solid #E4E4E0;border-left:3px solid #0A0A0A;border-radius:6px;padding:14px 18px}
+.cond-lbl{font-size:9px;letter-spacing:2.4px;color:#0A0A0A;font-weight:700;text-transform:uppercase;margin-bottom:8px}
+.cond-b{font-size:9.5px;color:#3C3C3C;line-height:1.65;width:100%;display:block;resize:none;overflow:hidden;background:transparent;border:none}
 
 /* ---------- signatures ---------- */
 .firm{display:grid;grid-template-columns:1fr 1fr;gap:52px;padding:30px 26px 20px;margin-top:auto}
@@ -263,8 +264,10 @@ textarea.f{resize:none;overflow:hidden;display:block}
 
   <!-- CONDITIONS -->
   <div class="cond">
-    <div class="lbl">Condiciones<br>y garantía</div>
-    <div class="cond-b"><textarea class="f" id="cond" rows="3"></textarea></div>
+    <div class="cond-box">
+      <div class="cond-lbl">Condiciones y garantía</div>
+      <textarea class="f cond-b" id="cond" rows="2"></textarea>
+    </div>
   </div>
 
   <!-- SIGNATURES -->
