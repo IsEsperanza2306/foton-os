@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Panel de Seguimiento · Foton MDT/LDT</title>
+<style>
+  :root{
+    --bg:#06142E;
+    --bg-elev:#0B1D3D;
+    --line:#16294F;
+    --text:#F2F5FA;
+    --text-dim:#8CA0C4;
+    --accent:#E8601C;
+    --celeste:#4FB4E8;
+    --verde:#2FBF71;
+    --amarillo:#E8B84F;
+    --rojo:#E85C5C;
+    --radius-s:6px;
+    --radius-m:10px;
+    --radius-l:14px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    padding-bottom:60px;
+  }
+  header{
+    padding:20px 16px 14px;
+    border-bottom:1px solid var(--line);
+    position:sticky;
+    top:0;
+    background:var(--bg);
+    z-index:10;
+  }
+  header h1{
+    font-size:20px;
+    margin:0 0 2px;
+    font-weight:700;
+    letter-spacing:-0.01em;
+  }
+  header p{
+    margin:0;
+    font-size:12px;
+    color:var(--text-dim);
+  }
+  .summary{
+    display:flex;
+    gap:8px;
+    padding:14px 16px 4px;
+    overflow-x:auto;
+  }
+  .chip{
+    flex:0 0 auto;
+    background:var(--bg-elev);
+    border:1px solid var(--line);
+    border-radius:var(--radius-m);
+    padding:10px 14px;
+    min-width:84px;
+    text-align:center;
+  }
+  .chip .n{
+    font-size:20px;
+    font-weight:700;
+    display:block;
+  }
+  .chip .lbl{
+    font-size:11px;
+    color:var(--text-dim);
+    margin-top:2px;
+    display:block;
+  }
+  .chip.verde .n{color:var(--verde);}
+  .chip.amarillo .n{color:var(--amarillo);}
+  .chip.rojo .n{color:var(--rojo);}
+
+  .filters{
+    display:flex;
+    gap:8px;
+    padding:12px 16px;
+    overflow-x:auto;
+  }
+  .filters button{
+    flex:0 0 auto;
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--text-dim);
+    border-radius:999px;
+    padding:8px 14px;
+    font-size:12px;
+    min-height:34px;
+  }
+  .filters button.active{
+    border-color:var(--accent);
+    color:var(--text);
+    background:rgba(232,96,28,0.12);
+  }
+
+  main{padding:4px 16px 16px;}
+
+  .card{
+    background:var(--bg-elev);
+    border:1px solid var(--line);
+    border-radius:var(--radius-l);
+    padding:14px;
+    margin-bottom:10px;
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+  }
+  .dot{
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    margin-top:4px;
+    flex:0 0 auto;
+  }
+  .dot.verde{background:var(--verde);}
+  .dot.amarillo{background:var(--amarillo);}
+  .dot.rojo{background:var(--rojo);}
+
+  .card-body{flex:1;min-width:0;}
+  .card-title{
+    font-size:14px;
+    font-weight:600;
+    margin:0 0 2px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .card-sub{
+    font-size:11px;
+    color:var(--text-dim);
+    margin:0 0 8px;
+  }
+  .card-meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  .tag{
+    font-size:11px;
+    padding:3px 8px;
+    border-radius:var(--radius-s);
+    background:rgba(255,255,255,0.05);
+    color:var(--text-dim);
+    white-space:nowrap;
+  }
+  .tag.warn{color:var(--amarillo); background:rgba(232,184,79,0.12);}
+  .tag.bad{color:var(--rojo); background:rgba(232,92,92,0.12);}
+  .tag.ok{color:var(--verde); background:rgba(47,191,113,0.12);}
+  .tag.info{color:var(--celeste); background:rgba(79,180,232,0.12);}
+
+  .empty{
+    text-align:center;
+    color:var(--text-dim);
+    font-size:13px;
+    padding:40px 20px;
+  }
+
+  .refresh{
+    position:fixed;
+    bottom:16px;
+    right:16px;
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    border-radius:999px;
+    padding:12px 18px;
+    font-size:13px;
+    font-weight:600;
+    min-height:44px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.4);
+  }
+  .refresh:active{opacity:0.8;}
+
+  .loading{
+    text-align:center;
+    padding:40px;
+    color:var(--text-dim);
+    font-size:13px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Panel de Seguimiento</h1>
+  <p>Segmento MDT/LDT · ciclo Día 1 / Día 2</p>
+</header>
+
+<div class="summary" id="summary"></div>
+
+<div class="filters" id="filters">
+  <button class="active" data-f="todos">Todos</button>
+  <button data-f="rojo">Atención</button>
+  <button data-f="amarillo">Seguimiento</button>
+  <button data-f="verde">Al día</button>
+  <button data-f="sin_vendedor">Sin vendedor</button>
+</div>
+
+<main id="main">
+  <div class="loading">Cargando panel…</div>
+</main>
+
+<button class="refresh" onclick="cargar()">↻ Actualizar</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+const SUPABASE_URL = "https://gblwoaaitnqbgorxaydv.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdibHdvYWFpdG5xYmdvcnhheWR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxOTQ3NTMsImV4cCI6MjA5NTc3MDc1M30.o7zYCCfH2rHEs69o4U7Zc9dM4IvQi8GsXRlZFW_2kso";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let rows = [];
+let filtroActivo = "todos";
+
+function diasDesde(fechaISO){
+  if(!fechaISO) return null;
+  const d = new Date(fechaISO + "T00:00:00");
+  const hoy = new Date();
+  return Math.floor((hoy - d) / (1000*60*60*24));
+}
+
+function estadoDistribuidor(r){
+  const sinVendedor = !r.vendedor_id;
+  const pendAbiertos = r.pendientes_abiertos || 0;
+  const diasMax = r.dias_pendiente_max || 0;
+  const diasDia1 = diasDesde(r.ultimo_dia1);
+  const diasDia2 = diasDesde(r.ultimo_dia2);
+  const sinCiclo = diasDia1 === null && diasDia2 === null;
+
+  // rojo: sin vendedor asignado, o nunca ha corrido el ciclo, o pendientes muy viejos
+  if (sinVendedor || sinCiclo || diasMax > 30 || pendAbiertos > 15) return "rojo";
+
+  // amarillo: ciclo corrió pero hace más de 8 días, o hay pendientes de más de 15 días, o meta de contactos no alcanzada
+  const cicloViejo = (diasDia1 !== null && diasDia1 > 8) || (diasDia2 !== null && diasDia2 > 8);
+  const metaBaja = (r.contactos_semana || 0) < (r.meta_contactos || 3);
+  if (cicloViejo || diasMax > 15 || metaBaja || pendAbiertos > 5) return "amarillo";
+
+  return "verde";
+}
+
+function render(){
+  const main = document.getElementById("main");
+  const counts = {verde:0, amarillo:0, rojo:0};
+  rows.forEach(r => counts[estadoDistribuidor(r)]++);
+
+  document.getElementById("summary").innerHTML = `
+    <div class="chip rojo"><span class="n">${counts.rojo}</span><span class="lbl">Atención</span></div>
+    <div class="chip amarillo"><span class="n">${counts.amarillo}</span><span class="lbl">Seguimiento</span></div>
+    <div class="chip verde"><span class="n">${counts.verde}</span><span class="lbl">Al día</span></div>
+    <div class="chip"><span class="n">${rows.length}</span><span class="lbl">Distribuidores</span></div>
+  `;
+
+  let visibles = rows;
+  if(filtroActivo === "sin_vendedor"){
+    visibles = rows.filter(r => !r.vendedor_id);
+  } else if(filtroActivo !== "todos"){
+    visibles = rows.filter(r => estadoDistribuidor(r) === filtroActivo);
+  }
+
+  visibles = [...visibles].sort((a,b) => {
+    const orden = {rojo:0, amarillo:1, verde:2};
+    return orden[estadoDistribuidor(a)] - orden[estadoDistribuidor(b)];
+  });
+
+  if(visibles.length === 0){
+    main.innerHTML = `<div class="empty">Nada en este filtro. Prueba con otro.</div>`;
+    return;
+  }
+
+  main.innerHTML = visibles.map(r => {
+    const estado = estadoDistribuidor(r);
+    const diasDia1 = diasDesde(r.ultimo_dia1);
+    const diasDia2 = diasDesde(r.ultimo_dia2);
+    const tags = [];
+
+    if(!r.vendedor_id){
+      tags.push(`<span class="tag bad">Sin vendedor especialista</span>`);
+    } else {
+      const certTag = r.estado_certificacion === "certificado" ? "ok" : (r.estado_certificacion === "en_proceso" ? "warn" : "bad");
+      tags.push(`<span class="tag ${certTag}">${r.vendedor_nombre} · ${r.estado_certificacion}</span>`);
+      tags.push(`<span class="tag ${(r.contactos_semana||0) >= (r.meta_contactos||3) ? "ok" : "warn"}">${r.contactos_semana||0}/${r.meta_contactos||3} contactos sem.</span>`);
+    }
+
+    if(r.pendientes_abiertos > 0){
+      const pendTag = r.dias_pendiente_max > 30 ? "bad" : (r.dias_pendiente_max > 15 ? "warn" : "info");
+      tags.push(`<span class="tag ${pendTag}">${r.pendientes_abiertos} pendientes · ${r.dias_pendiente_max||0}d máx</span>`);
+    } else {
+      tags.push(`<span class="tag ok">Sin pendientes</span>`);
+    }
+
+    if(diasDia1 === null){
+      tags.push(`<span class="tag bad">Sin Día 1 registrado</span>`);
+    } else {
+      tags.push(`<span class="tag ${diasDia1 > 8 ? "warn" : "info"}">Día 1 hace ${diasDia1}d</span>`);
+    }
+
+    if(diasDia2 === null){
+      tags.push(`<span class="tag bad">Sin Día 2 registrado</span>`);
+    } else {
+      tags.push(`<span class="tag ${diasDia2 > 8 ? "warn" : "info"}">Día 2 hace ${diasDia2}d</span>`);
+    }
+
+    return `
+      <div class="card">
+        <div class="dot ${estado}"></div>
+        <div class="card-body">
+          <p class="card-title">${r.nombre}</p>
+          <p class="card-sub">${r.plaza || ""}</p>
+          <div class="card-meta">${tags.join("")}</div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+async function cargar(){
+  document.getElementById("main").innerHTML = `<div class="loading">Cargando panel…</div>`;
+  const { data, error } = await sb.from("v_panel_seguimiento").select("*");
+  if(error){
+    document.getElementById("main").innerHTML = `<div class="empty">Error al cargar: ${error.message}</div>`;
+    return;
+  }
+  rows = data || [];
+  render();
+}
+
+document.getElementById("filters").addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-f]");
+  if(!btn) return;
+  document.querySelectorAll("#filters button").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  filtroActivo = btn.dataset.f;
+  render();
+});
+
+cargar();
+</script>
+</body>
+</html>
