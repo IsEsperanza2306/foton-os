@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Reporte de Campo · Foton MDT/LDT</title>
+<style>
+  :root{
+    --bg:#06142E;
+    --bg-elev:#0B1D3D;
+    --line:#16294F;
+    --text:#F2F5FA;
+    --text-dim:#8CA0C4;
+    --accent:#E8601C;
+    --celeste:#4FB4E8;
+    --verde:#2FBF71;
+    --radius-s:6px;
+    --radius-m:10px;
+    --radius-l:14px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    min-height:100vh;
+    padding:0 0 40px;
+  }
+  .screen{
+    max-width:480px;
+    margin:0 auto;
+    padding:24px 18px;
+  }
+  h1{
+    font-size:19px;
+    margin:0 0 4px;
+    font-weight:700;
+  }
+  .sub{
+    font-size:12px;
+    color:var(--text-dim);
+    margin:0 0 24px;
+  }
+  label{
+    display:block;
+    font-size:12px;
+    color:var(--text-dim);
+    margin:16px 0 6px;
+  }
+  input, textarea{
+    width:100%;
+    background:var(--bg-elev);
+    border:1px solid var(--line);
+    color:var(--text);
+    border-radius:var(--radius-m);
+    padding:12px 14px;
+    font-size:16px;
+    min-height:44px;
+  }
+  textarea{min-height:80px; resize:vertical;}
+  input:focus, textarea:focus{outline:1px solid var(--accent);}
+  .pin-input{
+    letter-spacing:6px;
+    font-size:22px;
+    text-align:center;
+    font-weight:700;
+  }
+  button{
+    width:100%;
+    min-height:48px;
+    border:none;
+    border-radius:var(--radius-m);
+    font-size:15px;
+    font-weight:600;
+    margin-top:18px;
+  }
+  .btn-primary{
+    background:var(--accent);
+    color:#fff;
+  }
+  .btn-primary:active{opacity:0.85;}
+  .btn-secondary{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--text);
+  }
+  .btn-ghost{
+    background:transparent;
+    color:var(--text-dim);
+    font-size:13px;
+    margin-top:10px;
+  }
+  .hidden{display:none;}
+  .welcome{
+    background:var(--bg-elev);
+    border:1px solid var(--line);
+    border-radius:var(--radius-l);
+    padding:14px 16px;
+    margin-bottom:18px;
+  }
+  .welcome .name{
+    font-size:15px;
+    font-weight:700;
+    margin:0 0 2px;
+  }
+  .welcome .plaza{
+    font-size:12px;
+    color:var(--text-dim);
+    margin:0;
+  }
+  .tiles{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-top:6px;
+  }
+  .tile{
+    background:var(--bg-elev);
+    border:1px solid var(--line);
+    border-radius:var(--radius-l);
+    padding:18px 12px;
+    text-align:center;
+    min-height:96px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:6px;
+  }
+  .tile .big{font-size:26px;}
+  .tile .lbl{font-size:12px; color:var(--text-dim);}
+  .tile:active{border-color:var(--accent);}
+
+  .pend-item{
+    background:var(--bg-elev);
+    border:1px solid var(--line);
+    border-radius:var(--radius-m);
+    padding:12px;
+    margin-bottom:8px;
+  }
+  .pend-item .modelo{font-size:14px; font-weight:600; margin:0 0 2px;}
+  .pend-item .info{font-size:11px; color:var(--text-dim); margin:0 0 8px;}
+  .pend-item button{margin-top:0; min-height:38px; font-size:13px;}
+
+  .toast{
+    position:fixed;
+    bottom:20px;
+    left:50%;
+    transform:translateX(-50%);
+    background:var(--verde);
+    color:#06142E;
+    padding:10px 18px;
+    border-radius:999px;
+    font-size:13px;
+    font-weight:600;
+    box-shadow:0 4px 14px rgba(0,0,0,0.4);
+  }
+  .error-msg{
+    color:#E85C5C;
+    font-size:12px;
+    margin-top:10px;
+    display:none;
+  }
+</style>
+</head>
+<body>
+
+<div class="screen">
+
+  <!-- PASO 1: PIN -->
+  <div id="paso-pin">
+    <h1>Reporte de Campo</h1>
+    <p class="sub">Ingresa el PIN de tu distribuidor para continuar.</p>
+    <label for="pin">PIN (6 dígitos)</label>
+    <input id="pin" class="pin-input" inputmode="numeric" maxlength="6" placeholder="••••••">
+    <button class="btn-primary" onclick="validarPin()">Entrar</button>
+    <p class="error-msg" id="pin-error">PIN no reconocido. Verifica con tu gerente regional.</p>
+  </div>
+
+  <!-- PASO 2: MENU -->
+  <div id="paso-menu" class="hidden">
+    <div class="welcome">
+      <p class="name" id="dist-nombre"></p>
+      <p class="plaza" id="dist-plaza"></p>
+    </div>
+    <div class="tiles">
+      <div class="tile" onclick="mostrar('paso-dia1')">
+        <div class="big">📋</div>
+        <div class="lbl">Día 1 · Pendientes</div>
+      </div>
+      <div class="tile" onclick="mostrar('paso-dia2')">
+        <div class="big">🚚</div>
+        <div class="lbl">Día 2 · Visita</div>
+      </div>
+    </div>
+    <button class="btn-ghost" onclick="mostrar('paso-vendedor')">Asignar / actualizar vendedor especialista</button>
+    <button class="btn-ghost" onclick="salir()">Cambiar de distribuidor</button>
+  </div>
+
+  <!-- PASO: DIA 1 -->
+  <div id="paso-dia1" class="hidden">
+    <h1>Día 1 · Pendientes</h1>
+    <p class="sub">Revisa lo abierto y marca lo resuelto. Agrega lo nuevo.</p>
+    <div id="lista-pendientes"></div>
+
+    <label for="p-modelo">Nuevo pendiente — modelo</label>
+    <input id="p-modelo" placeholder="Ej. S5 AMT">
+    <label for="p-folio">Folio (opcional)</label>
+    <input id="p-folio" placeholder="Folio interno">
+    <label for="p-notas">Notas</label>
+    <textarea id="p-notas" placeholder="Detalle del pendiente"></textarea>
+    <button class="btn-primary" onclick="registrarPendiente()">Guardar pendiente</button>
+    <button class="btn-secondary" onclick="mostrar('paso-menu')">Volver</button>
+  </div>
+
+  <!-- PASO: DIA 2 -->
+  <div id="paso-dia2" class="hidden">
+    <h1>Día 2 · Visita</h1>
+    <p class="sub">Contactos realizados hoy en campo.</p>
+    <label for="v-contactos">Clientes contactados</label>
+    <input id="v-contactos" type="number" inputmode="numeric" min="0" value="0">
+    <label for="v-prospectos">Prospectos nuevos</label>
+    <input id="v-prospectos" type="number" inputmode="numeric" min="0" value="0">
+    <label for="v-notas">Notas de la visita</label>
+    <textarea id="v-notas" placeholder="Qué se trabajó, acuerdos, siguiente paso"></textarea>
+    <button class="btn-primary" onclick="registrarVisita()">Guardar visita</button>
+    <button class="btn-secondary" onclick="mostrar('paso-menu')">Volver</button>
+  </div>
+
+  <!-- PASO: VENDEDOR -->
+  <div id="paso-vendedor" class="hidden">
+    <h1>Vendedor Especialista</h1>
+    <p class="sub">Registra o actualiza al vendedor designado para el segmento MDT/LDT.</p>
+    <label for="ve-nombre">Nombre</label>
+    <input id="ve-nombre" placeholder="Nombre completo">
+    <label for="ve-telefono">Teléfono / WhatsApp</label>
+    <input id="ve-telefono" placeholder="10 dígitos">
+    <button class="btn-primary" onclick="asignarVendedor()">Guardar</button>
+    <button class="btn-secondary" onclick="mostrar('paso-menu')">Volver</button>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+const SUPABASE_URL = "https://gblwoaaitnqbgorxaydv.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdibHdvYWFpdG5xYmdvcnhheWR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxOTQ3NTMsImV4cCI6MjA5NTc3MDc1M30.o7zYCCfH2rHEs69o4U7Zc9dM4IvQi8GsXRlZFW_2kso";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let pinActual = null;
+let distActual = null;
+
+function mostrar(id){
+  document.querySelectorAll(".screen > div").forEach(d => d.classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+  if(id === "paso-dia1") cargarPendientes();
+}
+
+function salir(){
+  pinActual = null;
+  distActual = null;
+  document.getElementById("pin").value = "";
+  mostrar("paso-pin");
+}
+
+function toast(msg){
+  const t = document.createElement("div");
+  t.className = "toast";
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+
+async function validarPin(){
+  const pin = document.getElementById("pin").value.trim();
+  document.getElementById("pin-error").style.display = "none";
+  if(pin.length !== 6){
+    document.getElementById("pin-error").textContent = "El PIN debe tener 6 dígitos.";
+    document.getElementById("pin-error").style.display = "block";
+    return;
+  }
+  const { data, error } = await sb.from("distribuidores").select("id,nombre,plaza").eq("pin", pin).maybeSingle();
+  if(error || !data){
+    document.getElementById("pin-error").textContent = "PIN no reconocido. Verifica con tu gerente regional.";
+    document.getElementById("pin-error").style.display = "block";
+    return;
+  }
+  pinActual = pin;
+  distActual = data;
+  document.getElementById("dist-nombre").textContent = data.nombre;
+  document.getElementById("dist-plaza").textContent = data.plaza || "";
+  mostrar("paso-menu");
+}
+
+async function cargarPendientes(){
+  const cont = document.getElementById("lista-pendientes");
+  cont.innerHTML = `<p class="sub">Cargando…</p>`;
+  const { data, error } = await sb.from("back_order")
+    .select("id,modelo,folio,fecha_solicitud,obs")
+    .eq("distribuidor_id", distActual.id)
+    .eq("resuelto", false)
+    .order("fecha_solicitud", { ascending: true });
+
+  if(error){
+    cont.innerHTML = `<p class="sub">Error al cargar pendientes.</p>`;
+    return;
+  }
+  if(!data || data.length === 0){
+    cont.innerHTML = `<p class="sub">Sin pendientes abiertos. 👍</p>`;
+    return;
+  }
+  cont.innerHTML = data.map(p => `
+    <div class="pend-item">
+      <p class="modelo">${p.modelo || "Sin modelo"}</p>
+      <p class="info">${p.folio ? "Folio " + p.folio + " · " : ""}Solicitado ${p.fecha_solicitud || ""}</p>
+      <button class="btn-secondary" onclick="resolverPendiente('${p.id}')">Marcar resuelto</button>
+    </div>
+  `).join("");
+}
+
+async function resolverPendiente(id){
+  const { error } = await sb.rpc("fn_resolver_pendiente", { p_pin: pinActual, p_back_order_id: id });
+  if(error){ toast("Error al actualizar"); return; }
+  toast("Pendiente resuelto");
+  cargarPendientes();
+}
+
+async function registrarPendiente(){
+  const modelo = document.getElementById("p-modelo").value.trim();
+  if(!modelo){ toast("Indica el modelo"); return; }
+  const folio = document.getElementById("p-folio").value.trim() || null;
+  const notas = document.getElementById("p-notas").value.trim() || null;
+
+  const { error } = await sb.rpc("fn_registrar_pendiente", {
+    p_pin: pinActual, p_modelo: modelo, p_folio: folio, p_notas: notas
+  });
+  if(error){ toast("Error al guardar"); return; }
+  document.getElementById("p-modelo").value = "";
+  document.getElementById("p-folio").value = "";
+  document.getElementById("p-notas").value = "";
+  toast("Pendiente guardado");
+  cargarPendientes();
+}
+
+async function registrarVisita(){
+  const contactos = parseInt(document.getElementById("v-contactos").value || "0", 10);
+  const prospectos = parseInt(document.getElementById("v-prospectos").value || "0", 10);
+  const notas = document.getElementById("v-notas").value.trim() || null;
+
+  const { error } = await sb.rpc("fn_registrar_visita", {
+    p_pin: pinActual, p_tipo: "dia2", p_contactos: contactos, p_prospectos_nuevos: prospectos, p_notas: notas
+  });
+  if(error){ toast("Error al guardar"); return; }
+  document.getElementById("v-contactos").value = "0";
+  document.getElementById("v-prospectos").value = "0";
+  document.getElementById("v-notas").value = "";
+  toast("Visita registrada");
+  mostrar("paso-menu");
+}
+
+async function asignarVendedor(){
+  const nombre = document.getElementById("ve-nombre").value.trim();
+  if(!nombre){ toast("Indica el nombre"); return; }
+  const telefono = document.getElementById("ve-telefono").value.trim() || null;
+
+  const { error } = await sb.rpc("fn_asignar_vendedor", {
+    p_pin: pinActual, p_nombre: nombre, p_telefono: telefono
+  });
+  if(error){ toast("Error al guardar"); return; }
+  document.getElementById("ve-nombre").value = "";
+  document.getElementById("ve-telefono").value = "";
+  toast("Vendedor especialista guardado");
+  mostrar("paso-menu");
+}
+
+document.getElementById("pin").addEventListener("keypress", (e) => {
+  if(e.key === "Enter") validarPin();
+});
+</script>
+</body>
+</html>
