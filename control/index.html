@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#002870">
+<title>Foton OS · Panel de Control</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F7FB; --card:#FFFFFF; --ice:#EEF5FD;
+  --deep:#002870; --navy:#042C53; --blue:#185FA5; --sky:#4A90D9;
+  --ink:#1B2733; --mut:#5B6B7C; --dim:#8496A8;
+  --line:#D6E4F2; --line2:#E4EDF7;
+  --red:#C0392B; --redbg:#FBEAE8;
+  --orange:#D35400; --orangebg:#FDEEE3;
+  --amber:#C47A1A; --amberbg:#FBF1E1;
+  --green:#1E8E5A; --greenbg:#E7F5EE;
+  --purple:#8E44AD; --purplebg:#F3E9F7;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:'Inter',-apple-system,sans-serif;
+  padding:20px 16px 48px;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px;margin:0 auto}
+
+/* header */
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap}
+.htitle{font-family:'Barlow Condensed';font-weight:800;font-size:34px;letter-spacing:.2px;color:var(--deep);line-height:1}
+.hsub{font-size:13px;color:var(--mut);margin-top:5px;font-weight:500}
+.hmeta{font-family:'JetBrains Mono';font-size:11px;color:var(--dim);text-align:right}
+.hmeta b{color:var(--blue)}
+
+/* search */
+.searchbar{margin-bottom:22px}
+.searchbar input{
+  width:100%; padding:13px 16px; border:1.5px solid var(--line); border-radius:12px;
+  background:var(--card); font-family:'Inter'; font-size:14px; color:var(--ink);
+  outline:none; transition:border-color .15s;
+}
+.searchbar input:focus{border-color:var(--blue)}
+.searchbar input::placeholder{color:var(--dim)}
+
+/* hero / biblia */
+.hero{
+  background:linear-gradient(135deg,var(--deep),var(--navy));
+  border-radius:18px; padding:26px 26px 24px; margin-bottom:26px;
+  display:flex; justify-content:space-between; align-items:center; gap:20px;
+  box-shadow:0 8px 24px rgba(0,40,112,.18); position:relative; overflow:hidden;
+  text-decoration:none; cursor:pointer;
+}
+.hero:hover{filter:brightness(1.05)}
+.hero-badge{
+  display:inline-block; font-family:'JetBrains Mono'; font-size:10px; font-weight:700;
+  letter-spacing:1px; color:#FFD9A0; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2);
+  padding:4px 10px; border-radius:20px; margin-bottom:10px;
+}
+.hero-title{font-family:'Barlow Condensed';font-weight:800;font-size:30px;color:#fff;line-height:1.05}
+.hero-desc{color:#B9D0EA;font-size:13px;margin-top:6px;max-width:520px;line-height:1.5}
+.hero-arrow{
+  font-family:'Barlow Condensed';font-size:15px;font-weight:700;color:#fff;
+  background:var(--orange); padding:11px 20px; border-radius:10px; white-space:nowrap;
+  box-shadow:0 4px 12px rgba(211,84,0,.35);
+}
+
+/* section */
+.section{margin-bottom:30px}
+.section-head{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}
+.section-title{font-family:'Barlow Condensed';font-weight:700;font-size:20px;color:var(--navy);letter-spacing:.3px}
+.section-count{font-family:'JetBrains Mono';font-size:11px;color:var(--dim)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+
+.card{
+  background:var(--card); border:1px solid var(--line2); border-radius:14px;
+  padding:16px 16px 14px; text-decoration:none; color:var(--ink);
+  display:flex; flex-direction:column; gap:8px; transition:transform .12s,box-shadow .12s,border-color .12s;
+  position:relative;
+}
+.card:hover{transform:translateY(-2px); box-shadow:0 6px 18px rgba(20,50,90,.1); border-color:var(--blue)}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.card-emoji{font-size:22px;line-height:1}
+.pill{
+  font-family:'JetBrains Mono'; font-size:9.5px; font-weight:700; letter-spacing:.4px;
+  padding:3px 8px; border-radius:20px; white-space:nowrap;
+}
+.pill-live{color:var(--green);background:var(--greenbg)}
+.pill-pulir{color:var(--amber);background:var(--amberbg)}
+.pill-legacy{color:var(--dim);background:var(--ice)}
+.pill-dist{color:var(--purple);background:var(--purplebg)}
+.card-title{font-family:'Barlow Condensed';font-weight:700;font-size:17px;color:var(--navy);line-height:1.15}
+.card-desc{font-size:12px;color:var(--mut);line-height:1.45;flex:1}
+.card-foot{font-family:'JetBrains Mono';font-size:10px;color:var(--sky);font-weight:600;margin-top:2px}
+
+/* legacy strip */
+.legacy-note{
+  font-size:11.5px;color:var(--dim);background:var(--ice);border:1px dashed var(--line);
+  border-radius:10px;padding:10px 14px;margin-top:6px;line-height:1.5
+}
+
+footer{text-align:center;font-family:'JetBrains Mono';font-size:10.5px;color:var(--dim);margin-top:36px}
+
+@media(max-width:640px){
+  .htitle{font-size:26px}
+  .hero{flex-direction:column;align-items:flex-start}
+  .hero-arrow{align-self:flex-start}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <div class="htitle">FOTON OS</div>
+      <div class="hsub">Panel de control interno · Israel Esperanza — Gerente Regional Centro-Sur</div>
+    </div>
+    <div class="hmeta" id="clock"></div>
+  </header>
+
+  <div class="searchbar">
+    <input type="text" id="q" placeholder="Buscar herramienta… (ej. cobranza, examen, mapa, cotización)" oninput="filterCards()">
+  </div>
+
+  <a class="hero" href="./panel.html" data-name="panel operativo cobranza biblia semaforo back order">
+    <div>
+      <span class="hero-badge">★ LA BIBLIA · USO DIARIO</span>
+      <div class="hero-title">Panel Operativo 2026 — Cobranza &amp; Back Order</div>
+      <div class="hero-desc">Semáforo de cobranza, back order y estatus por región (Centro-Sur / Noroeste-Pacífico / Nacional), segmento MDT/LDT. El tablero que revisas primero cada día.</div>
+    </div>
+    <div class="hero-arrow">Abrir panel →</div>
+  </a>
+
+  <!-- OPERACIÓN -->
+  <div class="section" id="sec-operacion">
+    <div class="section-head"><div class="section-title">Operación &amp; Seguimiento</div><div class="section-count">tablero de gestión diaria</div></div>
+    <div class="grid">
+
+      <a class="card" href="./panel-seguimiento/" data-name="panel de seguimiento distribuidor semaforo dia1 dia2 back order vendedor especialista">
+        <div class="card-top"><span class="card-emoji">🚦</span><span class="pill pill-live">LIVE</span></div>
+        <div class="card-title">Panel de Seguimiento Distribuidor</div>
+        <div class="card-desc">Semáforo Día1/Día2, back order y vendedor especialista asignado por distribuidor.</div>
+        <div class="card-foot">panel-seguimiento/</div>
+      </a>
+
+      <a class="card" href="./reporte-campo/" data-name="reporte de campo pin visita distribuidor">
+        <div class="card-top"><span class="card-emoji">📝</span><span class="pill pill-live">LIVE</span></div>
+        <div class="card-title">Reporte de Campo</div>
+        <div class="card-desc">Formulario PIN-gated para registrar visitas a distribuidor directo desde campo.</div>
+        <div class="card-foot">reporte-campo/</div>
+      </a>
+
+      <a class="card" href="./mapa-red-nacional/" data-name="mapa red nacional distribuidores talleres aliados">
+        <div class="card-top"><span class="card-emoji">🗺️</span><span class="pill pill-live">LIVE</span></div>
+        <div class="card-title">Mapa Red Nacional</div>
+        <div class="card-desc">Distribuidores y talleres aliados con contacto y navegación directa a Google Maps.</div>
+        <div class="card-foot">mapa-red-nacional/</div>
+      </a>
+
+      <a class="card" href="./direccion.html" data-name="panel de direccion supabase">
+        <div class="card-top"><span class="card-emoji">🧭</span><span class="pill pill-live">LIVE</span></div>
+        <div class="card-title">Panel de Dirección</div>
+        <div class="card-desc">Vista consolidada de dirección — requiere sesión (login Supabase).</div>
+        <div class="card-foot">direccion.html · auth</div>
+      </a>
+
+      <a class="card" href="./field-app.html" data-name="registro de visita field app supabase">
+        <div class="card-top"><span class="card-emoji">📍</span><span class="pill pill-live">LIVE</span></div>
+        <div class="card-title">Registro de Visita</div>
+        <div class="card-desc">Bitácora de visitas del app interno con sesión Supabase (tab "Registro de Visita").</div>
+        <div class="card-foot">field-app.html · auth</div>
+      </a>
+
+      <a class="card" href="./bp-tracker.html" data-name="bp tracker business plan supabase">
+        <div class="card-top"><span class="card-emoji">📈</span><span class="pill pill-live">LIVE</span></div>
+        <div class="card-title">BP Tracker</div>
+        <div class="card-desc">Seguimiento de business plan / metas por distribuidor, dentro del app con sesión.</div>
+        <div class="card-foot">bp-tracker.html · auth</div>
+      </a>
+
+      <a class="card" href="./mapa.html" data-name="mapa interno app supabase red">
+        <div class="card-top"><span class="card-emoji">📌</span><span class="pill pill-live">LIVE</span></div>
+        <div class="card-title">Mapa de Red (app interna)</div>
+        <div class="card-desc">Vista de mapa dentro del app con sesión — home actual del login Supabase.</div>
+        <div class="card-foot">mapa.html · auth</div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- CAPACITACIÓN -->
+  <div class="section" id="sec-capacitacion">
+    <div class="section-head"><div class="section-title">Capacitación &amp; Certificación</div><div class="section-count">cursos que impartes</div></div>
+    <div class="grid">
+
+      <a class="card" href="./foton-sales-machine-v12.html" data-name="foton sales machine curso asesores ventas roleplay">
+        <div class="card-top"><span class="card-emoji">🎯</span><span class="pill pill-live">LIVE</span></div>
+        <div class="card-title">Foton Sales Machine v12</div>
+        <div class="card-desc">Curso interactivo para asesores: BANT, SPIN, prospección, cierre, roleplay y calculadora de metas.</div>
+        <div class="card-foot">foton-sales-machine-v12.html</div>
+      </a>
+
+      <a class="card" href="https://isesperanza2306.github.io/foton-master-driver/" data-name="master driver curso operadores amt euro vi dpf urea">
+        <div class="card-top"><span class="card-emoji">🚛</span><span class="pill pill-live">LIVE</span></div>
+        <div class="card-title">Master Driver 2.0</div>
+        <div class="card-desc">Curso para operadores: portafolio S3–S12, caja AMT, Euro VI, DPF/Urea, testigos de tablero.</div>
+        <div class="card-foot">foton-master-driver/</div>
+      </a>
+
+      <a class="card" href="./foton_examen.html" data-name="evaluacion de producto examen distribuidor">
+        <div class="card-top"><span class="card-emoji">✅</span><span class="pill pill-dist">DISTRIBUIDOR</span></div>
+        <div class="card-title">Evaluación de Producto</div>
+        <div class="card-desc">Examen que presenta el asesor/distribuidor para certificarse — alimenta el panel gerencial.</div>
+        <div class="card-foot">foton_examen.html</div>
+      </a>
+
+      <a class="card" href="./foton_admin.html" data-name="panel gerencial resultados examen certificados ranking red">
+        <div class="card-top"><span class="card-emoji">🏆</span><span class="pill pill-live">LIVE</span></div>
+        <div class="card-title">Panel Gerencial · Resultados de Examen</div>
+        <div class="card-desc">Ranking de red, certificados emitidos, análisis de brechas por modelo y por distribuidor.</div>
+        <div class="card-foot">foton_admin.html</div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- COMERCIAL -->
+  <div class="section" id="sec-comercial">
+    <div class="section-head"><div class="section-title">Comercial &amp; Ventas</div><div class="section-count">material para prospectar y cerrar</div></div>
+    <div class="grid">
+
+      <a class="card" href="./presentacion/" data-name="presentacion corporativa foton 2025">
+        <div class="card-top"><span class="card-emoji">🏢</span><span class="pill pill-live">LIVE</span></div>
+        <div class="card-title">Presentación Corporativa</div>
+        <div class="card-desc">Deck institucional Foton/BAIC/LDR — respaldo global, planta, postventa, alianzas, portafolio.</div>
+        <div class="card-foot">presentacion/</div>
+      </a>
+
+      <a class="card" href="./cotizacion.html" data-name="cotizador institucional cotizacion">
+        <div class="card-top"><span class="card-emoji">🧮</span><span class="pill pill-live">LIVE</span></div>
+        <div class="card-title">Cotizador Institucional</div>
+        <div class="card-desc">Herramienta de cotización de la línea MDT/LDT para prospección y cierre.</div>
+        <div class="card-foot">cotizacion.html</div>
+      </a>
+
+      <a class="card" href="./informativo.html" data-name="guia de ventajas competitivas informativo">
+        <div class="card-top"><span class="card-emoji">📘</span><span class="pill pill-live">LIVE</span></div>
+        <div class="card-title">Guía de Ventajas Competitivas</div>
+        <div class="card-desc">Argumentario comparativo para reforzar objeciones frente a la competencia.</div>
+        <div class="card-foot">informativo.html</div>
+      </a>
+
+      <a class="card" href="./panel-asesor.html" data-name="mi panel vendedor especialista asesor">
+        <div class="card-top"><span class="card-emoji">🧑‍💼</span><span class="pill pill-live">LIVE</span></div>
+        <div class="card-title">Mi Panel · Vendedor Especialista</div>
+        <div class="card-desc">Vista individual para el vendedor especialista asignado por distribuidor.</div>
+        <div class="card-foot">panel-asesor.html</div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- DISTRIBUIDOR -->
+  <div class="section" id="sec-distribuidor">
+    <div class="section-head"><div class="section-title">Portal Distribuidor</div><div class="section-count">para robustecer y entregar</div></div>
+    <div class="grid">
+
+      <a class="card" href="./dealer.html" data-name="dealer portal distribuidores inventario retail">
+        <div class="card-top"><span class="card-emoji">🏬</span><span class="pill pill-dist">DISTRIBUIDOR</span></div>
+        <div class="card-title">Dealer Portal</div>
+        <div class="card-desc">Portal con tabs de inventario y retail para el distribuidor — candidato principal a entregar.</div>
+        <div class="card-foot">dealer.html</div>
+      </a>
+
+      <a class="card" href="https://foton-dealer-os-git-master-isesperanza2306s-projects.vercel.app" data-name="inteligencia competitiva pwa pin vercel">
+        <div class="card-top"><span class="card-emoji">🕵️</span><span class="pill pill-dist">DISTRIBUIDOR</span></div>
+        <div class="card-title">Foton Dealer · Inteligencia Competitiva</div>
+        <div class="card-desc">PWA comparativo vs. competencia, PIN-gated. Repo y despliegue separados (Vercel).</div>
+        <div class="card-foot">foton-dealer-os · vercel</div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- LEGACY -->
+  <div class="section" id="sec-legacy">
+    <div class="section-head"><div class="section-title">Revisar / posible duplicado</div><div class="section-count">confirmar si siguen vigentes</div></div>
+    <div class="grid">
+
+      <a class="card" href="./foton-field-app.html" data-name="foton field app legacy duplicado registro visita">
+        <div class="card-top"><span class="card-emoji">♻️</span><span class="pill pill-legacy">LEGACY</span></div>
+        <div class="card-title">Foton Field App (versión anterior)</div>
+        <div class="card-desc">Archivo más pesado que field-app.html, no referenciado en la navegación actual del app.</div>
+        <div class="card-foot">foton-field-app.html</div>
+      </a>
+
+      <a class="card" href="./foton_bp_tracker.html" data-name="foton bp tracker legacy duplicado">
+        <div class="card-top"><span class="card-emoji">♻️</span><span class="pill pill-legacy">LEGACY</span></div>
+        <div class="card-title">Foton BP Tracker (versión anterior)</div>
+        <div class="card-desc">Archivo más pesado que bp-tracker.html, no referenciado en la navegación actual del app.</div>
+        <div class="card-foot">foton_bp_tracker.html</div>
+      </a>
+
+    </div>
+    <div class="legacy-note">Estos dos archivos parecen versiones previas de herramientas que ya están integradas y vigentes (field-app.html y bp-tracker.html). Confírmame si los borro del repo para dejar de mantener dos copias.</div>
+  </div>
+
+  <footer>FOTON OS · isesperanza2306.github.io/foton-os · actualizado 8 sep 2026</footer>
+</div>
+
+<script>
+document.getElementById('clock').innerHTML = new Date().toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+function filterCards(){
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  document.querySelectorAll('.card, .hero').forEach(el=>{
+    const name = (el.dataset.name || '') + ' ' + el.textContent.toLowerCase();
+    el.style.display = (!q || name.toLowerCase().includes(q)) ? '' : 'none';
+  });
+  document.querySelectorAll('.section').forEach(sec=>{
+    const visible = [...sec.querySelectorAll('.card')].some(c=>c.style.display !== 'none');
+    sec.style.display = visible ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>
