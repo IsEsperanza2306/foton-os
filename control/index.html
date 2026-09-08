@@ -3,324 +3,319 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#002870">
+<meta name="theme-color" content="#F5F5F7">
 <title>Foton OS · Panel de Control</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#F4F7FB; --card:#FFFFFF; --ice:#EEF5FD;
-  --deep:#002870; --navy:#042C53; --blue:#185FA5; --sky:#4A90D9;
-  --ink:#1B2733; --mut:#5B6B7C; --dim:#8496A8;
-  --line:#D6E4F2; --line2:#E4EDF7;
-  --red:#C0392B; --redbg:#FBEAE8;
-  --orange:#D35400; --orangebg:#FDEEE3;
-  --amber:#C47A1A; --amberbg:#FBF1E1;
-  --green:#1E8E5A; --greenbg:#E7F5EE;
-  --purple:#8E44AD; --purplebg:#F3E9F7;
+  --bg:#F5F5F7; --card:#FFFFFF;
+  --deep:#00194D; --navy:#00266B; --blue:#0668D9; --sky:#3A93E8;
+  --ink:#1D1D1F; --mut:#6E6E73; --dim:#98989D;
+  --line:rgba(0,0,0,.07); --line-soft:rgba(0,0,0,.045);
+  --red:#D6432F; --redbg:#FCEDEA;
+  --orange:#D3720B; --orangebg:#FDF0E1;
+  --amber:#B8860F; --amberbg:#FBF3DE;
+  --green:#1D9A5C; --greenbg:#E7F7EE;
+  --purple:#8244C7; --purplebg:#F2E9FB;
+  --grey:#6E6E73; --greybg:#F0F0F2;
+  --r-lg:22px; --r-md:16px; --r-sm:11px;
+  --shadow-rest:0 1px 2px rgba(0,0,0,.04);
+  --shadow-hover:0 24px 48px -12px rgba(10,30,60,.16), 0 4px 12px rgba(10,30,60,.06);
 }
 *{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
 body{
   background:var(--bg); color:var(--ink);
-  font-family:'Inter',-apple-system,sans-serif;
-  padding:20px 16px 48px;
-  -webkit-font-smoothing:antialiased;
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  letter-spacing:-0.01em;
+  padding-bottom:70px;
 }
-.wrap{max-width:1180px;margin:0 auto}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
 
-/* header */
-header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap}
-.htitle{font-family:'Barlow Condensed';font-weight:800;font-size:34px;letter-spacing:.2px;color:var(--deep);line-height:1}
-.hsub{font-size:13px;color:var(--mut);margin-top:5px;font-weight:500}
-.hmeta{font-family:'JetBrains Mono';font-size:11px;color:var(--dim);text-align:right}
-.hmeta b{color:var(--blue)}
-
-/* search */
-.searchbar{margin-bottom:22px}
-.searchbar input{
-  width:100%; padding:13px 16px; border:1.5px solid var(--line); border-radius:12px;
-  background:var(--card); font-family:'Inter'; font-size:14px; color:var(--ink);
-  outline:none; transition:border-color .15s;
+/* ===== sticky header ===== */
+.topbar{
+  position:sticky; top:0; z-index:50;
+  backdrop-filter:blur(24px) saturate(180%); -webkit-backdrop-filter:blur(24px) saturate(180%);
+  background:rgba(245,245,247,.72);
+  border-bottom:1px solid var(--line-soft);
 }
-.searchbar input:focus{border-color:var(--blue)}
-.searchbar input::placeholder{color:var(--dim)}
+.topbar-inner{
+  max-width:1180px;margin:0 auto;padding:14px 20px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{
+  width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--navy),var(--blue));
+  display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;
+  box-shadow:0 2px 6px rgba(6,38,92,.25);
+}
+.brand-text{font-weight:700;font-size:15px;letter-spacing:-.01em}
+.brand-sub{font-size:11px;color:var(--dim);font-weight:500;margin-top:-1px}
 
-/* hero / biblia */
+.search-wrap{position:relative;flex:1;max-width:360px}
+.search-wrap svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--dim);pointer-events:none}
+.search-wrap input{
+  width:100%;padding:9px 14px 9px 38px;border:none;border-radius:980px;
+  background:rgba(120,120,128,.12); font-size:13.5px; font-family:inherit; color:var(--ink);
+  outline:none;transition:background .15s;
+}
+.search-wrap input:focus{background:rgba(120,120,128,.18)}
+.search-wrap input::placeholder{color:var(--dim)}
+
+/* ===== chips ===== */
+.chipbar{display:flex;gap:8px;overflow-x:auto;padding:14px 20px 4px;max-width:1180px;margin:0 auto;scrollbar-width:none}
+.chipbar::-webkit-scrollbar{display:none}
+.chip{
+  flex-shrink:0;font-size:13px;font-weight:600;padding:7px 15px;border-radius:980px;
+  background:var(--card);border:1px solid var(--line);color:var(--mut);cursor:pointer;
+  text-decoration:none;white-space:nowrap;transition:all .15s;
+}
+.chip:hover{border-color:var(--blue);color:var(--blue)}
+.chip.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* ===== hero ===== */
 .hero{
-  background:linear-gradient(135deg,var(--deep),var(--navy));
-  border-radius:18px; padding:26px 26px 24px; margin-bottom:26px;
-  display:flex; justify-content:space-between; align-items:center; gap:20px;
-  box-shadow:0 8px 24px rgba(0,40,112,.18); position:relative; overflow:hidden;
-  text-decoration:none; cursor:pointer;
+  margin:22px 0 8px; border-radius:var(--r-lg);
+  background:
+    radial-gradient(1200px 400px at 15% -10%, rgba(58,147,232,.35), transparent 60%),
+    radial-gradient(900px 500px at 100% 120%, rgba(6,104,217,.25), transparent 60%),
+    linear-gradient(145deg,#00194D,#00296B 55%,#023A8C);
+  padding:44px 40px; position:relative; overflow:hidden;
+  text-decoration:none; display:block; color:#fff;
+  box-shadow:0 30px 60px -20px rgba(0,25,77,.45);
+  transition:transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s;
 }
-.hero:hover{filter:brightness(1.05)}
+.hero:hover{transform:translateY(-3px);box-shadow:0 40px 70px -18px rgba(0,25,77,.55)}
 .hero-badge{
-  display:inline-block; font-family:'JetBrains Mono'; font-size:10px; font-weight:700;
-  letter-spacing:1px; color:#FFD9A0; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2);
-  padding:4px 10px; border-radius:20px; margin-bottom:10px;
+  display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;letter-spacing:.03em;
+  color:#FFD8A8;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);
+  padding:5px 12px 5px 10px;border-radius:980px;margin-bottom:16px;backdrop-filter:blur(6px);
 }
-.hero-title{font-family:'Barlow Condensed';font-weight:800;font-size:30px;color:#fff;line-height:1.05}
-.hero-desc{color:#B9D0EA;font-size:13px;margin-top:6px;max-width:520px;line-height:1.5}
-.hero-arrow{
-  font-family:'Barlow Condensed';font-size:15px;font-weight:700;color:#fff;
-  background:var(--orange); padding:11px 20px; border-radius:10px; white-space:nowrap;
-  box-shadow:0 4px 12px rgba(211,84,0,.35);
+.hero-title{font-size:38px;font-weight:700;letter-spacing:-.02em;line-height:1.08;max-width:640px}
+.hero-desc{color:rgba(255,255,255,.72);font-size:15px;margin-top:10px;max-width:480px;line-height:1.55;font-weight:400}
+.hero-cta{
+  display:inline-flex;align-items:center;gap:8px;margin-top:24px;
+  background:#fff;color:var(--deep);font-weight:600;font-size:14.5px;
+  padding:12px 20px 12px 22px;border-radius:980px;
 }
+.hero-cta svg{transition:transform .2s}
+.hero:hover .hero-cta svg{transform:translateX(3px)}
 
-/* section */
-.section{margin-bottom:30px}
-.section-head{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}
-.section-title{font-family:'Barlow Condensed';font-weight:700;font-size:20px;color:var(--navy);letter-spacing:.3px}
-.section-count{font-family:'JetBrains Mono';font-size:11px;color:var(--dim)}
+/* ===== sections ===== */
+.section{padding-top:44px;scroll-margin-top:110px}
+.section-head{margin-bottom:16px}
+.section-eyebrow{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sky)}
+.section-title{font-size:22px;font-weight:700;letter-spacing:-.015em;margin-top:3px}
+.section-desc{font-size:13px;color:var(--mut);margin-top:3px}
 
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:14px}
 
 .card{
-  background:var(--card); border:1px solid var(--line2); border-radius:14px;
-  padding:16px 16px 14px; text-decoration:none; color:var(--ink);
-  display:flex; flex-direction:column; gap:8px; transition:transform .12s,box-shadow .12s,border-color .12s;
-  position:relative;
+  background:var(--card); border:1px solid var(--line); border-radius:var(--r-md);
+  padding:20px 20px 18px; text-decoration:none; color:var(--ink);
+  display:flex; flex-direction:column; gap:12px;
+  box-shadow:var(--shadow-rest);
+  transition:transform .22s cubic-bezier(.2,.8,.2,1), box-shadow .22s, border-color .22s;
+  opacity:0; animation:rise .5s cubic-bezier(.2,.8,.2,1) forwards;
 }
-.card:hover{transform:translateY(-2px); box-shadow:0 6px 18px rgba(20,50,90,.1); border-color:var(--blue)}
-.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
-.card-emoji{font-size:22px;line-height:1}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.card:hover{transform:translateY(-5px) scale(1.012); box-shadow:var(--shadow-hover); border-color:transparent}
+.card:active{transform:translateY(-2px) scale(1.005)}
+
+.card-top{display:flex;justify-content:space-between;align-items:flex-start}
+.icon-badge{
+  width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.icon-badge svg{width:21px;height:21px}
+
 .pill{
-  font-family:'JetBrains Mono'; font-size:9.5px; font-weight:700; letter-spacing:.4px;
-  padding:3px 8px; border-radius:20px; white-space:nowrap;
+  display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;letter-spacing:.01em;
+  padding:4px 9px 4px 7px;border-radius:980px;white-space:nowrap;
 }
+.pill::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
 .pill-live{color:var(--green);background:var(--greenbg)}
-.pill-pulir{color:var(--amber);background:var(--amberbg)}
-.pill-legacy{color:var(--dim);background:var(--ice)}
 .pill-dist{color:var(--purple);background:var(--purplebg)}
-.card-title{font-family:'Barlow Condensed';font-weight:700;font-size:17px;color:var(--navy);line-height:1.15}
-.card-desc{font-size:12px;color:var(--mut);line-height:1.45;flex:1}
-.card-foot{font-family:'JetBrains Mono';font-size:10px;color:var(--sky);font-weight:600;margin-top:2px}
+.pill-legacy{color:var(--grey);background:var(--greybg)}
 
-/* legacy strip */
-.legacy-note{
-  font-size:11.5px;color:var(--dim);background:var(--ice);border:1px dashed var(--line);
-  border-radius:10px;padding:10px 14px;margin-top:6px;line-height:1.5
+.card-title{font-size:16.5px;font-weight:650;letter-spacing:-.01em;line-height:1.25}
+.card-desc{font-size:12.5px;color:var(--mut);line-height:1.5;flex:1}
+.card-foot{
+  font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);font-weight:500;
+  padding-top:10px;border-top:1px solid var(--line-soft);
 }
 
-footer{text-align:center;font-family:'JetBrains Mono';font-size:10.5px;color:var(--dim);margin-top:36px}
+.legacy-note{
+  font-size:12px;color:var(--mut);background:var(--card);border:1px dashed var(--line);
+  border-radius:var(--r-sm);padding:14px 16px;margin-top:14px;line-height:1.55
+}
+
+footer{
+  text-align:center;font-size:11px;color:var(--dim);margin-top:60px;
+  padding-top:22px;border-top:1px solid var(--line-soft);font-family:'JetBrains Mono',monospace;
+}
 
 @media(max-width:640px){
-  .htitle{font-size:26px}
-  .hero{flex-direction:column;align-items:flex-start}
-  .hero-arrow{align-self:flex-start}
+  .hero{padding:32px 24px}
+  .hero-title{font-size:28px}
+  .search-wrap{max-width:120px}
+  .brand-sub{display:none}
 }
 </style>
 </head>
 <body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark">F</div>
+      <div>
+        <div class="brand-text">Foton OS</div>
+        <div class="brand-sub">Israel Esperanza · Gerente Regional Centro-Sur</div>
+      </div>
+    </div>
+    <div class="search-wrap">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="q" placeholder="Buscar herramienta…" oninput="filterCards()">
+    </div>
+  </div>
+  <div class="chipbar" id="chipbar"></div>
+</div>
+
 <div class="wrap">
 
-  <header>
-    <div>
-      <div class="htitle">FOTON OS</div>
-      <div class="hsub">Panel de control interno · Israel Esperanza — Gerente Regional Centro-Sur</div>
-    </div>
-    <div class="hmeta" id="clock"></div>
-  </header>
-
-  <div class="searchbar">
-    <input type="text" id="q" placeholder="Buscar herramienta… (ej. cobranza, examen, mapa, cotización)" oninput="filterCards()">
-  </div>
-
-  <a class="hero" href="./panel.html" data-name="panel operativo cobranza biblia semaforo back order">
-    <div>
-      <span class="hero-badge">★ LA BIBLIA · USO DIARIO</span>
-      <div class="hero-title">Panel Operativo 2026 — Cobranza &amp; Back Order</div>
-      <div class="hero-desc">Semáforo de cobranza, back order y estatus por región (Centro-Sur / Noroeste-Pacífico / Nacional), segmento MDT/LDT. El tablero que revisas primero cada día.</div>
-    </div>
-    <div class="hero-arrow">Abrir panel →</div>
+  <a class="hero" href="./panel.html" data-name="panel operativo cobranza biblia semaforo back order" data-section="all">
+    <span class="hero-badge">★ LA BIBLIA · USO DIARIO</span>
+    <div class="hero-title">Panel Operativo 2026 — Cobranza &amp; Back Order</div>
+    <div class="hero-desc">Semáforo de cobranza, back order y estatus por región — Centro-Sur, Noroeste/Pacífico, Nacional. El tablero que abres primero cada día.</div>
+    <span class="hero-cta">Abrir panel
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </span>
   </a>
 
-  <!-- OPERACIÓN -->
-  <div class="section" id="sec-operacion">
-    <div class="section-head"><div class="section-title">Operación &amp; Seguimiento</div><div class="section-count">tablero de gestión diaria</div></div>
-    <div class="grid">
-
-      <a class="card" href="./panel-seguimiento/" data-name="panel de seguimiento distribuidor semaforo dia1 dia2 back order vendedor especialista">
-        <div class="card-top"><span class="card-emoji">🚦</span><span class="pill pill-live">LIVE</span></div>
-        <div class="card-title">Panel de Seguimiento Distribuidor</div>
-        <div class="card-desc">Semáforo Día1/Día2, back order y vendedor especialista asignado por distribuidor.</div>
-        <div class="card-foot">panel-seguimiento/</div>
-      </a>
-
-      <a class="card" href="./reporte-campo/" data-name="reporte de campo pin visita distribuidor">
-        <div class="card-top"><span class="card-emoji">📝</span><span class="pill pill-live">LIVE</span></div>
-        <div class="card-title">Reporte de Campo</div>
-        <div class="card-desc">Formulario PIN-gated para registrar visitas a distribuidor directo desde campo.</div>
-        <div class="card-foot">reporte-campo/</div>
-      </a>
-
-      <a class="card" href="./mapa-red-nacional/" data-name="mapa red nacional distribuidores talleres aliados">
-        <div class="card-top"><span class="card-emoji">🗺️</span><span class="pill pill-live">LIVE</span></div>
-        <div class="card-title">Mapa Red Nacional</div>
-        <div class="card-desc">Distribuidores y talleres aliados con contacto y navegación directa a Google Maps.</div>
-        <div class="card-foot">mapa-red-nacional/</div>
-      </a>
-
-      <a class="card" href="./direccion.html" data-name="panel de direccion supabase">
-        <div class="card-top"><span class="card-emoji">🧭</span><span class="pill pill-live">LIVE</span></div>
-        <div class="card-title">Panel de Dirección</div>
-        <div class="card-desc">Vista consolidada de dirección — requiere sesión (login Supabase).</div>
-        <div class="card-foot">direccion.html · auth</div>
-      </a>
-
-      <a class="card" href="./field-app.html" data-name="registro de visita field app supabase">
-        <div class="card-top"><span class="card-emoji">📍</span><span class="pill pill-live">LIVE</span></div>
-        <div class="card-title">Registro de Visita</div>
-        <div class="card-desc">Bitácora de visitas del app interno con sesión Supabase (tab "Registro de Visita").</div>
-        <div class="card-foot">field-app.html · auth</div>
-      </a>
-
-      <a class="card" href="./bp-tracker.html" data-name="bp tracker business plan supabase">
-        <div class="card-top"><span class="card-emoji">📈</span><span class="pill pill-live">LIVE</span></div>
-        <div class="card-title">BP Tracker</div>
-        <div class="card-desc">Seguimiento de business plan / metas por distribuidor, dentro del app con sesión.</div>
-        <div class="card-foot">bp-tracker.html · auth</div>
-      </a>
-
-      <a class="card" href="./mapa.html" data-name="mapa interno app supabase red">
-        <div class="card-top"><span class="card-emoji">📌</span><span class="pill pill-live">LIVE</span></div>
-        <div class="card-title">Mapa de Red (app interna)</div>
-        <div class="card-desc">Vista de mapa dentro del app con sesión — home actual del login Supabase.</div>
-        <div class="card-foot">mapa.html · auth</div>
-      </a>
-
-    </div>
-  </div>
-
-  <!-- CAPACITACIÓN -->
-  <div class="section" id="sec-capacitacion">
-    <div class="section-head"><div class="section-title">Capacitación &amp; Certificación</div><div class="section-count">cursos que impartes</div></div>
-    <div class="grid">
-
-      <a class="card" href="./foton-sales-machine-v12.html" data-name="foton sales machine curso asesores ventas roleplay">
-        <div class="card-top"><span class="card-emoji">🎯</span><span class="pill pill-live">LIVE</span></div>
-        <div class="card-title">Foton Sales Machine v12</div>
-        <div class="card-desc">Curso interactivo para asesores: BANT, SPIN, prospección, cierre, roleplay y calculadora de metas.</div>
-        <div class="card-foot">foton-sales-machine-v12.html</div>
-      </a>
-
-      <a class="card" href="https://isesperanza2306.github.io/foton-master-driver/" data-name="master driver curso operadores amt euro vi dpf urea">
-        <div class="card-top"><span class="card-emoji">🚛</span><span class="pill pill-live">LIVE</span></div>
-        <div class="card-title">Master Driver 2.0</div>
-        <div class="card-desc">Curso para operadores: portafolio S3–S12, caja AMT, Euro VI, DPF/Urea, testigos de tablero.</div>
-        <div class="card-foot">foton-master-driver/</div>
-      </a>
-
-      <a class="card" href="./foton_examen.html" data-name="evaluacion de producto examen distribuidor">
-        <div class="card-top"><span class="card-emoji">✅</span><span class="pill pill-dist">DISTRIBUIDOR</span></div>
-        <div class="card-title">Evaluación de Producto</div>
-        <div class="card-desc">Examen que presenta el asesor/distribuidor para certificarse — alimenta el panel gerencial.</div>
-        <div class="card-foot">foton_examen.html</div>
-      </a>
-
-      <a class="card" href="./foton_admin.html" data-name="panel gerencial resultados examen certificados ranking red">
-        <div class="card-top"><span class="card-emoji">🏆</span><span class="pill pill-live">LIVE</span></div>
-        <div class="card-title">Panel Gerencial · Resultados de Examen</div>
-        <div class="card-desc">Ranking de red, certificados emitidos, análisis de brechas por modelo y por distribuidor.</div>
-        <div class="card-foot">foton_admin.html</div>
-      </a>
-
-    </div>
-  </div>
-
-  <!-- COMERCIAL -->
-  <div class="section" id="sec-comercial">
-    <div class="section-head"><div class="section-title">Comercial &amp; Ventas</div><div class="section-count">material para prospectar y cerrar</div></div>
-    <div class="grid">
-
-      <a class="card" href="./presentacion/" data-name="presentacion corporativa foton 2025">
-        <div class="card-top"><span class="card-emoji">🏢</span><span class="pill pill-live">LIVE</span></div>
-        <div class="card-title">Presentación Corporativa</div>
-        <div class="card-desc">Deck institucional Foton/BAIC/LDR — respaldo global, planta, postventa, alianzas, portafolio.</div>
-        <div class="card-foot">presentacion/</div>
-      </a>
-
-      <a class="card" href="./cotizacion.html" data-name="cotizador institucional cotizacion">
-        <div class="card-top"><span class="card-emoji">🧮</span><span class="pill pill-live">LIVE</span></div>
-        <div class="card-title">Cotizador Institucional</div>
-        <div class="card-desc">Herramienta de cotización de la línea MDT/LDT para prospección y cierre.</div>
-        <div class="card-foot">cotizacion.html</div>
-      </a>
-
-      <a class="card" href="./informativo.html" data-name="guia de ventajas competitivas informativo">
-        <div class="card-top"><span class="card-emoji">📘</span><span class="pill pill-live">LIVE</span></div>
-        <div class="card-title">Guía de Ventajas Competitivas</div>
-        <div class="card-desc">Argumentario comparativo para reforzar objeciones frente a la competencia.</div>
-        <div class="card-foot">informativo.html</div>
-      </a>
-
-      <a class="card" href="./panel-asesor.html" data-name="mi panel vendedor especialista asesor">
-        <div class="card-top"><span class="card-emoji">🧑‍💼</span><span class="pill pill-live">LIVE</span></div>
-        <div class="card-title">Mi Panel · Vendedor Especialista</div>
-        <div class="card-desc">Vista individual para el vendedor especialista asignado por distribuidor.</div>
-        <div class="card-foot">panel-asesor.html</div>
-      </a>
-
-    </div>
-  </div>
-
-  <!-- DISTRIBUIDOR -->
-  <div class="section" id="sec-distribuidor">
-    <div class="section-head"><div class="section-title">Portal Distribuidor</div><div class="section-count">para robustecer y entregar</div></div>
-    <div class="grid">
-
-      <a class="card" href="./dealer.html" data-name="dealer portal distribuidores inventario retail">
-        <div class="card-top"><span class="card-emoji">🏬</span><span class="pill pill-dist">DISTRIBUIDOR</span></div>
-        <div class="card-title">Dealer Portal</div>
-        <div class="card-desc">Portal con tabs de inventario y retail para el distribuidor — candidato principal a entregar.</div>
-        <div class="card-foot">dealer.html</div>
-      </a>
-
-      <a class="card" href="https://foton-dealer-os-git-master-isesperanza2306s-projects.vercel.app" data-name="inteligencia competitiva pwa pin vercel">
-        <div class="card-top"><span class="card-emoji">🕵️</span><span class="pill pill-dist">DISTRIBUIDOR</span></div>
-        <div class="card-title">Foton Dealer · Inteligencia Competitiva</div>
-        <div class="card-desc">PWA comparativo vs. competencia, PIN-gated. Repo y despliegue separados (Vercel).</div>
-        <div class="card-foot">foton-dealer-os · vercel</div>
-      </a>
-
-    </div>
-  </div>
-
-  <!-- LEGACY -->
-  <div class="section" id="sec-legacy">
-    <div class="section-head"><div class="section-title">Revisar / posible duplicado</div><div class="section-count">confirmar si siguen vigentes</div></div>
-    <div class="grid">
-
-      <a class="card" href="./foton-field-app.html" data-name="foton field app legacy duplicado registro visita">
-        <div class="card-top"><span class="card-emoji">♻️</span><span class="pill pill-legacy">LEGACY</span></div>
-        <div class="card-title">Foton Field App (versión anterior)</div>
-        <div class="card-desc">Archivo más pesado que field-app.html, no referenciado en la navegación actual del app.</div>
-        <div class="card-foot">foton-field-app.html</div>
-      </a>
-
-      <a class="card" href="./foton_bp_tracker.html" data-name="foton bp tracker legacy duplicado">
-        <div class="card-top"><span class="card-emoji">♻️</span><span class="pill pill-legacy">LEGACY</span></div>
-        <div class="card-title">Foton BP Tracker (versión anterior)</div>
-        <div class="card-desc">Archivo más pesado que bp-tracker.html, no referenciado en la navegación actual del app.</div>
-        <div class="card-foot">foton_bp_tracker.html</div>
-      </a>
-
-    </div>
-    <div class="legacy-note">Estos dos archivos parecen versiones previas de herramientas que ya están integradas y vigentes (field-app.html y bp-tracker.html). Confírmame si los borro del repo para dejar de mantener dos copias.</div>
-  </div>
+  <div id="sections"></div>
 
   <footer>FOTON OS · isesperanza2306.github.io/foton-os · actualizado 8 sep 2026</footer>
 </div>
 
 <script>
-document.getElementById('clock').innerHTML = new Date().toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+const ICONS = {
+  traffic:  '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="8" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="16" r="1.4" fill="currentColor" stroke="none"/>',
+  clipboard:'<rect x="6" y="4" width="12" height="17" rx="2"/><rect x="9" y="2.5" width="6" height="3" rx="1"/><path d="M9 12l2 2 4-4"/>',
+  map:      '<polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/>',
+  compass:  '<circle cx="12" cy="12" r="9"/><polygon points="14.5 9.5 12 12 9.5 14.5 12 12"/>',
+  pin:      '<path d="M12 21s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.4"/>',
+  trend:    '<polyline points="3 17 9 11 13 15 21 6"/><polyline points="15 6 21 6 21 12"/>',
+  target:   '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/>',
+  truck:    '<rect x="2" y="6" width="12" height="11" rx="1.5"/><path d="M14 10h4l3 3v4h-7z"/><circle cx="6.5" cy="18.5" r="1.8"/><circle cx="16.5" cy="18.5" r="1.8"/>',
+  check:    '<circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.3 2.3 4.7-5"/>',
+  award:    '<circle cx="12" cy="9" r="6"/><path d="M9 14l-1.5 7 4.5-2.5 4.5 2.5-1.5-7"/>',
+  building: '<rect x="4" y="3" width="16" height="18" rx="1"/><line x1="8" y1="7" x2="8" y2="7.01"/><line x1="12" y1="7" x2="12" y2="7.01"/><line x1="16" y1="7" x2="16" y2="7.01"/><line x1="8" y1="11" x2="8" y2="11.01"/><line x1="12" y1="11" x2="12" y2="11.01"/><line x1="16" y1="11" x2="16" y2="11.01"/><line x1="8" y1="15" x2="8" y2="15.01"/><line x1="12" y1="15" x2="12" y2="15.01"/><line x1="16" y1="15" x2="16" y2="15.01"/><line x1="10" y1="21" x2="10" y2="18"/><line x1="14" y1="21" x2="14" y2="18"/>',
+  calc:     '<rect x="5" y="2.5" width="14" height="19" rx="2"/><line x1="8" y1="6.5" x2="16" y2="6.5"/><line x1="8" y1="11" x2="8" y2="11.01"/><line x1="12" y1="11" x2="12" y2="11.01"/><line x1="16" y1="11" x2="16" y2="11.01"/><line x1="8" y1="14.5" x2="8" y2="14.51"/><line x1="12" y1="14.5" x2="12" y2="14.51"/><line x1="16" y1="14.5" x2="16" y2="18"/><line x1="8" y1="18" x2="8" y2="18.01"/><line x1="12" y1="18" x2="12" y2="18.01"/>',
+  book:     '<path d="M3 5.5A2.5 2.5 0 0 1 5.5 3H12v18H5.5A2.5 2.5 0 0 1 3 18.5z"/><path d="M21 5.5A2.5 2.5 0 0 0 18.5 3H12v18h6.5a2.5 2.5 0 0 0 2.5-2.5z"/>',
+  user:     '<circle cx="12" cy="8.5" r="4"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/>',
+  store:    '<path d="M3 9.5l1.2-5h15.6l1.2 5"/><path d="M3 9.5a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0"/><path d="M5 10v9.5h14V10"/><rect x="9.5" y="14" width="5" height="5.5"/>',
+  search:   '<circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+  archive:  '<rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9"/><line x1="10" y1="13" x2="14" y2="13"/>'
+};
+
+const SECTIONS = [
+  { id:'operacion', eyebrow:'Operación diaria', title:'Operación & Seguimiento', desc:'Tableros de gestión y control de campo' },
+  { id:'capacitacion', eyebrow:'Cursos que impartes', title:'Capacitación & Certificación', desc:'Formación de asesores, operadores y evaluación' },
+  { id:'comercial', eyebrow:'Material de venta', title:'Comercial & Ventas', desc:'Herramientas para prospectar y cerrar' },
+  { id:'distribuidor', eyebrow:'Para entregar y robustecer', title:'Portal Distribuidor', desc:'Herramientas de cara al distribuidor' },
+  { id:'legacy', eyebrow:'Confirmar vigencia', title:'Revisar / posible duplicado', desc:'Archivos que podrían estar obsoletos' }
+];
+
+const TOOLS = [
+  { s:'operacion', icon:'traffic', color:'blue', status:'live', title:'Panel de Seguimiento Distribuidor', desc:'Semáforo Día1/Día2, back order y vendedor especialista asignado por distribuidor.', href:'./panel-seguimiento/', foot:'panel-seguimiento/' },
+  { s:'operacion', icon:'clipboard', color:'blue', status:'live', title:'Reporte de Campo', desc:'Formulario PIN-gated para registrar visitas a distribuidor directo desde campo.', href:'./reporte-campo/', foot:'reporte-campo/' },
+  { s:'operacion', icon:'map', color:'green', status:'live', title:'Mapa Red Nacional', desc:'Distribuidores y talleres aliados con contacto y navegación directa a Google Maps.', href:'./mapa-red-nacional/', foot:'mapa-red-nacional/' },
+  { s:'operacion', icon:'compass', color:'blue', status:'live', title:'Panel de Dirección', desc:'Vista consolidada de dirección — requiere sesión (login Supabase).', href:'./direccion.html', foot:'direccion.html · auth' },
+  { s:'operacion', icon:'pin', color:'blue', status:'live', title:'Registro de Visita', desc:'Bitácora de visitas del app interno con sesión Supabase.', href:'./field-app.html', foot:'field-app.html · auth' },
+  { s:'operacion', icon:'trend', color:'green', status:'live', title:'BP Tracker', desc:'Seguimiento de business plan / metas por distribuidor, con sesión.', href:'./bp-tracker.html', foot:'bp-tracker.html · auth' },
+  { s:'operacion', icon:'map', color:'blue', status:'live', title:'Mapa de Red (app interna)', desc:'Vista de mapa dentro del app con sesión — home actual del login.', href:'./mapa.html', foot:'mapa.html · auth' },
+
+  { s:'capacitacion', icon:'target', color:'orange', status:'live', title:'Foton Sales Machine v12', desc:'Curso interactivo para asesores: BANT, SPIN, prospección, cierre y roleplay.', href:'./foton-sales-machine-v12.html', foot:'foton-sales-machine-v12.html' },
+  { s:'capacitacion', icon:'truck', color:'orange', status:'live', title:'Master Driver 2.0', desc:'Curso para operadores: portafolio S3–S12, caja AMT, Euro VI, DPF/Urea.', href:'https://isesperanza2306.github.io/foton-master-driver/', foot:'foton-master-driver/' },
+  { s:'capacitacion', icon:'check', color:'purple', status:'dist', title:'Evaluación de Producto', desc:'Examen que presenta el asesor/distribuidor para certificarse.', href:'./foton_examen.html', foot:'foton_examen.html' },
+  { s:'capacitacion', icon:'award', color:'orange', status:'live', title:'Panel Gerencial · Resultados', desc:'Ranking de red, certificados, análisis de brechas por modelo y distribuidor.', href:'./foton_admin.html', foot:'foton_admin.html' },
+
+  { s:'comercial', icon:'building', color:'blue', status:'live', title:'Presentación Corporativa', desc:'Deck institucional Foton/BAIC/LDR — respaldo, planta, postventa, alianzas.', href:'./presentacion/', foot:'presentacion/' },
+  { s:'comercial', icon:'calc', color:'blue', status:'live', title:'Cotizador Institucional', desc:'Herramienta de cotización de la línea MDT/LDT para prospección y cierre.', href:'./cotizacion.html', foot:'cotizacion.html' },
+  { s:'comercial', icon:'book', color:'blue', status:'live', title:'Guía de Ventajas Competitivas', desc:'Argumentario comparativo para reforzar objeciones frente a la competencia.', href:'./informativo.html', foot:'informativo.html' },
+  { s:'comercial', icon:'user', color:'blue', status:'live', title:'Mi Panel · Vendedor Especialista', desc:'Vista individual para el vendedor especialista asignado por distribuidor.', href:'./panel-asesor.html', foot:'panel-asesor.html' },
+
+  { s:'distribuidor', icon:'store', color:'purple', status:'dist', title:'Dealer Portal', desc:'Portal con tabs de inventario y retail — candidato principal a entregar.', href:'./dealer.html', foot:'dealer.html' },
+  { s:'distribuidor', icon:'search', color:'purple', status:'dist', title:'Foton Dealer · Inteligencia Competitiva', desc:'PWA comparativo vs. competencia, PIN-gated. Repo y despliegue separados.', href:'https://foton-dealer-os-git-master-isesperanza2306s-projects.vercel.app', foot:'foton-dealer-os · vercel' },
+
+  { s:'legacy', icon:'archive', color:'grey', status:'legacy', title:'Foton Field App (anterior)', desc:'Archivo más pesado que field-app.html, no referenciado en la navegación actual.', href:'./foton-field-app.html', foot:'foton-field-app.html' },
+  { s:'legacy', icon:'archive', color:'grey', status:'legacy', title:'Foton BP Tracker (anterior)', desc:'Archivo más pesado que bp-tracker.html, no referenciado en la navegación actual.', href:'./foton_bp_tracker.html', foot:'foton_bp_tracker.html' }
+];
+
+const COLOR_MAP = {
+  blue:{fg:'#0668D9',bg:'#E7F1FD'}, green:{fg:'#1D9A5C',bg:'#E7F7EE'},
+  orange:{fg:'#D3720B',bg:'#FDF0E1'}, purple:{fg:'#8244C7',bg:'#F2E9FB'}, grey:{fg:'#6E6E73',bg:'#F0F0F2'}
+};
+const STATUS_MAP = { live:['pill-live','LIVE'], dist:['pill-dist','DISTRIBUIDOR'], legacy:['pill-legacy','LEGACY'] };
+
+function cardHTML(t, i){
+  const c = COLOR_MAP[t.color];
+  const [pillClass, pillLabel] = STATUS_MAP[t.status];
+  const dataName = (t.title + ' ' + t.desc).toLowerCase();
+  return `<a class="card" href="${t.href}" data-name="${dataName}" data-section="${t.s}" style="animation-delay:${i*22}ms">
+    <div class="card-top">
+      <div class="icon-badge" style="background:${c.bg};color:${c.fg}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICONS[t.icon]}</svg>
+      </div>
+      <span class="pill ${pillClass}">${pillLabel}</span>
+    </div>
+    <div>
+      <div class="card-title">${t.title}</div>
+      <div class="card-desc">${t.desc}</div>
+    </div>
+    <div class="card-foot">${t.foot}</div>
+  </a>`;
+}
+
+function render(){
+  const secWrap = document.getElementById('sections');
+  secWrap.innerHTML = SECTIONS.map(sec => {
+    const items = TOOLS.filter(t => t.s === sec.id);
+    const cards = items.map((t,i) => cardHTML(t,i)).join('');
+    const noteHTML = sec.id === 'legacy'
+      ? `<div class="legacy-note">Estos archivos parecen versiones previas de herramientas ya integradas y vigentes (field-app.html y bp-tracker.html). Confirma si se eliminan del repo para dejar de mantener dos copias.</div>`
+      : '';
+    return `<div class="section" id="sec-${sec.id}">
+      <div class="section-head">
+        <div class="section-eyebrow">${sec.eyebrow}</div>
+        <div class="section-title">${sec.title}</div>
+        <div class="section-desc">${sec.desc}</div>
+      </div>
+      <div class="grid">${cards}</div>
+      ${noteHTML}
+    </div>`;
+  }).join('');
+
+  const chipbar = document.getElementById('chipbar');
+  const chips = [{id:'all', label:'Todas'}, ...SECTIONS.map(s=>({id:s.id,label:s.title}))];
+  chipbar.innerHTML = chips.map(c => `<a class="chip${c.id==='all'?' active':''}" data-chip="${c.id}" href="${c.id==='all'?'#':'#sec-'+c.id}">${c.label}</a>`).join('');
+  chipbar.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      chipbar.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');
+    });
+  });
+}
+render();
 
 function filterCards(){
   const q = document.getElementById('q').value.trim().toLowerCase();
-  document.querySelectorAll('.card, .hero').forEach(el=>{
-    const name = (el.dataset.name || '') + ' ' + el.textContent.toLowerCase();
-    el.style.display = (!q || name.toLowerCase().includes(q)) ? '' : 'none';
+  document.querySelectorAll('.card').forEach(el=>{
+    const name = el.dataset.name || '';
+    el.style.display = (!q || name.includes(q)) ? '' : 'none';
   });
   document.querySelectorAll('.section').forEach(sec=>{
     const visible = [...sec.querySelectorAll('.card')].some(c=>c.style.display !== 'none');
