@@ -356,7 +356,7 @@ main{padding:22px 26px 64px;max-width:1500px;margin:0 auto}
     <div class="t2" id="seglbl" style="color:rgba(255,255,255,.45);font-size:8.5px;margin-top:2px">MDT/LDT</div>
   </div>
   <div class="hspace"></div>
-  <div class="rswitch" style="margin-right:8px">
+  <div class="rswitch" id="reg-switch" style="margin-right:8px">
     <button class="rbtn on" data-r="israel" onclick="setRegion('israel')">Baj&iacute;o / Pac&iacute;fico</button>
     <button class="rbtn" data-r="marco" onclick="setRegion('marco')">Norte</button>
     <button class="rbtn" data-r="rodrigo" onclick="setRegion('rodrigo')">Sur</button>
@@ -853,7 +853,7 @@ function setSegmento(s){SEG=s;
   cargar();window.scrollTo({top:0,behavior:'smooth'});
 }
 function setRegion(r){REG=r;
-  document.querySelectorAll('.rswitch:first-of-type .rbtn').forEach(b=>b.classList.toggle('on',b.dataset.r===r));
+  document.querySelectorAll('#reg-switch .rbtn').forEach(b=>b.classList.toggle('on',b.dataset.r===r));
   const rl=SEG==='pv'?RLBL_PV:RLBL_MDT;
   const rs=SEG==='pv'?RSUB_PV:RSUB_MDT;
   document.getElementById('reglbl').textContent=(rl[r]||RLBL_MDT[r])+' \u00b7 '+(rs[r]||RSUB_MDT[r]);
