@@ -162,17 +162,17 @@ main{padding:22px 26px 64px;max-width:1500px;margin:0 auto}
 
 /* ── AGING ── */
 .aging{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:20px}
-.agc{background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);padding:15px 18px;
-  border-left:3px solid var(--line);box-shadow:var(--sh-1);transition:box-shadow .25s var(--ease)}
-.agc:hover{box-shadow:var(--sh-2)}
-.agc.b1{border-left-color:var(--blu)}
-.agc.b2{border-left-color:var(--amb)}
-.agc.b3{border-left-color:var(--org)}
-.agc.b4{border-left-color:var(--red)}
-.agc-l{font-size:9.5px;color:var(--dim);font-weight:700;letter-spacing:.9px;text-transform:uppercase}
-.agc-n{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:800;line-height:1;margin:6px 0 3px}
+.agc{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:19px 20px 17px;
+  box-shadow:var(--sh-1);transition:box-shadow .25s var(--ease),transform .25s var(--ease)}
+.agc:hover{box-shadow:var(--sh-2);transform:translateY(-1px)}
+.agc-l{display:flex;align-items:center;gap:7px;font-size:9.5px;color:var(--dim);font-weight:700;
+  letter-spacing:.9px;text-transform:uppercase}
+.agc-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.agc-n{font-family:'Barlow Condensed',sans-serif;font-size:34px;font-weight:800;line-height:1;margin:9px 0 10px}
 .agc-s{font-size:10.5px;color:var(--mut);font-weight:500}
 .agc-s b{font-family:'JetBrains Mono',monospace;color:var(--ink)}
+.agc-bar{height:3px;border-radius:3px;background:var(--line2);overflow:hidden;margin-top:11px}
+.agc-bar i{display:block;height:100%;border-radius:3px;transition:width .6s var(--ease)}
 
 /* ── COBRANZA DEALER ── */
 .cd{border-bottom:1px solid var(--line2)}
@@ -600,9 +600,11 @@ function renderCob(){
 function ag(cls,lbl,arr,tot){
   const p=tot?Math.round(arr.length/tot*100):0;
   const col={b1:'#185FA5',b2:'#C47A1A',b3:'#D35400',b4:'#C0392B'}[cls];
-  return '<div class="agc '+cls+'"><div class="agc-l">'+lbl+'</div>'+
-    '<div class="agc-n" style="color:'+(arr.length?col:'#C3D2E0')+'">'+arr.length+'</div>'+
-    '<div class="agc-s"><b>'+p+'%</b> de la cartera</div></div>'}
+  const c=arr.length?col:'#C9D6E2';
+  return '<div class="agc"><div class="agc-l"><span class="agc-dot" style="background:'+c+'"></span>'+lbl+'</div>'+
+    '<div class="agc-n" style="color:'+c+'">'+arr.length+'</div>'+
+    '<div class="agc-s"><b>'+p+'%</b> de la cartera</div>'+
+    '<div class="agc-bar"><i style="width:'+p+'%;background:'+col+'"></i></div></div>'}
 function togBO(el){el.nextElementSibling.classList.toggle('open')}
 function togMod(el,uid){el.classList.toggle('mopen');document.getElementById(uid+'_b').classList.toggle('mopen')}
 function tog(el){el.nextElementSibling.classList.toggle('open')}
@@ -702,9 +704,11 @@ function renderBOPend(){
   const prom=Math.round(uds.reduce((a,r)=>a+(diasDesde(r.fecha_solicitud)||0),0)/uds.length);
   const agc=(cls,lbl,n)=>{
     const col={b1:'#185FA5',b2:'#C47A1A',b3:'#D35400',b4:'#C0392B'}[cls];
-    return '<div class="agc '+cls+'"><div class="agc-l">'+lbl+'</div>'+
-      '<div class="agc-n" style="color:'+(n?col:'#C3D2E0')+'">'+n+'</div>'+
-      '<div class="agc-s"><b>'+Math.round(n/uds.length*100)+'%</b> del back order</div></div>'};
+    const c=n?col:'#C9D6E2', p=Math.round(n/uds.length*100);
+    return '<div class="agc"><div class="agc-l"><span class="agc-dot" style="background:'+c+'"></span>'+lbl+'</div>'+
+      '<div class="agc-n" style="color:'+c+'">'+n+'</div>'+
+      '<div class="agc-s"><b>'+p+'%</b> del back order</div>'+
+      '<div class="agc-bar"><i style="width:'+p+'%;background:'+col+'"></i></div></div>'};
 
   // orden dealers: mayor antigüedad primero
   const ORDEN_MODS = ['S3','S5','S6','S8','S12','MILER','OTRO'];
