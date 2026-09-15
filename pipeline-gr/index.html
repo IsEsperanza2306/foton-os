@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Pipeline GR · Foton MDT/LDT</title>
+<style>
+:root{
+  --navy:#002870; --blue:#185FA5; --cyan:#00AECC;
+  --bg:#F4F7FB; --white:#FFFFFF; --border:#DDE3EE;
+  --text:#0F1A2E; --textMed:#374151; --textSoft:#64748B;
+  --green:#1E8E5A; --greenLt:#E8F8F1;
+  --amber:#B45309; --amberLt:#FEF3C7;
+  --red:#C0392B; --redLt:#FDE8EC;
+  --purple:#6D28D9; --purpleLt:#EDE9FE;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding-bottom:32px;}
+
+.topbar{background:var(--navy);color:#fff;padding:16px 20px 12px;position:sticky;top:0;z-index:100;}
+.topbar h1{margin:0 0 2px;font-size:18px;font-weight:700;}
+.topbar p{margin:0;font-size:12px;opacity:.65;}
+
+.section{padding:16px 16px 0;}
+.section-title{font-size:13px;font-weight:700;color:var(--textSoft);text-transform:uppercase;letter-spacing:.04em;margin:0 0 10px;}
+
+/* KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:4px;}
+.kpi-card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:14px;border-top:4px solid var(--cyan);}
+.kpi-card.warn{border-top-color:var(--amber);}
+.kpi-card.ok{border-top-color:var(--green);}
+.kpi-card.danger{border-top-color:var(--red);}
+.kpi-card.purple{border-top-color:var(--purple);}
+.kv{font-size:28px;font-weight:700;color:var(--navy);line-height:1.1;}
+.kv.warn{color:var(--amber);}
+.kv.ok{color:var(--green);}
+.kv.danger{color:var(--red);}
+.kl{font-size:12px;color:var(--textSoft);margin-top:4px;}
+
+/* TABLA */
+.tbl-wrap{background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:12px;}
+.tbl-head{background:var(--navy);color:#fff;display:grid;font-size:12px;font-weight:600;padding:10px 14px;}
+.tbl-row{display:grid;padding:10px 14px;border-top:1px solid var(--border);font-size:13px;align-items:center;}
+.tbl-row:hover{background:var(--bg);}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;}
+.badge-prospecto{background:#EDF2F7;color:#64748B;}
+.badge-contactado{background:#E0F6FB;color:var(--cyan);}
+.badge-cotizacion{background:var(--amberLt);color:var(--amber);}
+.badge-negociacion{background:var(--purpleLt);color:var(--purple);}
+.badge-ganado{background:var(--greenLt);color:var(--green);}
+.badge-perdido{background:var(--redLt);color:var(--red);}
+.badge-vencida{background:var(--redLt);color:var(--red);}
+.badge-caliente{background:#FFF0E6;color:#C05000;}
+
+/* FILTROS */
+.filtros{display:flex;gap:6px;overflow-x:auto;padding:0 0 10px;scrollbar-width:none;}
+.filtros button{flex:0 0 auto;border:1px solid var(--border);border-radius:999px;background:var(--white);color:var(--textSoft);padding:6px 12px;font-size:12px;min-height:32px;cursor:pointer;}
+.filtros button.act{border-color:var(--navy);color:var(--navy);background:#EBF3FF;font-weight:600;}
+
+/* APOYO GR */
+.apoyo-card{background:var(--purpleLt);border:1px solid #C4B5FD;border-radius:14px;padding:14px;margin-bottom:10px;}
+.apoyo-card .empresa{font-size:14px;font-weight:700;margin:0 0 2px;}
+.apoyo-card .det{font-size:12px;color:var(--purple);margin:0 0 6px;}
+.apoyo-card .sig-paso{font-size:12px;color:var(--textMed);background:rgba(255,255,255,.6);border-radius:8px;padding:6px 8px;margin-top:6px;}
+
+/* EMPTY */
+.empty{text-align:center;padding:32px;color:var(--textSoft);font-size:13px;}
+
+.refresh-btn{position:fixed;bottom:16px;right:16px;background:var(--navy);color:#fff;border:none;border-radius:999px;padding:12px 18px;font-size:13px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.15);cursor:pointer;}
+
+.last-updated{text-align:center;color:var(--textSoft);font-size:11px;padding:8px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>Pipeline GR — Vista Regional</h1>
+  <p>Israel Esperanza · Centro-Sur · MDT/LDT</p>
+</div>
+
+<!-- KPIs GLOBALES -->
+<div class="section" style="padding-top:16px;">
+  <p class="section-title">Resumen general</p>
+  <div class="kpi-grid" id="kpis-global"></div>
+</div>
+
+<!-- REQUIEREN APOYO GR -->
+<div class="section" style="margin-top:16px;">
+  <p class="section-title">🚨 Requieren tu visita (apoyo GR)</p>
+  <div id="apoyo-lista"></div>
+</div>
+
+<!-- PIPELINE POR DISTRIBUIDOR -->
+<div class="section" style="margin-top:8px;">
+  <p class="section-title">Pipeline por distribuidor</p>
+  <div class="filtros" id="filtros">
+    <button class="act" data-f="activas" onclick="setFiltro(this)">Activas</button>
+    <button data-f="todas" onclick="setFiltro(this)">Todas</button>
+    <button data-f="vencidas" onclick="setFiltro(this)">⚠️ Vencidas</button>
+    <button data-f="caliente" onclick="setFiltro(this)">🔥 Calientes</button>
+    <button data-f="S12" onclick="setFiltro(this)">S12</button>
+    <button data-f="S8" onclick="setFiltro(this)">S8</button>
+    <button data-f="ganado" onclick="setFiltro(this)">✅ Ganadas</button>
+  </div>
+  <div id="pipeline-tabla"></div>
+</div>
+
+<!-- MODELO BREAKDOWN -->
+<div class="section" style="margin-top:8px;">
+  <p class="section-title">Desglose por modelo</p>
+  <div id="modelo-tabla"></div>
+</div>
+
+<p class="last-updated" id="last-updated"></p>
+<button class="refresh-btn" onclick="cargar()">↻ Actualizar</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+const SB_URL = 'https://gblwoaaitnqbgorxaydv.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdibHdvYWFpdG5xYmdvcnhheWR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxOTQ3NTMsImV4cCI6MjA5NTc3MDc1M30.o7zYCCfH2rHEs69o4U7Zc9dM4IvQi8GsXRlZFW_2kso';
+const sb = supabase.createClient(SB_URL, SB_KEY);
+
+let ALL = [], filtroActivo = 'activas';
+
+function fmt(n){ return n ? '$'+Number(n).toLocaleString('es-MX',{maximumFractionDigits:0}) : '—'; }
+function mfmt(n){ return n>=1e6 ? '$'+(n/1e6).toFixed(1)+'M' : fmt(n); }
+
+function temperatura(op){
+  if(['ganado','perdido','descartado'].includes(op.estatus)) return 'cerrada';
+  if(op.siguiente_paso_fecha && op.siguiente_paso_fecha < new Date().toISOString().slice(0,10)) return 'vencida';
+  if((op.probabilidad||0) >= 70) return 'caliente';
+  if((op.probabilidad||0) >= 40) return 'tibia';
+  return 'fria';
+}
+
+function modeloBase(m){ return m ? m.split(' ')[0] : ''; }
+
+async function cargar(){
+  const { data } = await sb.from('pipeline_comercial').select('*, distribuidores(nombre,plaza)').order('created_at',{ascending:false});
+  ALL = (data||[]).map(op=>({ ...op, _dist: op.distribuidores?.nombre||op.distribuidor_id, _plaza: op.distribuidores?.plaza||'' }));
+  renderKpis();
+  renderApoyo();
+  renderTabla();
+  renderModelos();
+  document.getElementById('last-updated').textContent = 'Actualizado: '+new Date().toLocaleTimeString('es-MX');
+}
+
+function renderKpis(){
+  const activas = ALL.filter(o=>!['ganado','perdido','descartado'].includes(o.estatus));
+  const valor = activas.reduce((s,o)=>s+(o.valor_oportunidad||0),0);
+  const ponderado = activas.reduce((s,o)=>s+(o.valor_oportunidad||0)*(o.probabilidad||0)/100,0);
+  const vencidas = activas.filter(o=>temperatura(o)==='vencida').length;
+  const apoyo = activas.filter(o=>o.requiere_apoyo_gr).length;
+  const ganadas = ALL.filter(o=>o.estatus==='ganado');
+  const val_ganado = ganadas.reduce((s,o)=>s+(o.valor_oportunidad||0),0);
+
+  document.getElementById('kpis-global').innerHTML = `
+    <div class="kpi-card"><div class="kv">${activas.length}</div><div class="kl">Oportunidades activas</div></div>
+    <div class="kpi-card"><div class="kv">${mfmt(valor)}</div><div class="kl">Valor total pipeline</div></div>
+    <div class="kpi-card"><div class="kv">${mfmt(ponderado)}</div><div class="kl">Valor ponderado</div></div>
+    <div class="kpi-card ok"><div class="kv ok">${ganadas.length}</div><div class="kl">Ganadas · ${mfmt(val_ganado)}</div></div>
+    <div class="kpi-card ${vencidas>0?'danger':''}"><div class="kv ${vencidas>0?'danger':''}">${vencidas}</div><div class="kl">Vencidas sin acción</div></div>
+    <div class="kpi-card ${apoyo>0?'purple':''}"><div class="kv">${apoyo}</div><div class="kl">Piden apoyo GR</div></div>
+  `;
+}
+
+function renderApoyo(){
+  const apoyo = ALL.filter(o=>o.requiere_apoyo_gr && !['ganado','perdido','descartado'].includes(o.estatus));
+  const el = document.getElementById('apoyo-lista');
+  if(!apoyo.length){ el.innerHTML='<p style="color:var(--textSoft);font-size:13px;padding:4px 0;">Sin solicitudes de apoyo activas. 👍</p>'; return; }
+  el.innerHTML = apoyo.map(op=>`
+    <div class="apoyo-card">
+      <p class="empresa">${op.prospecto} <span style="font-weight:400;font-size:13px;">— ${op._dist}</span></p>
+      <p class="det">${op.modelo} · ${fmt(op.valor_oportunidad)} · <b>${op.estatus}</b></p>
+      ${op.siguiente_paso ? `<div class="sig-paso">→ ${op.siguiente_paso}${op.siguiente_paso_fecha ? ' ('+op.siguiente_paso_fecha+')' : ''}</div>` : ''}
+      ${op.notas ? `<p style="font-size:12px;color:var(--textMed);margin:6px 0 0;">${op.notas.slice(0,120)}${op.notas.length>120?'…':''}</p>` : ''}
+    </div>
+  `).join('');
+}
+
+function setFiltro(btn){
+  document.querySelectorAll('.filtros button').forEach(b=>b.classList.remove('act'));
+  btn.classList.add('act');
+  filtroActivo = btn.dataset.f;
+  renderTabla();
+}
+
+function renderTabla(){
+  let ops = [...ALL];
+  if(filtroActivo==='activas') ops = ops.filter(o=>!['ganado','perdido','descartado'].includes(o.estatus));
+  else if(filtroActivo==='vencidas') ops = ops.filter(o=>temperatura(o)==='vencida');
+  else if(filtroActivo==='caliente') ops = ops.filter(o=>temperatura(o)==='caliente');
+  else if(filtroActivo==='S12') ops = ops.filter(o=>modeloBase(o.modelo)==='S12');
+  else if(filtroActivo==='S8') ops = ops.filter(o=>modeloBase(o.modelo)==='S8');
+  else if(filtroActivo==='ganado') ops = ops.filter(o=>o.estatus==='ganado');
+
+  const el = document.getElementById('pipeline-tabla');
+  if(!ops.length){ el.innerHTML='<div class="empty">Sin oportunidades en este filtro.</div>'; return; }
+
+  const cols = '2fr 2fr 1.2fr 1fr 1fr 1fr';
+  el.innerHTML = `
+    <div class="tbl-wrap">
+      <div class="tbl-head" style="grid-template-columns:${cols}">
+        <span>Prospecto</span><span>Distribuidor</span><span>Modelo</span><span>Valor</span><span>Estatus</span><span>Vence</span>
+      </div>
+      ${ops.map(op=>{
+        const temp = temperatura(op);
+        const badge = temp==='vencida' ? `<span class="badge badge-vencida">Vencida</span>` :
+                      temp==='caliente' ? `<span class="badge badge-caliente">🔥 Caliente</span>` :
+                      `<span class="badge badge-${op.estatus}">${op.estatus}</span>`;
+        const fechaVence = op.siguiente_paso_fecha || '—';
+        return `<div class="tbl-row" style="grid-template-columns:${cols}">
+          <span style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${op.prospecto}${op.requiere_apoyo_gr?'<span style="color:var(--purple);"> ★GR</span>':''}</span>
+          <span style="font-size:12px;color:var(--textSoft);">${op._dist}<br><span style="color:var(--textSoft);">${op._plaza}</span></span>
+          <span>${op.modelo||'—'}</span>
+          <span>${mfmt(op.valor_oportunidad)}</span>
+          <span>${badge}</span>
+          <span style="font-size:12px;color:${fechaVence<new Date().toISOString().slice(0,10)?'var(--red)':'var(--textSoft)'};">${fechaVence}</span>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function renderModelos(){
+  const modelos = ['S3','S5','S6','S8','S12'];
+  const activas = ALL.filter(o=>!['perdido','descartado'].includes(o.estatus));
+  const cols = '1fr 1fr 1fr 1fr 1fr';
+  const rows = modelos.map(m=>{
+    const ops = activas.filter(o=>modeloBase(o.modelo)===m);
+    const ganadas = ops.filter(o=>o.estatus==='ganado');
+    const actvsM = ops.filter(o=>!['ganado'].includes(o.estatus));
+    const valor = ops.reduce((s,o)=>s+(o.valor_oportunidad||0),0);
+    return `<div class="tbl-row" style="grid-template-columns:${cols}">
+      <span style="font-weight:700;">${m}</span>
+      <span>${ops.length} total</span>
+      <span style="color:var(--green);">${ganadas.length} ganadas</span>
+      <span style="color:var(--amber);">${actvsM.length} activas</span>
+      <span>${mfmt(valor)}</span>
+    </div>`;
+  });
+  document.getElementById('modelo-tabla').innerHTML = `
+    <div class="tbl-wrap">
+      <div class="tbl-head" style="grid-template-columns:${cols}">
+        <span>Modelo</span><span>Total ops</span><span>Ganadas</span><span>Activas</span><span>Valor</span>
+      </div>
+      ${rows.join('')}
+    </div>`;
+}
+
+cargar();
+// Auto-refresh cada 2 minutos
+setInterval(cargar, 120000);
+</script>
+</body>
+</html>
