@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Pipeline · Foton MDT/LDT</title>
+<style>
+:root{
+  --navy:#002870; --blue:#185FA5; --cyan:#00AECC; --white:#FFFFFF;
+  --bg:#F4F7FB; --bgCard:#FFFFFF; --border:#DDE3EE;
+  --text:#0F1A2E; --textMed:#374151; --textSoft:#64748B;
+  --green:#1E8E5A; --greenLt:#E8F8F1;
+  --amber:#B45309; --amberLt:#FEF3C7;
+  --red:#C0392B; --redLt:#FDE8EC;
+  --purple:#6D28D9; --purpleLt:#EDE9FE;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding-bottom:80px;}
+
+/* HEADER */
+.topbar{background:var(--navy);color:var(--white);padding:16px 16px 12px;position:sticky;top:0;z-index:100;}
+.topbar h1{margin:0 0 2px;font-size:18px;font-weight:700;}
+.topbar p{margin:0;font-size:12px;opacity:.7;}
+
+/* SCREENS */
+.screen{display:none;padding:16px;}
+.screen.active{display:block;}
+
+/* FORMS */
+label{display:block;font-size:12px;color:var(--textSoft);margin:12px 0 4px;font-weight:500;}
+input,select,textarea{width:100%;background:var(--white);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 12px;font-size:16px;min-height:44px;-webkit-appearance:none;}
+textarea{min-height:72px;resize:vertical;}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--cyan);border-color:transparent;}
+.pin-input{letter-spacing:8px;font-size:24px;font-weight:700;text-align:center;}
+
+/* BUTTONS */
+.btn{display:block;width:100%;min-height:48px;border:none;border-radius:12px;font-size:15px;font-weight:600;padding:0 16px;cursor:pointer;margin-top:12px;}
+.btn-primary{background:var(--navy);color:var(--white);}
+.btn-primary:active{background:var(--blue);}
+.btn-cyan{background:var(--cyan);color:var(--white);}
+.btn-ghost{background:transparent;color:var(--textSoft);border:1px solid var(--border);font-size:13px;margin-top:8px;}
+
+/* KPI STRIP */
+.kpis{display:flex;gap:8px;overflow-x:auto;padding:4px 0 8px;scrollbar-width:none;}
+.kpi{flex:0 0 auto;background:var(--white);border:1px solid var(--border);border-radius:12px;padding:10px 14px;min-width:90px;text-align:center;border-top:3px solid var(--cyan);}
+.kpi .v{font-size:22px;font-weight:700;color:var(--navy);display:block;}
+.kpi .l{font-size:11px;color:var(--textSoft);margin-top:2px;}
+.kpi.warn{border-top-color:var(--amber);}
+.kpi.warn .v{color:var(--amber);}
+.kpi.ok{border-top-color:var(--green);}
+.kpi.ok .v{color:var(--green);}
+
+/* OPORTUNIDAD CARD */
+.op-card{background:var(--white);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden;}
+.op-head{padding:12px 14px 8px;display:flex;gap:10px;align-items:flex-start;}
+.op-dot{width:10px;height:10px;border-radius:50%;margin-top:4px;flex:0 0 auto;}
+.op-body{flex:1;min-width:0;}
+.op-empresa{font-size:14px;font-weight:700;margin:0 0 2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.op-modelo{font-size:12px;color:var(--textSoft);margin:0 0 6px;}
+.op-tags{display:flex;flex-wrap:wrap;gap:4px;}
+.tag{font-size:11px;padding:2px 7px;border-radius:6px;background:var(--bg);}
+.tag.cyan{background:#E0F6FB;color:var(--cyan);}
+.tag.green{background:var(--greenLt);color:var(--green);}
+.tag.amber{background:var(--amberLt);color:var(--amber);}
+.tag.red{background:var(--redLt);color:var(--red);}
+.tag.purple{background:var(--purpleLt);color:var(--purple);}
+.op-foot{border-top:1px solid var(--border);padding:8px 14px;display:flex;gap:8px;}
+.op-foot button{flex:1;min-height:34px;border:none;border-radius:8px;font-size:12px;font-weight:600;background:var(--bg);color:var(--textMed);cursor:pointer;}
+.op-foot .btn-edit{color:var(--blue);background:#EBF3FF;}
+
+/* FILTROS */
+.filtros{display:flex;gap:6px;overflow-x:auto;padding:4px 0 12px;scrollbar-width:none;}
+.filtros button{flex:0 0 auto;border:1px solid var(--border);border-radius:999px;background:var(--white);color:var(--textSoft);padding:6px 12px;font-size:12px;min-height:32px;cursor:pointer;}
+.filtros button.act{border-color:var(--navy);color:var(--navy);background:#EBF3FF;font-weight:600;}
+
+/* FAB */
+.fab{position:fixed;bottom:20px;right:16px;background:var(--navy);color:var(--white);border:none;border-radius:999px;padding:14px 20px;font-size:15px;font-weight:700;box-shadow:0 4px 16px rgba(0,0,0,.18);cursor:pointer;z-index:200;}
+.fab:active{background:var(--blue);}
+
+/* SECCION FORM */
+.form-section{background:var(--white);border-radius:14px;padding:14px;margin-bottom:12px;border:1px solid var(--border);}
+.form-section h3{margin:0 0 2px;font-size:14px;font-weight:700;color:var(--navy);}
+.form-section p{margin:0 0 8px;font-size:12px;color:var(--textSoft);}
+
+/* EMPTY */
+.empty{text-align:center;padding:48px 20px;color:var(--textSoft);font-size:14px;}
+.empty .big{font-size:40px;margin-bottom:8px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--navy);color:var(--white);padding:10px 20px;border-radius:999px;font-size:13px;font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.2);z-index:999;white-space:nowrap;}
+.err{color:var(--red);font-size:12px;margin-top:6px;display:none;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1 id="topTitle">Pipeline Comercial</h1>
+  <p id="topSub">Foton MDT/LDT</p>
+</div>
+
+<!-- PIN -->
+<div class="screen active" id="s-pin">
+  <div style="max-width:360px;margin:40px auto 0;">
+    <p style="text-align:center;color:var(--textSoft);font-size:14px;margin-bottom:24px;">Ingresa el PIN de tu distribuidor</p>
+    <input id="pin" class="pin-input" inputmode="numeric" maxlength="6" placeholder="••••••">
+    <p class="err" id="pin-err">PIN no reconocido. Verifica con tu gerente.</p>
+    <button class="btn btn-primary" onclick="validarPin()">Entrar</button>
+  </div>
+</div>
+
+<!-- LISTA DE OPORTUNIDADES -->
+<div class="screen" id="s-lista">
+  <div class="kpis" id="kpis"></div>
+  <div class="filtros" id="filtros">
+    <button class="act" data-f="activas" onclick="setFiltro(this)">Activas</button>
+    <button data-f="todas" onclick="setFiltro(this)">Todas</button>
+    <button data-f="caliente" onclick="setFiltro(this)">🔥 Calientes</button>
+    <button data-f="vencidas" onclick="setFiltro(this)">⚠️ Vencidas</button>
+    <button data-f="ganado" onclick="setFiltro(this)">✅ Ganadas</button>
+    <button data-f="S12" onclick="setFiltro(this)">S12</button>
+    <button data-f="S8" onclick="setFiltro(this)">S8</button>
+  </div>
+  <div id="lista"></div>
+  <button class="fab" onclick="nuevaOp()">+ Nueva</button>
+</div>
+
+<!-- FORMULARIO CREAR/EDITAR -->
+<div class="screen" id="s-form">
+  <div class="form-section">
+    <h3>Prospecto</h3>
+    <p>¿Con quién estás trabajando esta oportunidad?</p>
+    <label>Empresa / Nombre del prospecto *</label>
+    <input id="f-prospecto" placeholder="Ej. Transportes Gala Trucking">
+    <label>Nombre del decisor (quien firma)</label>
+    <input id="f-contacto" placeholder="Ej. Roberto Gala">
+    <label>Teléfono</label>
+    <input id="f-tel" inputmode="tel" placeholder="10 dígitos">
+    <label>Sector</label>
+    <select id="f-sector">
+      <option value="">— Seleccionar —</option>
+      <option>Aguacate / Agro frío</option>
+      <option>Construcción</option>
+      <option>Portuario / Industrial (LZC)</option>
+      <option>Distribución / Logística</option>
+      <option>Hombre Camión</option>
+      <option>Gobierno / Obra pública</option>
+      <option>Otro</option>
+    </select>
+    <label>Zona</label>
+    <select id="f-zona">
+      <option value="">— Seleccionar —</option>
+      <option>Uruapan</option>
+      <option>Morelia</option>
+      <option>Lázaro Cárdenas</option>
+      <option>Zamora</option>
+      <option>Apatzingán</option>
+      <option>Otra</option>
+    </select>
+    <label><input type="checkbox" id="f-denue" style="width:auto;min-height:auto;margin-right:6px;">Prospecto viene del DENUE</label>
+  </div>
+
+  <div class="form-section">
+    <h3>Oportunidad</h3>
+    <label>Modelo *</label>
+    <select id="f-modelo">
+      <option value="">— Seleccionar —</option>
+      <option>S3 MT — $718,896</option>
+      <option>S5 MT — $926,976</option>
+      <option>S6 MT — $1,025,834</option>
+      <option>S8 AMT — $1,339,323</option>
+      <option>S12 AMT — $1,598,342</option>
+    </select>
+    <label>Cantidad de unidades</label>
+    <input id="f-cantidad" type="number" inputmode="numeric" value="1" min="1">
+    <label>Esquema de financiamiento ofrecido</label>
+    <select id="f-fin">
+      <option value="">— Sin definir —</option>
+      <option>Banorte 9.94% / 36m</option>
+      <option>Atlas HC PFAE 60m/13%</option>
+      <option>TIP México (4to pago gratis)</option>
+      <option>Plan México ISR 86%</option>
+      <option>Contado</option>
+      <option>Otro</option>
+    </select>
+    <label><input type="checkbox" id="f-apoyo-gr" style="width:auto;min-height:auto;margin-right:6px;"><b>Requiero apoyo del GR</b> (Israel entra a esta visita)</label>
+  </div>
+
+  <div class="form-section">
+    <h3>Estatus y seguimiento</h3>
+    <label>Estatus actual *</label>
+    <select id="f-estatus">
+      <option value="prospecto">Prospecto — identificado, no contactado</option>
+      <option value="contactado">Contactado — primera llamada/visita hecha</option>
+      <option value="cotizacion">Cotización — mandé precio</option>
+      <option value="negociacion">Negociación — está decidiendo</option>
+      <option value="ganado">Ganado ✅</option>
+      <option value="perdido">Perdido ❌</option>
+    </select>
+    <div id="causa-perdida-wrap" style="display:none;">
+      <label>Causa de pérdida (obligatorio)</label>
+      <input id="f-causa-perdida" placeholder="Ej. Precio, competidor Isuzu, sin presupuesto…">
+    </div>
+    <label>Probabilidad de cierre (%)</label>
+    <select id="f-prob">
+      <option value="10">10% — Muy baja</option>
+      <option value="20">20% — Baja</option>
+      <option value="40">40% — Media</option>
+      <option value="60">60% — Buena</option>
+      <option value="80">80% — Alta, casi segura</option>
+      <option value="95">95% — Prácticamente cerrado</option>
+    </select>
+    <label>Fecha estimada de cierre</label>
+    <input id="f-fecha-cierre" type="date">
+    <label>Siguiente paso concreto</label>
+    <input id="f-sig-paso" placeholder="Ej. Enviar cotización formal el lunes">
+    <label>Fecha del siguiente paso</label>
+    <input id="f-sig-fecha" type="date">
+    <label>Notas adicionales</label>
+    <textarea id="f-notas" placeholder="Contexto de la visita, objeciones, detalles…"></textarea>
+  </div>
+
+  <button class="btn btn-primary" onclick="guardarOp()">Guardar oportunidad</button>
+  <button class="btn btn-ghost" onclick="goLista()">Cancelar</button>
+  <p class="err" id="form-err"></p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+const SB_URL = 'https://gblwoaaitnqbgorxaydv.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdibHdvYWFpdG5xYmdvcnhheWR2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxOTQ3NTMsImV4cCI6MjA5NTc3MDc1M30.o7zYCCfH2rHEs69o4U7Zc9dM4IvQi8GsXRlZFW_2kso';
+const sb = supabase.createClient(SB_URL, SB_KEY);
+
+// PRECIOS POR MODELO
+const PRECIOS = {
+  'S3 MT': 718896, 'S5 MT': 926976, 'S6 MT': 1025834,
+  'S8 AMT': 1339323, 'S12 AMT': 1598342
+};
+
+let PIN = null, DIST = null, OPS = [], filtroActivo = 'activas', editId = null;
+
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+function toast(msg, ms=2200){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),ms); }
+function fmt(n){ return n ? '$'+Number(n).toLocaleString('es-MX',{maximumFractionDigits:0}) : '—'; }
+function mfmt(n){ return n >= 1e6 ? '$'+( n/1e6 ).toFixed(1)+'M' : fmt(n); }
+
+const COLORES = { prospecto:'#94A3B8', contactado:'#00AECC', cotizacion:'#B45309', negociacion:'#6D28D9', ganado:'#1E8E5A', perdido:'#C0392B', descartado:'#CBD5E1' };
+const TEMP_TAG = { caliente:'🔥 Caliente', tibia:'Tibia', fria:'Fría', vencida:'⚠️ Vencida', cerrada:'' };
+const TEMP_CLS = { caliente:'red', tibia:'amber', fria:'cyan', vencida:'amber', cerrada:'' };
+
+function temperatura(op){
+  if(['ganado','perdido','descartado'].includes(op.estatus)) return 'cerrada';
+  if(op.siguiente_paso_fecha && op.siguiente_paso_fecha < new Date().toISOString().slice(0,10)) return 'vencida';
+  if(op.probabilidad >= 70) return 'caliente';
+  if(op.probabilidad >= 40) return 'tibia';
+  return 'fria';
+}
+
+function modeloBase(m){ return m ? m.split(' ')[0] : ''; } // "S12 AMT — $..." → "S12"
+
+// ── PIN ──────────────────────────────────────────────────────────────────────
+async function validarPin(){
+  const pin = document.getElementById('pin').value.trim();
+  document.getElementById('pin-err').style.display = 'none';
+  if(pin.length !== 6){ document.getElementById('pin-err').textContent='El PIN debe tener 6 dígitos.'; document.getElementById('pin-err').style.display='block'; return; }
+  const { data, error } = await sb.from('distribuidores').select('id,nombre,plaza').eq('pin',pin).maybeSingle();
+  if(error || !data){ document.getElementById('pin-err').textContent='PIN no reconocido.'; document.getElementById('pin-err').style.display='block'; return; }
+  PIN = pin; DIST = data;
+  document.getElementById('topSub').textContent = data.nombre + ' · ' + (data.plaza||'');
+  await cargarOps();
+  show('s-lista');
+}
+
+// ── CARGAR ───────────────────────────────────────────────────────────────────
+async function cargarOps(){
+  const { data } = await sb.from('pipeline_comercial').select('*').eq('distribuidor_id', DIST.id).order('created_at',{ascending:false});
+  OPS = data || [];
+  renderKpis();
+  renderLista();
+}
+
+function renderKpis(){
+  const activas = OPS.filter(o=>!['ganado','perdido','descartado'].includes(o.estatus));
+  const valor = activas.reduce((s,o)=>s+(o.valor_oportunidad||0),0);
+  const apoyo = activas.filter(o=>o.requiere_apoyo_gr).length;
+  const vencidas = activas.filter(o=>o.siguiente_paso_fecha && o.siguiente_paso_fecha < new Date().toISOString().slice(0,10)).length;
+  const s12 = activas.filter(o=>modeloBase(o.modelo)==='S12').length;
+  const s8 = activas.filter(o=>modeloBase(o.modelo)==='S8').length;
+  document.getElementById('kpis').innerHTML = `
+    <div class="kpi"><span class="v">${activas.length}</span><span class="l">Activas</span></div>
+    <div class="kpi"><span class="v">${mfmt(valor)}</span><span class="l">Valor pipeline</span></div>
+    <div class="kpi ${vencidas>0?'warn':''}"><span class="v">${vencidas}</span><span class="l">Vencidas</span></div>
+    <div class="kpi ${apoyo>0?'warn':''}"><span class="v">${apoyo}</span><span class="l">Apoyo GR</span></div>
+    <div class="kpi"><span class="v">${s8}+${s12}</span><span class="l">S8+S12</span></div>
+  `;
+}
+
+function setFiltro(btn){
+  document.querySelectorAll('.filtros button').forEach(b=>b.classList.remove('act'));
+  btn.classList.add('act');
+  filtroActivo = btn.dataset.f;
+  renderLista();
+}
+
+function renderLista(){
+  let ops = [...OPS];
+  if(filtroActivo==='activas') ops = ops.filter(o=>!['ganado','perdido','descartado'].includes(o.estatus));
+  else if(filtroActivo==='caliente') ops = ops.filter(o=>temperatura(o)==='caliente');
+  else if(filtroActivo==='vencidas') ops = ops.filter(o=>temperatura(o)==='vencida');
+  else if(filtroActivo==='ganado') ops = ops.filter(o=>o.estatus==='ganado');
+  else if(filtroActivo==='S12') ops = ops.filter(o=>modeloBase(o.modelo)==='S12');
+  else if(filtroActivo==='S8') ops = ops.filter(o=>modeloBase(o.modelo)==='S8');
+
+  const el = document.getElementById('lista');
+  if(!ops.length){ el.innerHTML=`<div class="empty"><div class="big">📭</div>Sin oportunidades en este filtro.</div>`; return; }
+
+  el.innerHTML = ops.map(op=>{
+    const temp = temperatura(op);
+    const tags = [];
+    if(op.zona) tags.push(`<span class="tag">${op.zona}</span>`);
+    if(op.sector) tags.push(`<span class="tag">${op.sector}</span>`);
+    if(op.esquema_fin) tags.push(`<span class="tag cyan">${op.esquema_fin.split(' ')[0]}</span>`);
+    if(op.requiere_apoyo_gr) tags.push(`<span class="tag purple">Apoyo GR</span>`);
+    if(temp && temp!=='cerrada') tags.push(`<span class="tag ${TEMP_CLS[temp]}">${TEMP_TAG[temp]}</span>`);
+    if(op.siguiente_paso) tags.push(`<span class="tag amber" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${op.siguiente_paso}">→ ${op.siguiente_paso.slice(0,30)}${op.siguiente_paso.length>30?'…':''}</span>`);
+
+    return `<div class="op-card">
+      <div class="op-head">
+        <div class="op-dot" style="background:${COLORES[op.estatus]||'#ccc'}"></div>
+        <div class="op-body">
+          <p class="op-empresa">${op.prospecto}</p>
+          <p class="op-modelo">${op.modelo||'—'} · ${op.cantidad} ud${op.cantidad>1?'s':''} · ${fmt(op.valor_oportunidad)} · <b>${op.estatus}</b></p>
+          <div class="op-tags">${tags.join('')}</div>
+        </div>
+      </div>
+      <div class="op-foot">
+        <button class="btn-edit" onclick="editarOp('${op.id}')">✏️ Actualizar</button>
+        <button onclick="avanzarEstatus('${op.id}')">→ Avanzar</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── FORMULARIO ───────────────────────────────────────────────────────────────
+function nuevaOp(){
+  editId = null;
+  limpiarForm();
+  document.getElementById('topTitle').textContent = 'Nueva Oportunidad';
+  show('s-form');
+}
+
+function editarOp(id){
+  const op = OPS.find(o=>o.id===id);
+  if(!op) return;
+  editId = id;
+  document.getElementById('f-prospecto').value = op.prospecto||'';
+  document.getElementById('f-contacto').value = op.contacto_nombre||'';
+  document.getElementById('f-tel').value = op.contacto_tel||'';
+  setSelect('f-sector', op.sector);
+  setSelect('f-zona', op.zona);
+  document.getElementById('f-denue').checked = op.origen_denue||false;
+  // Modelo: buscar la opción que empiece con el modelo base
+  const modeloBase2 = (op.modelo||'').split(' ')[0];
+  const opts = document.getElementById('f-modelo').options;
+  for(let i=0;i<opts.length;i++){ if(opts[i].value.startsWith(modeloBase2)){ opts[i].selected=true; break; } }
+  document.getElementById('f-cantidad').value = op.cantidad||1;
+  setSelect('f-fin', op.esquema_fin);
+  document.getElementById('f-apoyo-gr').checked = op.requiere_apoyo_gr||false;
+  setSelect('f-estatus', op.estatus);
+  document.getElementById('f-causa-perdida').value = op.causa_perdida||'';
+  document.getElementById('f-prob').value = String(op.probabilidad||20);
+  document.getElementById('f-fecha-cierre').value = op.fecha_cierre_esperada||'';
+  document.getElementById('f-sig-paso').value = op.siguiente_paso||'';
+  document.getElementById('f-sig-fecha').value = op.siguiente_paso_fecha||'';
+  document.getElementById('f-notas').value = op.notas||'';
+  toggleCausaPerdida();
+  document.getElementById('topTitle').textContent = 'Editar Oportunidad';
+  show('s-form');
+}
+
+function setSelect(id, val){
+  const sel = document.getElementById(id);
+  for(let i=0;i<sel.options.length;i++){ if(sel.options[i].value===val){ sel.selectedIndex=i; return; } }
+}
+
+function limpiarForm(){
+  ['f-prospecto','f-contacto','f-tel','f-causa-perdida','f-fecha-cierre','f-sig-paso','f-sig-fecha','f-notas'].forEach(id=>{ document.getElementById(id).value=''; });
+  ['f-sector','f-zona','f-modelo','f-fin'].forEach(id=>{ document.getElementById(id).selectedIndex=0; });
+  document.getElementById('f-estatus').value='prospecto';
+  document.getElementById('f-cantidad').value='1';
+  document.getElementById('f-prob').value='20';
+  document.getElementById('f-denue').checked=false;
+  document.getElementById('f-apoyo-gr').checked=false;
+  document.getElementById('form-err').style.display='none';
+  toggleCausaPerdida();
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('f-estatus').addEventListener('change', toggleCausaPerdida);
+});
+
+function toggleCausaPerdida(){
+  const v = document.getElementById('f-estatus').value;
+  document.getElementById('causa-perdida-wrap').style.display = v==='perdido' ? 'block':'none';
+}
+
+async function guardarOp(){
+  const prospecto = document.getElementById('f-prospecto').value.trim();
+  const modeloRaw = document.getElementById('f-modelo').value;
+  if(!prospecto||!modeloRaw){ showErr('form-err','Empresa y modelo son obligatorios.'); return; }
+  const modelo = modeloRaw.split(' — ')[0]; // "S3 MT — $718,896" → "S3 MT"
+  const modeloKey = modelo.split(' ')[0]+' '+modelo.split(' ')[1]; // "S3 MT"
+  const precio_lista = PRECIOS[modeloKey] || null;
+  const estatus = document.getElementById('f-estatus').value;
+  if(estatus==='perdido' && !document.getElementById('f-causa-perdida').value.trim()){ showErr('form-err','La causa de pérdida es obligatoria.'); return; }
+
+  const params = {
+    p_pin: PIN,
+    p_id: editId || null,
+    p_prospecto: prospecto,
+    p_contacto_nombre: document.getElementById('f-contacto').value.trim()||null,
+    p_contacto_tel: document.getElementById('f-tel').value.trim()||null,
+    p_sector: document.getElementById('f-sector').value||null,
+    p_zona: document.getElementById('f-zona').value||null,
+    p_origen_denue: document.getElementById('f-denue').checked,
+    p_modelo: modelo,
+    p_cantidad: parseInt(document.getElementById('f-cantidad').value||'1'),
+    p_precio_lista: precio_lista,
+    p_estatus: estatus,
+    p_probabilidad: parseInt(document.getElementById('f-prob').value||'20'),
+    p_causa_perdida: document.getElementById('f-causa-perdida').value.trim()||null,
+    p_esquema_fin: document.getElementById('f-fin').value||null,
+    p_requiere_apoyo_gr: document.getElementById('f-apoyo-gr').checked,
+    p_fecha_cierre_esperada: document.getElementById('f-fecha-cierre').value||null,
+    p_siguiente_paso: document.getElementById('f-sig-paso').value.trim()||null,
+    p_siguiente_paso_fecha: document.getElementById('f-sig-fecha').value||null,
+    p_notas: document.getElementById('f-notas').value.trim()||null,
+    p_creado_por: 'asesor',
+  };
+
+  const { data, error } = await sb.rpc('fn_upsert_pipeline', params);
+  if(error){ showErr('form-err','Error al guardar: '+error.message); return; }
+  toast(editId ? '✅ Oportunidad actualizada' : '✅ Oportunidad creada');
+  await cargarOps();
+  goLista();
+}
+
+function showErr(id,msg){ const e=document.getElementById(id); e.textContent=msg; e.style.display='block'; }
+
+async function avanzarEstatus(id){
+  const op = OPS.find(o=>o.id===id);
+  if(!op) return;
+  const siguiente = { prospecto:'contactado', contactado:'cotizacion', cotizacion:'negociacion', negociacion:'ganado' };
+  const sig = siguiente[op.estatus];
+  if(!sig){ toast('Este estatus no avanza automáticamente'); return; }
+  const { error } = await sb.rpc('fn_upsert_pipeline',{ p_pin:PIN, p_id:id, p_estatus:sig, p_probabilidad: sig==='ganado'?100:undefined });
+  if(error){ toast('Error: '+error.message); return; }
+  toast('→ '+sig.charAt(0).toUpperCase()+sig.slice(1));
+  await cargarOps();
+}
+
+function goLista(){
+  document.getElementById('topTitle').textContent='Pipeline Comercial';
+  show('s-lista');
+}
+
+document.getElementById('pin').addEventListener('keypress',e=>{ if(e.key==='Enter') validarPin(); });
+</script>
+</body>
+</html>
