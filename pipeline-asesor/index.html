@@ -263,7 +263,7 @@ async function validarPin(){
   const pin = document.getElementById('pin').value.trim();
   document.getElementById('pin-err').style.display = 'none';
   if(pin.length !== 6){ document.getElementById('pin-err').textContent='El PIN debe tener 6 dígitos.'; document.getElementById('pin-err').style.display='block'; return; }
-  const { data, error } = await sb.from('distribuidores').select('id,nombre,plaza').eq('pin',pin).maybeSingle();
+  const { data, error } = await sb.rpc('fn_validar_pin', { p_pin: pin });
   if(error || !data){ document.getElementById('pin-err').textContent='PIN no reconocido.'; document.getElementById('pin-err').style.display='block'; return; }
   PIN = pin; DIST = data;
   document.getElementById('topSub').textContent = data.nombre + ' · ' + (data.plaza||'');
@@ -273,7 +273,7 @@ async function validarPin(){
 
 // ── CARGAR ───────────────────────────────────────────────────────────────────
 async function cargarOps(){
-  const { data } = await sb.from('pipeline_comercial').select('*').eq('distribuidor_id', DIST.id).order('created_at',{ascending:false});
+  const { data } = await sb.rpc('fn_pipeline_por_pin', { p_pin: PIN });
   OPS = data || [];
   renderKpis();
   renderLista();
