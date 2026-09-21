@@ -136,6 +136,17 @@ select.f{appearance:none;-webkit-appearance:none;cursor:pointer}
 .ft-w{font-size:12px;font-weight:700;letter-spacing:.5px}
 .ft-c{font-size:7px;letter-spacing:2.2px;color:#7C7C7C;font-weight:600;margin-top:4px}
 
+
+/* surtimiento solicitado (solo captura; no forma parte del formato Excel) */
+.note{font-size:10px;color:#6E6E6E;line-height:1.5;margin:6px 0 4px;max-width:560px}
+.prow{display:grid;grid-template-columns:1.7fr 58px 132px 1.2fr 20px;gap:12px;align-items:end;padding:9px 0;border-bottom:.5px solid #E0E0E0}
+.prow .lbl{color:#8A8A8A;font-size:6.5px;letter-spacing:1.6px;margin-bottom:3px}
+.prow .v{font-size:11px;font-weight:600;min-height:16px}
+.prow input[type=date]{font-family:'IBM Plex Mono',monospace;font-size:11px}
+.ta{display:block;width:100%;min-height:66px;resize:vertical;font:inherit;font-size:11px;line-height:1.5;border:1px solid #D4D4D4;border-radius:3px;background:#FAFAFA;padding:8px 10px;margin-top:5px;outline:none}
+.ta:focus{border-color:#0A0A0A;background:#fff}
+.ta::placeholder{color:#B0B0B0}
+
 /* mobile */
 @media(max-width:820px){
   body{padding:12px 8px 48px}
@@ -152,6 +163,8 @@ select.f{appearance:none;-webkit-appearance:none;cursor:pointer}
   .n::before{display:block;content:attr(data-l);font-size:7px;letter-spacing:1.5px;color:#8A8A8A;font-weight:600;text-transform:uppercase;margin-bottom:2px}
   .n .f{text-align:left}
   .sub{grid-template-columns:1fr 1fr;margin-left:0}
+  .prow{grid-template-columns:1fr 1fr 22px}
+  .prow .u,.prow .nt{grid-column:1 / 3}
   .sub .w{grid-column:1 / 3}
   .tot-in{grid-template-columns:1fr;gap:18px}
   .tot-r{text-align:left}
@@ -261,6 +274,18 @@ body.prev .xlprint{display:block}
     <button class="add" id="addBtn" onclick="agregar()">+ Agregar unidad</button>
   </div>
 
+  <div class="sec" id="surt">
+    <div class="sec-h">
+      <span class="sec-t">SURTIMIENTO SOLICITADO</span>
+      <span class="sec-c">OPCIONAL</span>
+    </div>
+    <div class="note">Indica cuántas unidades necesitas y para qué fecha. Viaja en el correo a LDR y a tu Regional; no modifica el Formato de Pedido.</div>
+    <div id="prog"></div>
+    <button class="add" onclick="addProg()">+ Agregar entrega programada</button>
+    <div class="lbl" style="margin-top:16px;color:#8A8A8A">Comentarios de surtimiento</div>
+    <textarea class="ta" id="coment" placeholder="Ej. Necesito 3 unidades para entrega en octubre y las otras 2 a mediados de noviembre; prioridad a las unidades con carrocería." oninput="setP('coment',this.value)"></textarea>
+  </div>
+
   <div class="tot dk">
     <div class="tot-in">
       <div class="tot-l">
@@ -342,8 +367,8 @@ const store={
   set(k,v){try{localStorage.setItem('foton_ped_'+k,v)}catch(e){}}
 };
 
-let S={dist:'',lines:[],nombre:'',cargo:'',ok:false,committed:false};
-let UID=0;
+let S={dist:'',lines:[],nombre:'',cargo:'',ok:false,committed:false,prog:[],coment:''};
+let UID=0, PID=0;
 
 function fechaHoy(){const d=new Date(),z=x=>String(x).padStart(2,'0');return z(d.getDate())+'.'+z(d.getMonth()+1)+'.'+d.getFullYear();}
 function distLabel(i){
@@ -415,6 +440,7 @@ function render(){
   });
   S.lines.forEach(refreshLine); totales();
   $('addBtn').style.display=S.lines.length>=MAXL?'none':'block';
+  renderProg();
 }
 function calcLinea(l){
   const m=l.cat===''?null:CAT[l.cat];
@@ -440,18 +466,48 @@ function totales(){
   return {uni,fon,sub,iva,total:sub+iva,units};
 }
 
+
+/* ---------- surtimiento solicitado (va en el correo, no en el formato Excel) ---------- */
+const isoHoy=()=>{const d=new Date(),z=x=>String(x).padStart(2,'0');return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate());};
+const fIso=s=>s?s.split('-').reverse().join('/'):'';
+function lineLabel(l){const c=calcLinea(l),i=S.lines.indexOf(l);return (i+1)+'. '+c.m.n+' '+c.m.y+' · '+c.cant+' u.';}
+function renderProg(){
+  const wrap=$('prog'); if(!wrap)return;
+  const con=S.lines.filter(l=>l.cat!=='');
+  S.prog.forEach(p=>{if(!con.some(l=>l.id===p.line))p.line=con.length===1?con[0].id:'';});
+  wrap.innerHTML=S.prog.map(p=>{
+    const o='<option value="">Selecciona unidad</option>'+con.map(l=>'<option value="'+l.id+'"'+(p.line===l.id?' selected':'')+'>'+esc(lineLabel(l))+'</option>').join('');
+    return '<div class="prow">'+
+      '<div class="u"><div class="lbl">Unidad del pedido</div><div class="v"><select class="f" onchange="updProg('+p.id+',\'line\',parseInt(this.value)||\'\')">'+o+'</select></div></div>'+
+      '<div><div class="lbl">Cantidad</div><div class="v"><input class="f mono r" inputmode="numeric" placeholder="0" value="'+esc(p.cant)+'" oninput="updProg('+p.id+',\'cant\',this.value)"></div></div>'+
+      '<div><div class="lbl">Fecha requerida</div><div class="v"><input class="f" type="date" min="'+isoHoy()+'" value="'+esc(p.fecha)+'" oninput="updProg('+p.id+',\'fecha\',this.value)"></div></div>'+
+      '<div class="nt"><div class="lbl">Nota (opcional)</div><div class="v"><input class="f" placeholder="Ej. entrega en patio" value="'+esc(p.nota)+'" oninput="updProg('+p.id+',\'nota\',this.value)"></div></div>'+
+      '<button class="del" title="Quitar" onclick="delProg('+p.id+')">×</button>'+
+    '</div>';
+  }).join('');
+}
+function addProg(){
+  const con=S.lines.filter(l=>l.cat!=='');
+  if(!con.length){aviso('Primero agrega al menos una unidad con modelo.');return;}
+  S.prog.push({id:++PID,line:con.length===1?con[0].id:'',cant:'',fecha:'',nota:''}); renderProg(); save();
+}
+function updProg(id,k,v){const p=S.prog.find(x=>x.id===id); if(p){p[k]=v; save();}}
+function delProg(id){S.prog=S.prog.filter(x=>x.id!==id); renderProg(); save();}
+const progActivo=()=>S.prog.filter(p=>(parseInt(p.cant)||0)>0||p.fecha||(p.nota||'').trim());
+
 /* ---------- acciones ---------- */
 function upd(id,k,v){
   const l=S.lines.find(x=>x.id===id); if(!l)return;
   l[k]=v;
   if(k==='dom'&&S.dist!==''&&v.trim())store.set('dom_'+S.dist,v);
   refreshLine(l); totales(); save();
+  if(k==='cat'||k==='cant')renderProg();
 }
 function agregar(){
   if(S.lines.length>=MAXL){aviso('El formato admite hasta '+MAXL+' líneas por pedido. Genera un segundo pedido para el resto.');return;}
   S.lines.push(nuevaLinea(S.lines[S.lines.length-1])); render(); save();
 }
-function borrar(id){S.lines=S.lines.filter(x=>x.id!==id); if(!S.lines.length)S.lines.push(nuevaLinea()); render(); save();}
+function borrar(id){S.lines=S.lines.filter(x=>x.id!==id); S.prog=S.prog.filter(p=>p.line!==id); if(!S.lines.length)S.lines.push(nuevaLinea()); render(); save();}
 function setP(k,v){S[k]=v; save(); if(k==='nombre')$('firmaNombre').textContent=v; if(k==='cargo')$('firmaCargo').textContent=v||'\u00a0';}
 function setDist(v){
   S.dist=v; S.committed=false;
@@ -461,7 +517,7 @@ function setDist(v){
 function nuevo(){
   if(S.lines.some(l=>l.cat!=='')&&!confirm('Se borrarán las unidades capturadas. ¿Crear un pedido nuevo?'))return;
   commitFolio();
-  S.lines=[nuevaLinea()]; S.ok=false; S.committed=false;
+  S.lines=[nuevaLinea()]; S.ok=false; S.committed=false; S.prog=[]; S.coment=''; $('coment').value='';
   $('ok').checked=false; hide(); render(); renderDistInfo(); save();
 }
 function hide(){$('err').className='err';$('aviso').className='aviso';}
@@ -481,6 +537,16 @@ function validar(){
     if(!l.dom.trim())e.push(n+'falta el domicilio de entrega completo (condición 9).');
     if(/tunland/i.test(c.m.n)&&!l.color.trim())e.push(n+'indica el color (verifícalo con tu Regional).');
   });
+  const porLinea={};
+  progActivo().forEach((p,i)=>{
+    const n='Entrega programada '+(i+1)+': ', q=parseInt(p.cant)||0, l=S.lines.find(x=>x.id===p.line);
+    if(!l)e.push(n+'selecciona a qué unidad del pedido corresponde.');
+    if(q<1)e.push(n+'indica la cantidad.');
+    if(!p.fecha)e.push(n+'indica la fecha requerida.'); else if(p.fecha<isoHoy())e.push(n+'la fecha ya pasó.');
+    if(l)porLinea[l.id]=(porLinea[l.id]||0)+q;
+  });
+  Object.keys(porLinea).forEach(id=>{const l=S.lines.find(x=>x.id===parseInt(id)),c=calcLinea(l);
+    if(porLinea[id]>c.cant)e.push('Surtimiento de '+c.m.n+' '+c.m.y+': programaste '+porLinea[id]+' unidades y el pedido es de '+c.cant+'.');});
   if(!S.nombre.trim()||!S.cargo.trim())e.push('Captura nombre y cargo de la persona autorizada.');
   if(!S.ok)e.push('Marca la aceptación de las condiciones.');
   return e;
@@ -619,6 +685,15 @@ async function descargar(silencioso){
 }
 
 /* ---------- envío ---------- */
+function surtTxt(){
+  const ps=progActivo().slice().sort((x,y)=>x.fecha<y.fecha?-1:x.fecha>y.fecha?1:0), com=(S.coment||'').trim();
+  if(!ps.length&&!com)return '';
+  let t='SURTIMIENTO SOLICITADO\n';
+  ps.forEach(p=>{const l=S.lines.find(x=>x.id===p.line),c=calcLinea(l);
+    t+='• '+(parseInt(p.cant)||0)+' × '+c.m.n+' '+c.m.y+' para el '+fIso(p.fecha)+((p.nota||'').trim()?' — '+p.nota.trim():'')+'\n';});
+  if(com)t+=(ps.length?'\n':'')+'Comentarios: '+com+'\n';
+  return t+'\n';
+}
 function resumen(){
   const t=totales(), d=DISTS[S.dist], n=folioNum();
   const rows=S.lines.filter(l=>l.cat!=='').map((l,i)=>{
@@ -634,6 +709,7 @@ function resumen(){
       'Fecha de solicitud: '+fechaHoy().replace(/\./g,'/')+'\n\n'+
       rows.join('\n')+'\n\n'+
       'Subtotal: '+fmt(t.sub)+'\nIVA 16%: '+fmt(t.iva)+'\nTOTAL: '+fmt(t.total)+'\n\n'+
+      surtTxt()+
       'Autoriza: '+S.nombre.trim()+' — '+S.cargo.trim()+'\n'+
       'Condiciones del pedido aceptadas el '+fechaHoy().replace(/\./g,'/')+' a las '+z(now.getHours())+':'+z(now.getMinutes())+'.\n\n'+
       'Se adjunta el Formato de Pedido de Unidades (Excel).'
@@ -646,9 +722,16 @@ async function enviar(){
   store.set('cc',cc);
   const name=await descargar(true); if(!name)return;
   commitFolio();
-  const url='mailto:'+MAIL_ADMON+'?'+(cc?'cc='+encodeURIComponent(cc)+'&':'')+'subject='+encodeURIComponent(r.asunto)+'&body='+encodeURIComponent(r.cuerpo);
+  const base='mailto:'+MAIL_ADMON+'?'+(cc?'cc='+encodeURIComponent(cc)+'&':'')+'subject='+encodeURIComponent(r.asunto)+'&body=';
+  let url=base+encodeURIComponent(r.cuerpo), largo=false;
+  if(url.length>1900){   // muchos clientes de correo cortan el cuerpo: se copia el texto completo y se pega en el correo
+    largo=true;
+    try{await navigator.clipboard.writeText(r.cuerpo);}catch(e){largo=false;}
+    if(largo)url=base+encodeURIComponent('Pega aquí el resumen del pedido (ya está copiado en tu portapapeles: Ctrl+V).\n\nSe adjunta el Formato de Pedido de Unidades (Excel).');
+    else url=base+encodeURIComponent(r.cuerpo.slice(0,1500)+'\n[…]');
+  }
   setTimeout(()=>{window.location.href=url;},500);
-  aviso('Se descargó '+name+' y se abrió tu correo con el resumen. Adjunta el archivo antes de enviarlo.');
+  aviso('Se descargó '+name+' y se abrió tu correo'+(largo?'; el resumen completo (con el surtimiento) está copiado: pégalo en el cuerpo del correo':' con el resumen')+'. Adjunta el archivo antes de enviarlo.');
 }
 
 /* ---------- init ---------- */
@@ -661,12 +744,13 @@ async function enviar(){
     S.lines=S.lines.filter(l=>l.cat===''||CAT[l.cat]);
     if(!S.lines.length)S.lines=[nuevaLinea()];
     UID=Math.max.apply(null,S.lines.map(l=>l.id||0).concat([0]));
+    S.prog=Array.isArray(S.prog)?S.prog:[]; PID=Math.max.apply(null,S.prog.map(p=>p.id||0).concat([0])); S.coment=S.coment||'';
     if(S.dist!==''&&!DISTS[S.dist])S.dist='';
   }else{
     S.dist=store.get('dist')||''; if(S.dist!==''&&!DISTS[S.dist])S.dist='';
     S.lines=[nuevaLinea()];
   }
-  $('cc').value=store.get('cc')||'';
+  $('cc').value=store.get('cc')||''; $('coment').value=S.coment||'';
   $('nombre').value=S.nombre||''; $('cargo').value=S.cargo||''; $('ok').checked=!!S.ok; $('firmaNombre').textContent=S.nombre||''; $('firmaCargo').textContent=S.cargo||'\u00a0';
   renderDistSelect(); renderDistInfo(); render();
 })();
