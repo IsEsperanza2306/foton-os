@@ -267,7 +267,6 @@ body{font-family:'Inter',sans-serif;background:var(--surf);color:var(--ink);min-
   <div class="main-tabs">
     <div class="main-tab on" data-tab="panel" onclick="switchMainTab('panel',this)">Mi Panel</div>
     <div class="main-tab" data-tab="inventario" onclick="switchMainTab('inventario',this)">Inventario</div>
-    <div class="main-tab" data-tab="red" onclick="switchMainTab('red',this)">Red Foton</div>
     <div class="main-tab" data-tab="pedidos" onclick="switchMainTab('pedidos',this)">Pedidos</div>
   </div>
   <div class="main-pane on" id="pane-panel">
@@ -320,23 +319,6 @@ body{font-family:'Inter',sans-serif;background:var(--surf);color:var(--ink);min-
   <div class="main-pane" id="pane-pedidos">
     <div class="wrap">
       <iframe id="pedido-frame" title="Pedidos de unidades" style="display:block;width:100%;height:720px;border:0;background:transparent" allow="clipboard-write"></iframe>
-    </div>
-  </div>
-  <div class="main-pane" id="pane-red">
-    <div class="wrap">
-      <div class="panel">
-        <div style="padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px">
-          <div>
-            <div style="font-size:12px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.5px">Inventario disponible en la red</div>
-            <div id="red-update-lbl" style="font-size:10px;color:var(--mut);margin-top:2px"></div>
-          </div>
-          <div style="display:flex;align-items:center;gap:10px">
-            <div id="red-total" style="font-size:11px;color:var(--mut)"></div>
-            <div id="red-freshness" style="font-size:10px;padding:3px 10px;border-radius:20px;font-weight:700"></div>
-          </div>
-        </div>
-        <div id="red-body" style="padding:16px"><div class="inv-empty">Selecciona esta tab para cargar la red.</div></div>
-      </div>
     </div>
   </div>
 </div>
@@ -726,7 +708,6 @@ function switchMainTab(tab, el) {
   el.classList.add('on');
   document.getElementById('pane-'+tab).classList.add('on');
   if(tab==='inventario') cargarInventario();
-  if(tab==='red') cargarRed();
   if(tab==='pedidos') cargarPedidos();
 }
 
@@ -872,86 +853,6 @@ function guardarRetail() {
     .catch(function(e){alert('Error al registrar: '+e.message);})
     .finally(function(){btn.disabled=false;btn.textContent='Registrar venta';});
 }
-
-// ============================================================
-// RED
-// ============================================================
-function cargarRed() {
-  var body=document.getElementById('red-body');
-  body.innerHTML='<div class="inv-empty">Cargando...</div>';
-  q('/inventario_unidades?estatus=eq.disponible&order=distribuidor_id.asc&limit=1000&select=*')
-    .then(function(data){
-      if(!data.length){body.innerHTML='<div class="inv-empty">Sin unidades disponibles en la red.</div>';return;}
-      document.getElementById('red-total').textContent=data.length+' unidades disponibles';
-      
-      // Calcular fecha de última actualización
-      var fechas=data.map(function(u){return u.updated_at||u.created_at;}).filter(Boolean).sort().reverse();
-      if(fechas.length){
-        var ultima=new Date(fechas[0]);
-        var ahora=new Date();
-        var diffH=Math.round((ahora-ultima)/3600000);
-        var diffD=Math.floor(diffH/24);
-        var lbl='';
-        var color='';
-        var bgColor='';
-        if(diffH<24){
-          lbl='Actualizado hoy';color='#1B7B3E';bgColor='#EAF5EF';
-        } else if(diffD===1){
-          lbl='Actualizado ayer';color='#C47A1A';bgColor='#FDF3E3';
-        } else if(diffD<=7){
-          lbl='Hace '+diffD+' días';color='#C47A1A';bgColor='#FDF3E3';
-        } else {
-          lbl='Hace '+diffD+' días';color='#C0392B';bgColor='#FBEAE7';
-        }
-        document.getElementById('red-freshness').textContent=lbl;
-        document.getElementById('red-freshness').style.background=bgColor;
-        document.getElementById('red-freshness').style.color=color;
-        
-        // Fecha exacta debajo del título
-        var opts={weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'};
-        document.getElementById('red-update-lbl').textContent=
-          'Última actualización: '+ultima.toLocaleDateString('es-MX',opts);
-      }
-      var byD={};
-      data.forEach(function(u){if(!byD[u.distribuidor_id])byD[u.distribuidor_id]=[];byD[u.distribuidor_id].push(u);});
-      var ids=Object.keys(byD).sort(function(a,b){return a===DEALER_ID?-1:b===DEALER_ID?1:0;});
-      body.innerHTML='';
-      ids.forEach(function(did){
-        var us=byD[did];
-        var dn=DL[did]?DL[did].nombre:did;
-        var mine=did===DEALER_ID;
-        var blk=document.createElement('div');
-        blk.className='red-blk'+(mine?' red-mine':'');
-        var hd=document.createElement('div');
-        hd.className='red-blk-hd';
-        hd.innerHTML='<div><div class="red-blk-name">'+(mine?'&#11088; ':'')+dn+'</div>'
-          +'<div class="red-blk-cnt">'+us.length+' disponibles</div></div>'
-          +'<span style="color:var(--mut);font-size:18px">&#8250;</span>';
-        hd.onclick=function(){blk.classList.toggle('abierto');};
-        var bd=document.createElement('div');
-        bd.className='red-blk-body';
-        var tbl='<div style="overflow-x:auto"><table class="inv-tbl"><thead><tr>'
-          +'<th>Modelo</th><th>VIN</th><th>Color</th><th>A&ntilde;o</th>'
-          +'</tr></thead><tbody>';
-        us.forEach(function(u){
-          tbl+='<tr>'
-            +'<td><b>'+u.modelo+'</b></td>'
-            +'<td style="font-family:JetBrains Mono,monospace;font-size:11px;color:var(--blue)">'+(u.vin||'&mdash;')+'</td>'
-            +'<td>'+(u.color||'&mdash;')+'</td>'
-            +'<td>'+(u.anio||'&mdash;')+'</td>'
-            +'</tr>';
-        });
-        tbl+='</tbody></table></div>';
-        bd.innerHTML=tbl;
-        blk.appendChild(hd);
-        blk.appendChild(bd);
-        if(mine)blk.classList.add('abierto');
-        body.appendChild(blk);
-      });
-    })
-    .catch(function(e){body.innerHTML='<div class="inv-empty">Error: '+e.message+'</div>';});
-}
-
 
 // ============================================================
 // TOAST
