@@ -197,6 +197,71 @@ body.bloq .bar,body.bloq .hint,body.bloq .pg,body.bloq .xlprint,body.bloq #vmis,
 .mp-a button:hover{background:#0A0A0A;color:#fff}
 @media(max-width:820px){.mp-h{grid-template-columns:1fr auto;row-gap:6px}.mp-f{font-size:16px}}
 
+/* ---------- embebido en el portal: sistema visual Apple / corporativo (solo captura; impresión y Excel no cambian) ---------- */
+body.embed{--font:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','Inter',Helvetica,Arial,sans-serif;font-family:var(--font);-webkit-font-smoothing:antialiased;letter-spacing:-.011em;color:#1D1D1F}
+body.embed .mono{font-family:var(--font);font-variant-numeric:tabular-nums}
+body.embed .vnav{width:fit-content;max-width:none;margin:0 0 16px max(0px,calc((100% - 216mm)/2));display:flex;gap:2px;padding:3px;background:rgba(118,118,128,.12);border-radius:12px}
+body.embed .vnav button{border:0;background:transparent;color:#6E6E73;border-radius:9px;padding:8px 18px;font-family:var(--font);font-size:13px;font-weight:600;letter-spacing:-.01em;transition:all .2s}
+body.embed .vnav button.on{background:#fff;color:#1D1D1F;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 1px rgba(0,0,0,.05)}
+body.embed .bar{gap:8px;margin-bottom:14px}
+body.embed .bar button{border:0;background:rgba(118,118,128,.12);color:#1D1D1F;border-radius:980px;padding:9px 16px;font-family:var(--font);font-size:12.5px;font-weight:600;letter-spacing:-.005em;transition:background .15s,transform .15s}
+body.embed .bar button:hover{background:rgba(118,118,128,.2);color:#1D1D1F}
+body.embed .bar button.p{background:linear-gradient(135deg,#0668D9,#00266B);color:#fff;box-shadow:0 4px 12px rgba(6,104,217,.3)}
+body.embed .bar button.p:hover{transform:translateY(-1px);background:linear-gradient(135deg,#0F76EE,#00266B)}
+body.embed .bar button:disabled{opacity:.55;cursor:progress;transform:none}
+body.embed .bar .cc{border:1.5px solid transparent;background:rgba(118,118,128,.12);border-radius:12px;font-family:var(--font);font-size:13px;padding:9px 14px}
+body.embed .bar .cc:focus{background:#fff;border-color:#0668D9;box-shadow:0 0 0 4px rgba(6,104,217,.14)}
+body.embed .hint{color:#6E6E73;font-size:12.5px;line-height:1.55}
+body.embed .err,body.embed .aviso{border-left:0;border-radius:14px;padding:13px 16px;font-size:13px}
+body.embed .err{background:#FCEDEA;color:#8A2A1B}
+body.embed .aviso{background:#E7F7EE;color:#0F5F3A}
+body.embed .pg{border-radius:22px;overflow:hidden;box-shadow:0 1px 2px rgba(0,0,0,.04),0 16px 40px -18px rgba(10,30,60,.22);border:1px solid rgba(0,0,0,.05)}
+body.embed .hd,body.embed .tot{background:radial-gradient(120% 140% at 88% -30%,rgba(58,147,232,.32) 0%,rgba(58,147,232,0) 55%),linear-gradient(180deg,#00194D 0%,#00214F 100%)}
+body.embed .hd-pat{opacity:.07}
+body.embed .ttl{font-size:32px;letter-spacing:-.04em;font-weight:700}
+body.embed .folio{font-size:28px;font-weight:700;letter-spacing:-.04em}
+body.embed .pg .lbl{font-size:11px;letter-spacing:0;text-transform:none;font-weight:500;color:#6E6E73}
+body.embed .hd .lbl,body.embed .tot .lbl{color:rgba(255,255,255,.58)}
+body.embed .hd-dt .v{font-size:12px;font-weight:600;letter-spacing:0}
+body.embed .cli{border-bottom:1px solid rgba(0,0,0,.08)}
+body.embed .cli-v{font-size:14px;font-weight:600;letter-spacing:-.02em}
+body.embed .cli-s{font-size:11.5px;color:#6E6E73}
+body.embed .sec-t{font-size:15px;letter-spacing:-.02em;font-weight:600}
+body.embed .sec-c{font-size:12px;letter-spacing:0;font-weight:500;color:#6E6E73}
+body.embed .cols{border-top:0;border-bottom:1px solid rgba(0,0,0,.08)}
+body.embed .cols span{font-size:11.5px;letter-spacing:0;text-transform:none;font-weight:600;color:#98989D}
+body.embed .ln{border-bottom:1px solid rgba(0,0,0,.06)}
+body.embed .mod{font-size:17px;font-weight:700;letter-spacing:-.03em}
+body.embed .spec{font-size:11.5px;letter-spacing:0;text-transform:none;color:#6E6E73;font-weight:500}
+body.embed .pg .sub .lbl,body.embed .pg .ent .lbl{font-size:11px;letter-spacing:0;margin-bottom:5px}
+body.embed .sub .v{font-size:13px;font-weight:600}
+body.embed .f:hover{background:rgba(0,0,0,.04)}
+body.embed .f:focus{background:#fff;box-shadow:0 0 0 2px rgba(6,104,217,.55)}
+body.embed .dk .f:hover{background:rgba(255,255,255,.1)}
+body.embed .dk .f:focus{background:rgba(255,255,255,.16);box-shadow:0 0 0 2px rgba(255,255,255,.5)}
+body.embed .add,body.embed .mini{border:1.5px dashed rgba(0,0,0,.16);border-radius:12px;background:transparent;color:#6E6E73;font-family:var(--font);font-size:12.5px;letter-spacing:0;text-transform:none;font-weight:600}
+body.embed .add:hover,body.embed .mini:hover{border-color:#0668D9;color:#0668D9}
+body.embed .er{border:1px solid rgba(0,0,0,.1);border-radius:10px}
+body.embed .tot-big{font-weight:700;letter-spacing:-.045em;font-size:44px}
+body.embed .tot-mn{letter-spacing:.08em}
+body.embed .cond-box{border:1px solid rgba(0,0,0,.06);border-left:1px solid rgba(0,0,0,.06);background:#F5F5F7;border-radius:16px}
+body.embed .cond-lbl{text-transform:none;letter-spacing:-.01em;font-size:14px;font-weight:600}
+body.embed .acc{font-family:var(--font)}
+body.embed .acc input{accent-color:#0668D9}
+body.embed .ft{clip-path:none;background:#00194D}
+body.embed .ft-a b{letter-spacing:.04em}
+body.embed .mp{border-radius:20px;border:1px solid rgba(0,0,0,.05);box-shadow:0 1px 2px rgba(0,0,0,.04),0 12px 32px -18px rgba(10,30,60,.16)}
+body.embed .mp-f{font-family:var(--font);font-weight:700;letter-spacing:-.04em;font-size:24px}
+body.embed .mp-t{font-size:14.5px;font-weight:600;letter-spacing:-.02em}
+body.embed .mp-m{font-family:var(--font);font-weight:600;font-size:15px;font-variant-numeric:tabular-nums}
+body.embed .chip{font-size:11px;letter-spacing:0;text-transform:none;font-weight:600}
+body.embed .mp-b{border-top:1px solid rgba(0,0,0,.06)}
+body.embed .mp-a button{border:0;background:rgba(118,118,128,.12);border-radius:980px;padding:8px 16px;font-family:var(--font);font-size:12.5px}
+body.embed .mp-a button:hover{background:rgba(118,118,128,.22);color:#1D1D1F}
+body.embed .vacio{border-left:0;border-radius:20px;text-align:center;padding:40px 24px;font-size:14px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 12px 32px -18px rgba(10,30,60,.14)}
+body.embed #bloqueo{border-left:0;border-radius:20px;box-shadow:0 12px 32px -18px rgba(10,30,60,.2)}
+body.embed #bloqueo button{border:0;border-radius:980px;background:linear-gradient(135deg,#0668D9,#00266B);font-family:var(--font)}
+
 /* mobile */
 @media(max-width:820px){
   body{padding:12px 8px 48px}
@@ -261,8 +326,8 @@ body.prev .xlprint{display:block}
 <div id="bloqueo" role="alert"><div class="bq-t" id="bq-t"></div><button id="bq-b" onclick="relogin()">Volver a entrar</button></div>
 <div class="bar">
   <input class="cc" id="cc" type="email" placeholder="Correo del Gerente Regional (copia)">
-  <button onclick="nuevo()">Vaciar pedido</button>
-  <button onclick="vista()" id="btnVista">Vista previa del formato</button>
+  <button onclick="nuevo()">Vaciar</button>
+  <button onclick="vista()" id="btnVista">Vista previa</button>
   <button onclick="imprimir()">Imprimir / PDF</button>
   <button onclick="descargar()">Descargar Excel</button>
   <button class="p" id="btnEnviar" onclick="enviar()">Enviar pedido</button>
@@ -316,8 +381,8 @@ body.prev .xlprint{display:block}
 
   <div class="sec">
     <div class="sec-h">
-      <span class="sec-t">UNIDADES</span>
-      <span class="sec-c" id="conteo">0 UNIDADES</span>
+      <span class="sec-t">Unidades</span>
+      <span class="sec-c" id="conteo">0 unidades</span>
     </div>
     <div class="grid cols">
       <span></span><span>Modelo</span><span class="r">Cant</span><span class="r">Precio s/IVA</span><span class="r">Fondo pub.</span><span class="r">Monto</span><span></span>
@@ -328,8 +393,8 @@ body.prev .xlprint{display:block}
 
   <div class="sec" id="surt">
     <div class="sec-h">
-      <span class="sec-t">COMENTARIOS DE SURTIMIENTO</span>
-      <span class="sec-c">OPCIONAL</span>
+      <span class="sec-t">Comentarios de surtimiento</span>
+      <span class="sec-c">Opcional</span>
     </div>
     <div class="note">El surtimiento de cada modelo (mes y cantidad) se captura dentro de su unidad. Aquí van indicaciones generales. Todo viaja en el correo a LDR y a tu Regional; no modifica el Formato de Pedido.</div>
     <textarea class="ta" id="coment" placeholder="Ej. Prioridad a las unidades con carrocería; puedo recibir en 2 partes." oninput="setP('coment',this.value)"></textarea>
@@ -346,7 +411,7 @@ body.prev .xlprint{display:block}
       <div class="tot-r">
         <div class="lbl">Total del pedido</div>
         <div class="tot-big mono" id="t-tot">$0.00</div>
-        <div class="tot-mn">MONEDA NACIONAL · IVA INCLUIDO</div>
+        <div class="tot-mn">Moneda nacional · IVA incluido</div>
       </div>
     </div>
   </div>
@@ -513,7 +578,7 @@ function totales(){
   const sub=uni+fon, iva=sub*IVA;
   $('t-uni').textContent=fmt(uni); $('t-fondo').textContent=fmt(fon); $('t-sub').textContent=fmt(sub);
   $('t-iva').textContent=fmt(iva); $('t-tot').textContent=fmt(sub+iva);
-  $('conteo').textContent=units+(units===1?' UNIDAD':' UNIDADES');
+  $('conteo').textContent=units+(units===1?' unidad':' unidades');
   return {uni,fon,sub,iva,total:sub+iva,units};
 }
 
@@ -656,7 +721,7 @@ function fitText(doc){
 function vista(){
   const on=document.body.classList.toggle('prev');
   if(on){fillPrint();fitText();}
-  $('btnVista').textContent=on?'Volver a la captura':'Vista previa del formato';
+  $('btnVista').textContent=on?'Volver a la captura':'Vista previa';
   window.scrollTo(0,0);
 }
 /* Documento aislado que contiene SOLO el Formato de Pedido: es lo único que se manda a imprimir */
