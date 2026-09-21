@@ -268,6 +268,7 @@ body{font-family:'Inter',sans-serif;background:var(--surf);color:var(--ink);min-
     <div class="main-tab on" data-tab="panel" onclick="switchMainTab('panel',this)">Mi Panel</div>
     <div class="main-tab" data-tab="inventario" onclick="switchMainTab('inventario',this)">Inventario</div>
     <div class="main-tab" data-tab="red" onclick="switchMainTab('red',this)">Red Foton</div>
+    <div class="main-tab" data-tab="pedidos" onclick="switchMainTab('pedidos',this)">Pedidos</div>
   </div>
   <div class="main-pane on" id="pane-panel">
     <div class="wrap">
@@ -314,6 +315,11 @@ body{font-family:'Inter',sans-serif;background:var(--surf);color:var(--ink);min-
         </div>
         <div id="inv-body"><div class="inv-empty">Selecciona esta tab para cargar el inventario.</div></div>
       </div>
+    </div>
+  </div>
+  <div class="main-pane" id="pane-pedidos">
+    <div class="wrap">
+      <iframe id="pedido-frame" title="Pedidos de unidades" style="display:block;width:100%;height:720px;border:0;background:transparent" allow="clipboard-write"></iframe>
     </div>
   </div>
   <div class="main-pane" id="pane-red">
@@ -475,13 +481,17 @@ async function validarPin(){
     const d=arr[0];
     errEl.textContent='';
     sessionStorage.setItem('foton_dealer',d.id);
+    sessionStorage.setItem('foton_pin',pin);
     mostrarDealer(d.id);
+    irATabDeep();
   }catch(e){errEl.textContent='Error de conexión, intenta de nuevo'}
 }
 document.getElementById('pin-input').addEventListener('keydown',e=>{if(e.key==='Enter')validarPin()});
 
 function logout(){
   sessionStorage.removeItem('foton_dealer');
+  sessionStorage.removeItem('foton_pin');
+  var pf=document.getElementById('pedido-frame'); if(pf) pf.removeAttribute('src');
   document.getElementById('pin-input').value='';
   document.getElementById('hdr-info').textContent='';
   show('publica');
@@ -672,7 +682,7 @@ async function init(){
     buildRanking();
     initDone=true;
     const saved=sessionStorage.getItem('foton_dealer');
-    if(saved&&DL[saved])mostrarDealer(saved);
+    if(saved&&DL[saved]){mostrarDealer(saved);irATabDeep();}
   }catch(e){
     document.getElementById('pin-err').textContent='Error cargando datos: '+e.message;
   }
@@ -687,6 +697,27 @@ var INV_EST = 'todos';
 var RETAIL_U = null;
 
 // ============================================================
+// PEDIDOS (módulo embebido: mismo PIN, misma sesión)
+// ============================================================
+function cargarPedidos(){
+  var f=document.getElementById('pedido-frame');
+  if(!f.getAttribute('src')) f.setAttribute('src','pedido-modulo.html?embed=1');
+}
+window.addEventListener('message',function(e){
+  if(e.origin!==location.origin||!e.data)return;
+  if(e.data.type==='foton-pedido-h'){
+    var f=document.getElementById('pedido-frame');
+    if(f&&e.data.h>200)f.style.height=e.data.h+'px';
+  }
+  if(e.data.type==='foton-pedido-relogin'){logout();}
+});
+function irATabDeep(){
+  var t=new URLSearchParams(location.search).get('tab');
+  if(t==='pedidos'){var el=document.querySelector('.main-tab[data-tab="pedidos"]'); if(el) el.click();}
+  else if(document.getElementById('pane-pedidos').classList.contains('on')) cargarPedidos();
+}
+
+// ============================================================
 // TABS
 // ============================================================
 function switchMainTab(tab, el) {
@@ -696,6 +727,7 @@ function switchMainTab(tab, el) {
   document.getElementById('pane-'+tab).classList.add('on');
   if(tab==='inventario') cargarInventario();
   if(tab==='red') cargarRed();
+  if(tab==='pedidos') cargarPedidos();
 }
 
 // ============================================================
