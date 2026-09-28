@@ -167,7 +167,7 @@ main{padding-block:22px 72px}
 .open>.cd-body{display:block}
 
 /* ── FILA DE UNIDAD ── */
-.urow{display:grid;grid-template-columns:64px minmax(0,1.25fr) minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 12px;border-radius:12px;position:relative}
+.urow{display:grid;grid-template-columns:64px minmax(215px,1.2fr) minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 12px;border-radius:12px;position:relative}
 .urow:hover{background:var(--fill2)}
 .urow+.urow::before{content:"";position:absolute;top:0;left:12px;right:12px;height:1px;background:var(--sep)}
 .urow:hover::before,.urow:hover+.urow::before{opacity:0}
@@ -176,12 +176,11 @@ main{padding-block:22px 72px}
 .u-d small{font-size:10.5px;color:var(--ter);font-weight:500}
 .u-mod{font-family:var(--fd);font-weight:800;font-size:16px;letter-spacing:-.01em}
 .u-mod small{font-family:var(--f);font-weight:500;font-size:12.5px;color:var(--ter);margin-left:6px;letter-spacing:0}
-.vin{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12.5px;color:var(--ter);letter-spacing:.01em;margin-top:2px;
-  padding:1px 6px;margin-left:-6px;border-radius:6px;text-align:left}
-.vin b{color:var(--ink2);font-weight:600}
-.vin:hover{background:var(--fill)}
-.vin svg{opacity:0;transition:opacity .15s}
-.vin:hover svg{opacity:.7}
+.vin{display:flex;align-items:center;flex-wrap:nowrap;gap:4px 8px;margin-top:4px;min-width:0}
+.vin .k{font-size:10.5px;font-weight:700;letter-spacing:.08em;color:var(--sec);background:var(--fill);border-radius:5px;padding:1px 5px}
+.vin .v{font-family:var(--mono);font-size:13.5px;font-weight:600;color:var(--ink);letter-spacing:.02em;white-space:nowrap;user-select:all;-webkit-user-select:all}
+.vin .cp{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:7px;color:var(--ter)}
+.vin .cp:hover{background:var(--fill);color:var(--accent)}
 .u-mid{font-size:13px;color:var(--sec);min-width:0}
 .u-mid .dn{color:var(--ink);font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .u-mid .mono{font-family:var(--mono);font-size:12px}
@@ -189,7 +188,7 @@ main{padding-block:22px 72px}
 .u-pills{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 .u-f{font-size:12px;color:var(--ter);white-space:nowrap}
 .u-f.ok{color:var(--sec)}
-.urow.nod{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) auto}
+.urow.nod{grid-template-columns:minmax(215px,1.2fr) minmax(0,1fr) auto}
 .showmore{display:flex;justify-content:center;padding:8px 0 16px}
 .btn{height:36px;padding:0 18px;border-radius:18px;background:var(--fill2);font-size:14px;font-weight:500;color:var(--accent)}
 .btn:hover{background:var(--fill)}
@@ -424,10 +423,11 @@ function entHtml(r){
   return pill(e[0],e[1],e[2])+'</div><div class="u-f'+(f?' ok':'')+'">'+(f?'Entrega '+esc(f):'Sin fecha de entrega');
 }
 function vinHtml(v){
-  if(!v)return '<span class="vin">Sin VIN</span>';
-  const s=String(v), a=s.slice(0,-8), b=s.slice(-8);
-  return '<button class="vin" onclick="copiarVIN(event,\''+esc(s)+'\')" title="Copiar VIN">'+esc(a)+'<b>'+esc(b)+'</b>'+
-    '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button>';
+  if(!v)return '<div class="vin"><span class="k">VIN</span><span class="v mut">Sin VIN</span></div>';
+  const s=String(v).trim();
+  return '<div class="vin"><span class="k">VIN</span><span class="v">'+esc(s)+'</span>'+
+    '<button class="cp" onclick="copiarVIN(event,\''+esc(s)+'\')" title="Copiar VIN" aria-label="Copiar VIN">'+
+    '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button></div>';
 }
 function copiarVIN(ev,v){ev.stopPropagation();
   (navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(()=>toast('VIN copiado'),()=>toast(v))}
