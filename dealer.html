@@ -226,6 +226,8 @@ button{font-family:inherit}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
+<script src="_config.js"></script>
+<script src="_umami.js"></script>
 </head>
 <body>
 
@@ -447,10 +449,11 @@ async function entrar(pin,silencioso){
   try{
     const arr=await q('/distribuidores?pin=eq.'+pin+'&select=id,nombre,region');
     if(!Array.isArray(arr)||!arr.length){
-      if(!silencioso){errEl.textContent='PIN incorrecto. Inténtalo de nuevo.';void errEl.offsetWidth;errEl.classList.add('shake')}
+      if(!silencioso){fotonTrack('portal_login_fallido');errEl.textContent='PIN incorrecto. Inténtalo de nuevo.';void errEl.offsetWidth;errEl.classList.add('shake')}
       sessionStorage.removeItem('foton_dealer');sessionStorage.removeItem('foton_pin');return;
     }
     const d=arr[0];DL={};DL[d.id]=d;
+    if(!silencioso)fotonTrack('portal_login',{distribuidor:d.id});
     await cargarDatos(d.id);
     sessionStorage.setItem('foton_dealer',d.id);
     sessionStorage.setItem('foton_pin',pin);
@@ -699,6 +702,7 @@ function switchMainTab(tab, el) {
   document.querySelectorAll('.main-pane').forEach(function(p){p.classList.remove('on')});
   el.classList.add('on');
   document.getElementById('pane-'+tab).classList.add('on');
+  fotonTrack('portal_tab',{tab:tab});
   if(tab==='inventario') cargarInventario();
   if(tab==='pedidos') cargarPedidos();
 }
