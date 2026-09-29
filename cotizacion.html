@@ -154,6 +154,8 @@ textarea.f{resize:none;overflow:hidden;display:block}
   .cli-c:empty-check{display:none}
 }
 </style>
+<script src="_config.js"></script>
+<script src="_umami.js"></script>
 </head>
 <body>
 
@@ -553,6 +555,7 @@ $('folio').addEventListener('input',e=>{ $('folioPie').textContent=e.target.valu
 });
 
 function prepararImpresion(){
+  fotonTrack('cotizacion_imprimir');
   // Oculta bloques de cliente vacíos para no dejar huecos ni imprimir placeholders
   const cliBlocks=[...document.querySelectorAll('.cli-c')];
   const estados=cliBlocks.map(c=>{
