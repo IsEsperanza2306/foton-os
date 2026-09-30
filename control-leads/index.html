@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="es">
+<head>
+<script src="../_acceso.js" data-area="interno"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#001A4D">
+<title>Control de Leads · Foton OS</title>
+<link rel="icon" href="../assets/icon-192.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="../_sistema.css">
+<style>
+.hero .hin{padding-block:22px 24px}.hero-sm h1{font-size:34px}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin:22px 0 4px;padding:4px;border-radius:14px;background:var(--fill);width:fit-content;max-width:100%;overflow-x:auto}
+.tabs button{border:0;background:none;color:var(--sec);font:600 13px var(--f);padding:8px 14px;border-radius:10px;cursor:pointer;white-space:nowrap}
+.tabs button[aria-selected="true"]{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.tabs .n{margin-left:6px;font-size:11px;background:var(--orangeBg);color:var(--orange);border-radius:980px;padding:1px 7px}
+.panel{margin-top:16px}.panel[hidden]{display:none}
+.box{background:var(--card);border-radius:20px;box-shadow:var(--shadow);padding:20px;margin-bottom:14px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .box{border:1px solid var(--sep)}}
+.box h3{margin:0 0 4px;font:800 18px var(--fd);letter-spacing:-.02em}.box p.s{margin:0 0 14px;color:var(--sec);font-size:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+input,select,textarea{font:500 14px var(--f);color:var(--ink);background:var(--bg);border:1px solid var(--sep);border-radius:12px;padding:9px 12px;min-width:0}
+input:focus,select:focus,textarea:focus{outline:3px solid color-mix(in srgb,var(--accent) 45%,transparent);border-color:var(--accent)}
+.btn{border:0;border-radius:12px;background:var(--accent);color:#fff;font:600 14px var(--f);padding:10px 16px;cursor:pointer}
+.btn.g{background:var(--fill);color:var(--ink)}.btn:disabled{opacity:.5;cursor:default}
+.btn.sm{padding:6px 11px;font-size:12px;border-radius:9px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.grid2 label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--sec)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.kpi{background:var(--card);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow)}.kpi b{display:block;font:800 28px var(--fd);letter-spacing:-.02em}.kpi span{font-size:12px;color:var(--sec);font-weight:600}
+.kpi.warn b{color:var(--orange)}
+table{width:100%;border-collapse:collapse;font-size:13px}th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--ter);padding:8px 10px;border-bottom:1px solid var(--sep);white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--sep);vertical-align:top}.tw{overflow-x:auto}
+.tag{font-size:11px;font-weight:600;padding:3px 9px;border-radius:980px;background:var(--grayBg);color:var(--gray);white-space:nowrap}
+.tag.b{background:var(--blueBg);color:var(--blue)}.tag.o{background:var(--orangeBg);color:var(--orange)}.tag.p{background:var(--purpleBg);color:var(--purple)}
+.msg{font-size:13px;padding:10px 12px;border-radius:12px;background:var(--fill);margin-top:10px}.msg.err{background:var(--orangeBg);color:var(--orange)}
+.al{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--sep)}.al:last-child{border:0}.al.u .t{color:var(--orange)}
+.al .t{font-weight:600;font-size:14px}.al small{color:var(--ter)}
+.login{max-width:440px;margin:40px auto}
+.sw{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--sep)}.sw input{margin-top:3px;width:18px;height:18px}
+.drop{border:2px dashed var(--sep);border-radius:16px;padding:22px;text-align:center;color:var(--sec);font-size:14px}
+code{font-family:var(--mono);font-size:12px}
+</style>
+</head>
+<body>
+<header class="hero hero-sm"><div class="hdr"><div class="wrap">
+  <a class="logo" href="../interno/"><span class="mk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4l8 8 8-8M4 12l8 8 8-8"/></svg></span><b>FOTON</b><small>Control de leads</small></a>
+  <nav class="seg"><a href="../interno/">Interno</a><a href="#" id="who" aria-current="page">Entrar</a></nav>
+</div></div><div class="wrap hin"><div class="eyebrow">Interno · Planta</div><h1>Control de leads</h1>
+<p class="lede">Carga, asigna a distribuidores y vigila que cada lead se atienda.</p></div></header>
+<main class="wrap" id="app"></main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="../_config.js"></script>
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const db = window.FOTON_DB || supabase.createClient(FOTON_CONFIG.SUPABASE_URL, FOTON_CONFIG.SUPABASE_ANON_KEY);
+const app = $('#app');
+let perfil = null, dists = [], leads = [], alertas = [], equipo = [], cfg = [], tablero = [], tab = 'tablero', filtro = { estatus: '', dist: '', q: '' };
+const EST = { nuevo: 'Sin asignar', asignado_dist: 'En bandeja del gerente', asignado_asesor: 'Con asesor', contactado: 'Contactado', cotizacion: 'Cotización', negociacion: 'Negociación', ganado: 'Ganado', perdido: 'Perdido', descartado: 'Descartado' };
+const ALT = { sin_asignar_dist: 'Sin asignar a distribuidor', sin_asignar_asesor: 'Sin asesor', sin_contacto: 'Sin primer contacto', sin_actualizacion: 'Sin actualización', paso_vencido: 'Paso vencido', dist_sin_actividad: 'Distribuidor sin movimiento' };
+const say = (el, t, err) => { el.innerHTML = t ? `<div class="msg${err ? ' err' : ''}">${esc(t)}</div>` : ''; };
+const rpc = async (fn, args) => { const { data, error } = await db.rpc(fn, args); if (error) throw new Error(error.message); return data; };
+
+// El acceso (sesión, rol, portal) lo resuelve _acceso.js; aquí solo se arranca cuando el perfil ya es válido.
+async function init() {
+  perfil = window.FOTON_PERFIL;
+  $('#who').textContent = perfil.nombre;
+  if (!perfil.planta && !(window.FotonAcceso && FotonAcceso.esMaster(perfil.email))) return sinAcceso('Tu perfil no tiene permisos de planta en la base de datos.');
+  try { await cargar(); render(); } catch (e) { sinAcceso('No se pudieron cargar los datos: ' + e.message); }
+}
+function sinAcceso(t) {
+  app.innerHTML = `<div class="box login"><h3>Sin acceso</h3><p class="s">${esc(t)}</p><button class="btn g" id="out">Salir</button></div>`;
+  $('#out').onclick = () => FotonAcceso.salir();
+}
+window.addEventListener('FotonAccesoListo', init);
+
+async function cargar() {
+  const [d, l, a, c, t, e] = await Promise.all([
+    db.from('distribuidores').select('id,nombre,region').order('nombre'),
+    db.from('leads').select('*').order('recibido_at', { ascending: false }).limit(2000),
+    db.from('alertas').select('*').is('resuelta_at', null).order('creada_at', { ascending: false }).limit(300),
+    db.from('lead_config').select('*').order('clave'),
+    rpc('fn_leads_tablero'), rpc('fn_equipo')
+  ]);
+  dists = (d.data || []).filter(x => x.id !== 'PRUEBA-000' || true); leads = l.data || []; alertas = a.data || []; cfg = c.data || []; tablero = t || []; equipo = e || [];
+}
+const dn = id => (dists.find(d => d.id === id) || {}).nombre || '—';
+const fh = t => t ? new Date(t).toLocaleString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—';
+
+function render() {
+  const nAl = alertas.length;
+  app.innerHTML = `<div class="tabs" role="tablist">${[['tablero', 'Tablero'], ['leads', 'Leads'], ['cargar', 'Cargar'], ['alertas', 'Alertas' + (nAl ? `<span class="n">${nAl}</span>` : '')], ['equipo', 'Equipo'], ['config', 'Avisos']]
+    .map(([k, v]) => `<button role="tab" data-t="${k}" aria-selected="${k === tab}">${v}</button>`).join('')}</div>
+  <section class="panel" id="p"></section>`;
+  app.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { tab = b.dataset.t; render(); });
+  ({ tablero: vTablero, leads: vLeads, cargar: vCargar, alertas: vAlertas, equipo: vEquipo, config: vConfig })[tab]($('#p'));
+}
+
+function vTablero(p) {
+  const cnt = s => leads.filter(l => s.includes(l.estatus)).length;
+  const venc = leads.filter(l => ['asignado_asesor', 'contactado', 'cotizacion', 'negociacion'].includes(l.estatus) && l.siguiente_paso_fecha && l.siguiente_paso_fecha < new Date().toISOString().slice(0, 10)).length;
+  p.innerHTML = `<div class="kpis">
+    <div class="kpi ${cnt(['nuevo']) ? 'warn' : ''}"><b>${cnt(['nuevo'])}</b><span>Sin asignar a distribuidor</span></div>
+    <div class="kpi ${cnt(['asignado_dist']) ? 'warn' : ''}"><b>${cnt(['asignado_dist'])}</b><span>Esperando asesor</span></div>
+    <div class="kpi"><b>${cnt(['asignado_asesor'])}</b><span>Sin primer contacto</span></div>
+    <div class="kpi"><b>${cnt(['contactado', 'cotizacion', 'negociacion'])}</b><span>En proceso</span></div>
+    <div class="kpi ${venc ? 'warn' : ''}"><b>${venc}</b><span>Con paso vencido</span></div>
+    <div class="kpi"><b>${cnt(['ganado'])}</b><span>Ganados</span></div></div>
+  <div class="box"><h3>Por distribuidor</h3><p class="s">Ordenado por quién tiene más leads esperando asesor.</p><div class="tw"><table>
+  <tr><th>Distribuidor</th><th>Total</th><th>Sin asesor</th><th>Sin contacto</th><th>En proceso</th><th>Vencidos</th><th>Ganados</th><th>Perdidos</th><th>Horas al 1er contacto</th></tr>
+  ${tablero.length ? tablero.map(r => `<tr><td><b>${esc(r.distribuidor)}</b><br><small>${esc(r.region)}</small></td><td>${r.total}</td><td>${r.sin_asesor || ''}</td><td>${r.sin_contacto || ''}</td><td>${r.en_proceso}</td><td>${r.vencidos || ''}</td><td>${r.ganados}</td><td>${r.perdidos}</td><td>${r.horas_primer_contacto ?? '—'}</td></tr>`).join('') : '<tr><td colspan="9">Aún no hay leads asignados a distribuidores.</td></tr>'}
+  </table></div></div>`;
+}
+
+function vLeads(p) {
+  const hoy = new Date().toISOString().slice(0, 10);
+  const rows = leads.filter(l => (!filtro.estatus || l.estatus === filtro.estatus) && (!filtro.dist || (filtro.dist === '-' ? !l.distribuidor_id : l.distribuidor_id === filtro.dist)) &&
+    (!filtro.q || [l.empresa, l.contacto, l.telefono, l.correo, l.folio].join(' ').toLowerCase().includes(filtro.q.toLowerCase()))).slice(0, 300);
+  p.innerHTML = `<div class="box"><div class="row">
+    <input id="fq" placeholder="Buscar empresa, contacto, folio…" value="${esc(filtro.q)}" style="flex:1;min-width:180px">
+    <select id="fe"><option value="">Todos los estatus</option>${Object.entries(EST).map(([k, v]) => `<option value="${k}" ${filtro.estatus === k ? 'selected' : ''}>${v}</option>`).join('')}</select>
+    <select id="fd"><option value="">Todos los distribuidores</option><option value="-" ${filtro.dist === '-' ? 'selected' : ''}>Sin distribuidor</option>${dists.map(d => `<option value="${esc(d.id)}" ${filtro.dist === d.id ? 'selected' : ''}>${esc(d.nombre)}</option>`).join('')}</select></div>
+    <div class="row" style="margin-top:12px"><b id="sel">0 seleccionados</b><select id="ad"><option value="">Asignar a distribuidor…</option>${dists.map(d => `<option value="${esc(d.id)}">${esc(d.nombre)}</option>`).join('')}</select><button class="btn" id="as" disabled>Asignar</button></div><div id="lm"></div></div>
+  <div class="box"><div class="tw"><table><tr><th></th><th>Folio</th><th>Lead</th><th>Interés</th><th>Distribuidor</th><th>Estatus</th><th>Última acción</th></tr>
+  ${rows.map(l => `<tr><td><input type="checkbox" class="ck" value="${l.id}" ${['nuevo', 'asignado_dist', 'asignado_asesor'].includes(l.estatus) ? '' : 'disabled'}></td><td><code>${esc(l.folio)}</code></td>
+   <td><b>${esc(l.empresa || l.contacto)}</b><br><small>${esc([l.contacto && l.empresa ? l.contacto : '', l.telefono, l.correo].filter(Boolean).join(' · '))}</small></td>
+   <td>${esc([l.modelo_interes, l.cantidad && '×' + l.cantidad].filter(Boolean).join(' '))}<br><small>${esc([l.ciudad, l.estado].filter(Boolean).join(', '))}</small></td>
+   <td>${l.distribuidor_id ? esc(dn(l.distribuidor_id)) : '<span class="tag o">Sin asignar</span>'}</td>
+   <td><span class="tag ${['ganado'].includes(l.estatus) ? 'b' : l.estatus === 'nuevo' ? 'o' : ''}">${EST[l.estatus]}</span>${l.siguiente_paso_fecha && l.siguiente_paso_fecha < hoy && !['ganado', 'perdido', 'descartado'].includes(l.estatus) ? '<br><span class="tag o">Paso vencido</span>' : ''}</td>
+   <td>${fh(l.ultima_accion_at || l.asignado_dist_at || l.recibido_at)}</td></tr>`).join('') || '<tr><td colspan="7">Sin resultados.</td></tr>'}
+  </table></div>${leads.length > 300 ? '<p class="s">Se muestran los primeros 300; usa los filtros.</p>' : ''}</div>`;
+  const upd = () => { const n = p.querySelectorAll('.ck:checked').length; $('#sel').textContent = n + ' seleccionados'; $('#as').disabled = !n || !$('#ad').value; };
+  p.querySelectorAll('.ck').forEach(c => c.onchange = upd); $('#ad').onchange = upd;
+  $('#fq').oninput = e => { filtro.q = e.target.value; clearTimeout(window._t); window._t = setTimeout(() => { vLeads(p); $('#fq').focus(); $('#fq').setSelectionRange(99, 99); }, 300); };
+  $('#fe').onchange = e => { filtro.estatus = e.target.value; vLeads(p); }; $('#fd').onchange = e => { filtro.dist = e.target.value; vLeads(p); };
+  $('#as').onclick = async () => {
+    const ids = [...p.querySelectorAll('.ck:checked')].map(c => c.value), dsel = $('#ad').value; $('#as').disabled = true;
+    try { const n = await rpc('fn_lead_asignar_dist', { p_ids: ids, p_dist: dsel }); await cargar(); render(); say($('#lm'), n + ' leads asignados a ' + dn(dsel)); }
+    catch (e) { say($('#lm'), e.message, true); }
+  };
+}
+
+let staged = [];
+function vCargar(p) {
+  p.innerHTML = `<div class="box"><h3>Cargar desde Excel o CSV</h3><p class="s">Columnas reconocidas: empresa, contacto, telefono, correo, estado, ciudad, modelo, cantidad, notas. Cada lead necesita empresa o contacto, y teléfono o correo. Los duplicados (mismo teléfono o correo) se omiten.</p>
+    <div class="drop"><input type="file" id="fl" accept=".xlsx,.xls,.csv"></div><div id="prev"></div><div id="lm"></div></div>
+  <div class="box"><h3>Captura manual</h3><p class="s">Para un lead suelto que llega por teléfono, evento o redes.</p>
+    <form id="fm"><div class="grid2">
+      <label>Empresa<input name="empresa"></label><label>Contacto<input name="contacto"></label><label>Teléfono<input name="telefono" inputmode="tel"></label><label>Correo<input name="correo" type="email"></label>
+      <label>Estado<input name="estado"></label><label>Ciudad<input name="ciudad"></label><label>Modelo de interés<input name="modelo_interes" placeholder="S5, S7…"></label><label>Cantidad<input name="cantidad" inputmode="numeric"></label>
+      <label>Origen<select name="origen"><option value="planta">Planta</option><option value="web">Web</option><option value="evento">Evento</option><option value="redes">Redes</option><option value="referido">Referido</option><option value="otro">Otro</option></select></label></div>
+      <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--sec);margin-top:10px">Notas<textarea name="notas" rows="2"></textarea></label>
+      <div class="row" style="margin-top:12px"><button class="btn" type="submit">Guardar lead</button></div></form><div id="lm2"></div></div>`;
+  const norm = k => String(k).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z]/g, '');
+  const MAP = { empresa: 'empresa', razonsocial: 'empresa', cliente: 'empresa', contacto: 'contacto', nombre: 'contacto', telefono: 'telefono', tel: 'telefono', celular: 'telefono', whatsapp: 'telefono', correo: 'correo', email: 'correo', mail: 'correo', estado: 'estado', ciudad: 'ciudad', modelo: 'modelo_interes', modelointeres: 'modelo_interes', cantidad: 'cantidad', unidades: 'cantidad', notas: 'notas', comentarios: 'notas', origen: 'origen' };
+  $('#fl').onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    const wb = XLSX.read(await f.arrayBuffer(), { type: 'array' });
+    const raw = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
+    staged = raw.map(r => { const o = {}; for (const [k, v] of Object.entries(r)) { const m = MAP[norm(k)]; if (m && v !== '') o[m] = String(v); } return o; });
+    $('#prev').innerHTML = `<p class="s" style="margin-top:14px">${staged.length} filas leídas de <b>${esc(f.name)}</b>. Vista previa:</p><div class="tw"><table><tr>${['empresa', 'contacto', 'telefono', 'correo', 'modelo_interes', 'ciudad'].map(h => `<th>${h}</th>`).join('')}</tr>
+      ${staged.slice(0, 5).map(r => `<tr>${['empresa', 'contacto', 'telefono', 'correo', 'modelo_interes', 'ciudad'].map(h => `<td>${esc(r[h])}</td>`).join('')}</tr>`).join('')}</table></div>
+      <div class="row" style="margin-top:12px"><button class="btn" id="imp">Importar ${staged.length} leads</button></div>`;
+    $('#imp').onclick = async () => {
+      $('#imp').disabled = true;
+      try {
+        const r = await rpc('fn_lead_importar', { p_leads: staged, p_lote: f.name + ' · ' + new Date().toLocaleDateString('es-MX') });
+        await cargar(); say($('#lm'), `Importados: ${r.insertados}. Duplicados omitidos: ${r.duplicados.length}. Sin datos suficientes: ${r.invalidos}.` + (r.duplicados.length ? ' Duplicados: ' + r.duplicados.slice(0, 8).map(d => d.empresa || d.contacto).join(', ') + (r.duplicados.length > 8 ? '…' : '') : ''));
+        $('#prev').innerHTML = '';
+      } catch (er) { say($('#lm'), er.message, true); $('#imp').disabled = false; }
+    };
+  };
+  $('#fm').onsubmit = async e => {
+    e.preventDefault(); const o = Object.fromEntries([...new FormData(e.target)].filter(([, v]) => v));
+    try { const r = await rpc('fn_lead_importar', { p_leads: [o], p_lote: null });
+      if (r.insertados) { await cargar(); e.target.reset(); say($('#lm2'), 'Lead guardado. Ya puedes asignarlo en la pestaña Leads.'); }
+      else say($('#lm2'), r.duplicados.length ? 'Ya existe un lead con ese teléfono o correo.' : 'Falta empresa o contacto, y teléfono (10 dígitos) o correo.', true);
+    } catch (er) { say($('#lm2'), er.message, true); }
+  };
+}
+
+function vAlertas(p) {
+  p.innerHTML = `<div class="box"><h3>Alertas abiertas</h3><p class="s">Se revisan cada 15 minutos y se cierran solas cuando el lead se atiende.</p>
+  ${alertas.filter(a => a.destino_rol === 'planta').map(a => `<div class="al ${a.nivel === 'urgente' ? 'u' : ''}"><div><div class="t">${esc(ALT[a.tipo])}${a.nivel === 'urgente' ? ' · urgente' : ''}</div>${esc(a.mensaje)}<br><small>${fh(a.creada_at)}</small></div>${a.leida_at ? '<span class="tag">Vista</span>' : `<button class="btn g sm" data-id="${a.id}">Marcar vista</button>`}</div>`).join('') || '<p class="s">Sin alertas para planta.</p>'}</div>
+  <div class="box"><h3>Avisos que ve el distribuidor</h3><p class="s">Para seguimiento: lo que hoy le está llegando a cada gerente y asesor.</p>
+  ${alertas.filter(a => a.destino_rol !== 'planta').slice(0, 40).map(a => `<div class="al"><div><div class="t">${esc(dn(a.distribuidor_id))} · ${a.destino_rol}</div>${esc(a.mensaje)}<br><small>${fh(a.creada_at)}</small></div></div>`).join('') || '<p class="s">Nada pendiente.</p>'}</div>`;
+  p.querySelectorAll('[data-id]').forEach(b => b.onclick = async () => { await rpc('fn_alerta_leida', { p_ids: [b.dataset.id] }); await cargar(); render(); });
+}
+
+function vEquipo(p) {
+  const opts = dists.map(d => `<option value="${esc(d.id)}">${esc(d.nombre)}</option>`).join('');
+  p.innerHTML = `<div class="box"><h3>Dar de alta un acceso</h3><p class="s">Entra con su correo, sin contraseña. Un asesor trabaja para un solo distribuidor. El gerente da de alta a sus propios asesores desde la app.</p>
+    <form id="fa"><div class="grid2"><label>Puesto<select name="rol"><option value="gerente">Gerente</option><option value="asesor">Asesor</option></select></label><label>Distribuidor<select name="dist" required>${opts}</select></label>
+    <label>Nombre<input name="nombre" required></label><label>Correo<input name="email" type="email" required></label><label>WhatsApp (con lada)<input name="whatsapp" inputmode="tel" placeholder="52618…"></label></div>
+    <div class="row" style="margin-top:12px"><button class="btn" type="submit">Dar de alta</button></div></form><div id="lm"></div></div>
+  <div class="box"><h3>Equipos</h3><div class="tw"><table><tr><th>Distribuidor</th><th>Nombre</th><th>Puesto</th><th>Correo</th><th>WhatsApp</th><th>Leads abiertos</th><th></th></tr>
+  ${equipo.map(u => `<tr style="${u.activo ? '' : 'opacity:.5'}"><td>${esc(dn(u.distribuidor_id))}</td><td><b>${esc(u.nombre)}</b></td><td><span class="tag ${u.rol === 'gerente' ? 'p' : 'b'}">${u.rol}</span></td><td>${esc(u.email)}</td><td>${esc(u.whatsapp || '—')}</td><td>${u.leads_abiertos}</td><td>${u.activo ? `<button class="btn g sm" data-baja="${u.id}">Dar de baja</button>` : 'Baja'}</td></tr>`).join('') || '<tr><td colspan="7">Aún no hay gerentes ni asesores con acceso.</td></tr>'}</table></div></div>`;
+  $('#fa').onsubmit = async e => {
+    e.preventDefault(); const f = Object.fromEntries(new FormData(e.target));
+    try {
+      await rpc(f.rol === 'gerente' ? 'fn_gerente_alta' : 'fn_asesor_alta', f.rol === 'gerente'
+        ? { p_nombre: f.nombre, p_email: f.email, p_dist: f.dist, p_whatsapp: f.whatsapp || null } : { p_nombre: f.nombre, p_email: f.email, p_dist: f.dist, p_whatsapp: f.whatsapp || null });
+      await cargar(); render();
+    } catch (er) { say($('#lm'), er.message, true); }
+  };
+  p.querySelectorAll('[data-baja]').forEach(b => b.onclick = async () => {
+    if (!confirm('¿Dar de baja? Sus leads abiertos regresan a la bandeja del gerente.')) return;
+    try { await rpc('fn_usuario_baja', { p_id: b.dataset.baja }); await cargar(); render(); } catch (er) { alert(er.message); }
+  });
+}
+
+function vConfig(p) {
+  const v = k => +(cfg.find(c => c.clave === k) || {}).valor;
+  const sw = (k, t, d) => `<div class="sw"><input type="checkbox" data-sw="${k}" ${v(k) === 1 ? 'checked' : ''}><div><b>${t}</b><br><small>${d}</small></div></div>`;
+  p.innerHTML = `<div class="box"><h3>Avisos y recordatorios</h3><p class="s">Las alertas siempre aparecen dentro del sistema. Aquí decides si se repiten y si salen por WhatsApp.</p>
+    ${sw('recordatorios_activos', 'Recordatorios de seguimiento', 'Si el lead sigue sin atenderse, el aviso se repite cada día (gerente, asesor y planta). Apagado: se avisa una sola vez.')}
+    ${sw('whatsapp_activo', 'Enviar avisos por WhatsApp', 'Pone cada alerta en la cola de envío. El envío real requiere conectar el proveedor de WhatsApp; mientras tanto solo se acumulan.')}<div id="lm"></div></div>
+  <div class="box"><h3>Tiempos de alerta</h3><p class="s">Cuánto esperamos antes de avisar. Los cambios aplican en la siguiente revisión.</p>
+    ${cfg.filter(c => !['recordatorios_activos', 'whatsapp_activo'].includes(c.clave)).map(c => `<div class="sw"><input type="number" min="1" style="width:80px" data-num="${c.clave}" value="${c.valor}"><div>${esc(c.descripcion)}</div></div>`).join('')}</div>`;
+  const save = async (k, val) => { try { await rpc('fn_lead_config_set', { p_clave: k, p_valor: val }); (cfg.find(c => c.clave === k) || {}).valor = val; say($('#lm'), 'Guardado.'); } catch (e) { say($('#lm'), e.message, true); } };
+  p.querySelectorAll('[data-sw]').forEach(i => i.onchange = () => save(i.dataset.sw, i.checked ? 1 : 0));
+  p.querySelectorAll('[data-num]').forEach(i => i.onchange = () => +i.value > 0 && save(i.dataset.num, +i.value));
+}
+if (window.FOTON_PERFIL) init();
+</script>
+</body>
+</html>

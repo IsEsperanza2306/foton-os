@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<script src="_acceso.js" data-area="interno"></script>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="theme-color" content="#0C447C">
@@ -380,7 +381,7 @@ function mkIcon(d) {
 async function load() {
   try {
     const [r1, r2, r3, r4] = await Promise.all([
-      db.from('distribuidores').select('*').order('nombre'),
+      db.from('distribuidores').select('id,nombre,plaza,grupo,contacto,segmento,status,regional_id,created_at,lat,lng,telefono,whatsapp,estado,ciudad,maps_url,region,regional_pv,regional_hdt').order('nombre'),
       db.from('bp_anual').select('distribuidor_id,unidades_bp').eq('anio', 2026),
       db.from('facturado_ytd').select('distribuidor_id,unidades_facturadas').eq('anio', 2026),
       db.from('visita_acuerdos').select('id,acuerdo,responsable,fecha_limite,visitas(distribuidor_id)').eq('completado', false)
@@ -560,5 +561,6 @@ window.addEventListener('FotonAuthReady', load);
 <script>window.NAV_ACTIVE_TAB = 'mapa';</script>
 <script src="./_nav.js?v=3"></script>
 <script>if("serviceWorker"in navigator)navigator.serviceWorker.register("/sw.js");</script>
+<script src="_sistema.js" defer></script>
 </body>
 </html>

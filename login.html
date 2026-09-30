@@ -231,19 +231,42 @@
       text-align: center;
       line-height: 1.5;
     }
+
+    /* ── Acceso Foton OS · estilo Apple: degradado, grid de diamantes y logo ── */
+    body{font-family:'Inter',-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;
+      background:radial-gradient(900px 480px at 78% -8%,rgba(79,179,255,.26),transparent 60%),radial-gradient(760px 420px at 6% 112%,rgba(19,99,214,.42),transparent 60%),linear-gradient(160deg,#001236 0%,#001A4D 45%,#0A2F6E 100%)}
+    body::before{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='96' viewBox='0 0 72 96'%3E%3Cpath d='M0 0 L36 48 L72 0 M0 48 L36 96 L72 48' fill='none' stroke='%23ffffff' stroke-opacity='.08' stroke-width='1.2'/%3E%3C/svg%3E");background-size:72px 96px;
+      -webkit-mask-image:radial-gradient(ellipse at 50% 40%,#000 25%,transparent 78%);mask-image:radial-gradient(ellipse at 50% 40%,#000 25%,transparent 78%)}
+    .card{max-width:400px;border-radius:28px;padding:38px 34px 30px;background:rgba(255,255,255,.96);backdrop-filter:saturate(1.6) blur(20px);-webkit-backdrop-filter:saturate(1.6) blur(20px);
+      border:1px solid rgba(255,255,255,.6);box-shadow:0 40px 90px rgba(0,10,40,.55),0 2px 0 rgba(255,255,255,.5) inset}
+    .brand{margin-bottom:26px}
+    .logo-tile{width:88px;height:88px;border-radius:24px;display:grid;place-items:center;margin:0 auto 18px;position:relative;overflow:hidden;
+      background:radial-gradient(120px 80px at 70% 0%,rgba(79,179,255,.45),transparent 60%),linear-gradient(160deg,#001A4D,#0A2F6E);box-shadow:0 14px 34px rgba(0,26,77,.4),0 1px 0 rgba(255,255,255,.25) inset}
+    .logo-tile img{width:62px;height:62px;object-fit:contain}
+    .brand-title{font-family:'Inter Tight','Inter',sans-serif;font-size:26px;font-weight:800;letter-spacing:-.02em;color:#0B1B3A}
+    .brand-title b{font-weight:800;color:#1363D6;letter-spacing:.14em;font-size:.72em;margin-left:6px}
+    .brand-sub{font-size:14px;color:#6E6E73;margin-top:6px}
+    .btn-google{border-radius:14px;padding:13px 16px;border:1px solid #E5E5EA;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+    .btn-google:hover:not(:disabled){border-color:#1363D6;background:#F5F9FF;box-shadow:0 6px 18px rgba(19,99,214,.16);transform:translateY(-1px)}
+    .field input{border-radius:14px;border:1px solid #E5E5EA;background:#F5F5F7;padding:12px 14px}
+    .field input:focus{border-color:#1363D6;background:#fff;box-shadow:0 0 0 4px rgba(19,99,214,.14)}
+    .btn-primary{border-radius:14px;padding:14px;background:linear-gradient(180deg,#2F86F7 0%,#1363D6 100%);box-shadow:0 8px 20px rgba(19,99,214,.35),0 1px 0 rgba(255,255,255,.3) inset;transition:transform .15s,box-shadow .15s,opacity .15s}
+    .btn-primary:hover:not(:disabled){background:linear-gradient(180deg,#3C90FA 0%,#1A6DE6 100%);transform:translateY(-1px);box-shadow:0 12px 26px rgba(19,99,214,.42),0 1px 0 rgba(255,255,255,.3) inset}
+    .msg{border-radius:14px}
+    .toggle-link button{color:#1363D6;font-weight:600}
+    @media (prefers-color-scheme:dark){.card{background:rgba(28,28,30,.88);border-color:rgba(255,255,255,.12)}
+      .brand-title{color:#F5F5F7}.brand-title b{color:#4C8DF0}.brand-sub,.field label{color:#98989D}
+      .btn-google{background:#2C2C2E;border-color:#3A3A3C;color:#F5F5F7}.btn-google:hover:not(:disabled){background:#343436}
+      .field input{background:#1C1C1E;border-color:#3A3A3C;color:#F5F5F7}.field input:focus{background:#000}.divider::before,.divider::after{background:#3A3A3C}}
   </style>
 </head>
 <body>
 
 <div class="card">
   <div class="brand">
-    <div style="display:flex;justify-content:center;margin-bottom:20px">
-      <div style="background:#0C447C;border-radius:20px;padding:14px;box-shadow:0 8px 32px rgba(4,44,83,0.35);display:flex;align-items:center;justify-content:center;">
-        <img src="./assets/logo-nombre.png" alt="Foton" style="height:100px;width:100px;object-fit:contain;">
-      </div>
-    </div>
-    <div class="brand-title">GR Centro-Sur</div>
-    <div class="brand-sub">Plataforma de gestión de red</div>
+    <div class="logo-tile"><img src="./assets/logo-nombre.png" alt="Foton"></div>
+    <div class="brand-title">Foton<b>OS</b></div>
+    <div class="brand-sub">Un solo acceso para toda la plataforma</div>
   </div>
 
   <!-- Google OAuth -->
@@ -283,6 +306,10 @@
       <input type="email" id="inp-magic-email" placeholder="tu@correo.com" autocomplete="email">
     </div>
     <button class="btn-primary" id="btn-magic" onclick="loginMagic()">Enviar link de acceso</button>
+    <div id="codigo-box" class="field" style="display:none;margin-top:14px">
+      <input id="inp-codigo" inputmode="numeric" maxlength="8" placeholder="Código de 6 dígitos" autocomplete="one-time-code" style="width:100%;margin-bottom:10px">
+      <button class="btn-primary" onclick="verificarCodigo()">Entrar con el código</button>
+    </div>
     <div class="magic-note">Recibirás un enlace en tu correo para ingresar sin contraseña.</div>
     <span class="toggle-link">
       <button onclick="showPassword()">Ingresar con contraseña</button>
@@ -301,17 +328,29 @@ const db = supabase.createClient(
   window.FOTON_CONFIG.SUPABASE_ANON_KEY
 );
 
-// Handle OAuth redirect callback (runs on page load after Google redirects back)
-db.auth.onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_IN' && session) {
-    location.replace('./mapa.html');
-  }
-});
-
-// Also check existing session on load
-db.auth.getSession().then(({ data: { session } }) => {
-  if (session) location.replace('./mapa.html');
-});
+// Destino después de entrar: la página que se pidió (?next=) o el portal que le toca al rol
+let YA = false;
+async function irAlPortal() {
+  if (YA) return; YA = true;
+  const next = new URLSearchParams(location.search).get('next');
+  if (next && !/^[a-z]+:|^\/\//i.test(next) && !next.includes('..')) { location.replace(new URL(next, location.href).href); return; }
+  let destino = './index.html';
+  try {
+    const { data } = await db.rpc('fn_mi_perfil');
+    if (data) {
+      const master = ['israel.esperanza.h@gmail.com', 'israel.esperanza@ldrsolutions.com.mx'].includes((data.email || '').toLowerCase());
+      destino = master || ['regional', 'admin', 'direccion', 'director'].includes(data.rol) ? './interno/' : data.rol === 'gerente' ? './distribuidores/' : './asesores/';
+    } else {
+      await db.auth.signOut(); YA = false;
+      showMsg('Tu correo no está dado de alta en Foton OS. Pide a Foton México o a tu gerente que te den de alta.', 'error');
+      return;
+    }
+  } catch (e) { /* si falla, al inicio */ }
+  location.replace(destino);
+}
+db.auth.onAuthStateChange((event, session) => { if (event === 'SIGNED_IN' && session) irAlPortal(); });
+db.auth.getSession().then(({ data: { session } }) => { if (session) irAlPortal(); });
+const RETORNO = () => location.origin + location.pathname + location.search;
 
 function showMsg(text, type) {
   const el = document.getElementById('msg');
@@ -335,7 +374,7 @@ async function loginGoogle() {
   const { error } = await db.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: new URL('mapa.html', window.location.href).href,
+      redirectTo: RETORNO(),
       queryParams: { prompt: 'select_account' }
     }
   });
@@ -371,7 +410,7 @@ async function loginPassword() {
     return;
   }
 
-  if (data.session) location.replace('./mapa.html');
+  if (data.session) irAlPortal();
 }
 
 async function loginMagic() {
@@ -390,7 +429,7 @@ async function loginMagic() {
 
   const { error } = await db.auth.signInWithOtp({
     email,
-    options: { emailRedirectTo: new URL('mapa.html', window.location.href).href }
+    options: { emailRedirectTo: RETORNO(), shouldCreateUser: true }
   });
 
   btn.disabled = false;
@@ -401,14 +440,23 @@ async function loginMagic() {
     return;
   }
 
-  showMsg('¡Enlace enviado! Revisa tu correo (también la carpeta de spam).', 'success');
+  showMsg('¡Listo! Revisa tu correo: entra con el enlace o escribe aquí el código de 6 dígitos.', 'success');
+  document.getElementById('codigo-box').style.display = 'block';
+  window.CORREO_CODIGO = email;
+}
+
+async function verificarCodigo() {
+  const token = document.getElementById('inp-codigo').value.trim();
+  if (!token || !window.CORREO_CODIGO) return;
+  const { error } = await db.auth.verifyOtp({ email: window.CORREO_CODIGO, token, type: 'email' });
+  if (error) showMsg('Código incorrecto o vencido. Pide uno nuevo.', 'error');
 }
 
 // Handle email magic link token in URL (when user clicks link from email)
 const hashParams = new URLSearchParams(window.location.hash.replace('#', '?'));
 if (hashParams.get('access_token') || hashParams.get('type') === 'magiclink') {
   db.auth.getSession().then(({ data: { session } }) => {
-    if (session) location.replace('./mapa.html');
+    if (session) irAlPortal();
   });
 }
 

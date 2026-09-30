@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<script src="_acceso.js" data-area="asesor" data-pin-ok></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Mi Panel · Vendedor Especialista Foton</title>
@@ -125,11 +126,12 @@ async function validarPin(){
   const err=document.getElementById('pin-error'); err.style.display='none';
   if(pin.length!==6){ err.textContent='El PIN debe tener 6 dígitos.'; err.style.display='block'; return; }
   try{
-    const dist=await get('/distribuidores?select=id,nombre,plaza&pin=eq.'+pin);
+    const vp=await fetch(SB_URL+'/rpc/fn_validar_pin',{method:'POST',headers:Object.assign({'Content-Type':'application/json'},H),body:JSON.stringify({p_pin:pin})}).then(r=>r.json()); const dist=vp&&vp.id?[vp]:[];
     if(!dist||dist.length===0){ err.textContent='PIN no reconocido. Verifica con tu gerente regional.'; err.style.display='block'; return; }
     const d=dist[0];
     const ve=await get('/vendedores_especialistas?distribuidor_id=eq.'+d.id+'&activo=eq.true&select=*');
     const pend=await get('/back_order?distribuidor_id=eq.'+d.id+'&resuelto=eq.false&select=id,fecha_solicitud,modelo');
+    try{ sessionStorage.setItem('foton_pin',pin); }catch(e){}
     renderPanel(d, ve[0]||null, pend);
   }catch(e){ err.textContent='Error de conexión. Intenta de nuevo.'; err.style.display='block'; }
 }
@@ -145,7 +147,7 @@ function renderPanel(dist, ve, pend){
         <div class="welcome"><div class="name">${dist.nombre}</div><div class="plaza">${dist.plaza||''}</div></div>
         <p class="sub" style="margin-top:12px">Todavía no hay un vendedor especialista designado para este distribuidor. Pídele a tu gerente regional o a tu distribuidor que te registre en el reporte de campo.</p>
       </div>
-      <a class="btnlink btn-primary" href="/foton-os/reporte-campo.html">Ir a Reporte de Campo →</a>
+      <a class="btnlink btn-primary" href="reporte-campo.html">Ir a Reporte de Campo →</a>
     `;
     return;
   }
@@ -205,12 +207,19 @@ function renderPanel(dist, ve, pend){
       ${pendOrdenado.length>5?`<p class="sub" style="margin:8px 0 0">+${pendOrdenado.length-5} más — repórtalos en Día 1.</p>`:''}
     </div>` : ''}
 
-    <a class="btnlink btn-primary" href="/foton-os/reporte-campo.html">Reportar Día 1 / Día 2 →</a>
+    <a class="btnlink btn-primary" href="reporte-campo.html">Reportar Día 1 / Día 2 →</a>
   `;
 }
 
 document.getElementById('pin').addEventListener('keypress',e=>{ if(e.key==='Enter') validarPin(); });
+// PIN compartido: si ya entraste en otra herramienta de Foton OS en esta pestaña, no se vuelve a pedir
+(function(){ let p=null; try{ p=sessionStorage.getItem('foton_pin'); }catch(e){}
+  // La app Foton Dealer abre esta herramienta con el PIN en el hash (#pin=123456); se quita de la barra de direcciones
+  const h=(location.hash.match(/[#&]pin=(\d{6})/)||[])[1]; if(h){ p=h; history.replaceState(null,'',location.pathname+location.search); }
+  if(p && /^\d{6}$/.test(p)){ document.getElementById('pin').value=p; validarPin(); } })();
+
 document.getElementById('logoimg').src = LOGO_DATAURI;
 </script>
+<script src="_sistema.js" defer></script>
 </body>
 </html>

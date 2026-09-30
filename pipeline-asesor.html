@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<script src="_acceso.js" data-area="asesor" data-pin-ok></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Pipeline · Foton MDT/LDT</title>
@@ -266,6 +267,7 @@ async function validarPin(){
   const { data, error } = await sb.rpc('fn_validar_pin', { p_pin: pin });
   if(error || !data){ document.getElementById('pin-err').textContent='PIN no reconocido.'; document.getElementById('pin-err').style.display='block'; return; }
   PIN = pin; DIST = data;
+  try{ sessionStorage.setItem('foton_pin', pin); }catch(e){}
   document.getElementById('topSub').textContent = data.nombre + ' · ' + (data.plaza||'');
   await cargarOps();
   show('s-lista');
@@ -465,6 +467,13 @@ function goLista(){
 }
 
 document.getElementById('pin').addEventListener('keypress',e=>{ if(e.key==='Enter') validarPin(); });
+// PIN compartido: si ya entraste en otra herramienta de Foton OS en esta pestaña, no se vuelve a pedir
+(function(){ let p=null; try{ p=sessionStorage.getItem('foton_pin'); }catch(e){}
+  // La app Foton Dealer abre esta herramienta con el PIN en el hash (#pin=123456); se quita de la barra de direcciones
+  const h=(location.hash.match(/[#&]pin=(\d{6})/)||[])[1]; if(h){ p=h; history.replaceState(null,'',location.pathname+location.search); }
+  if(p && /^\d{6}$/.test(p)){ document.getElementById('pin').value=p; validarPin(); } })();
+
 </script>
+<script src="_sistema.js" defer></script>
 </body>
 </html>
