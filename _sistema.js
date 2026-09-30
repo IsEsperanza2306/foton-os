@@ -114,6 +114,8 @@
     // ── Interno
     { id: 'panel', area: 'interno', group: 'Operación diaria', icon: 'traffic', title: 'Panel Operativo',
       desc: 'Cobranza, back order y entregas por región. El tablero que abres primero cada día.', path: 'panel.html', access: 'open', hero: true },
+    { id: 'leads', area: 'interno', group: 'Operación diaria', icon: 'funnel', title: 'Control de Leads',
+      desc: 'Carga leads, asígnalos a distribuidores y vigila alertas de seguimiento.', path: 'control-leads/', access: 'login' },
     { id: 'inventario', area: 'interno', group: 'Operación diaria', icon: 'archive', title: 'Inventario',
       desc: 'Unidades por modelo y ubicación, llegadas y pendientes.', path: 'inventario/', access: 'invpin' },
     { id: 'seguimiento', area: 'interno', group: 'Operación diaria', icon: 'user', title: 'Seguimiento de Asesores',
