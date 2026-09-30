@@ -231,19 +231,42 @@
       text-align: center;
       line-height: 1.5;
     }
+
+    /* ── Acceso Foton OS · estilo Apple: degradado, grid de diamantes y logo ── */
+    body{font-family:'Inter',-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased;letter-spacing:-.01em;
+      background:radial-gradient(900px 480px at 78% -8%,rgba(79,179,255,.26),transparent 60%),radial-gradient(760px 420px at 6% 112%,rgba(19,99,214,.42),transparent 60%),linear-gradient(160deg,#001236 0%,#001A4D 45%,#0A2F6E 100%)}
+    body::before{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='96' viewBox='0 0 72 96'%3E%3Cpath d='M0 0 L36 48 L72 0 M0 48 L36 96 L72 48' fill='none' stroke='%23ffffff' stroke-opacity='.08' stroke-width='1.2'/%3E%3C/svg%3E");background-size:72px 96px;
+      -webkit-mask-image:radial-gradient(ellipse at 50% 40%,#000 25%,transparent 78%);mask-image:radial-gradient(ellipse at 50% 40%,#000 25%,transparent 78%)}
+    .card{max-width:400px;border-radius:28px;padding:38px 34px 30px;background:rgba(255,255,255,.96);backdrop-filter:saturate(1.6) blur(20px);-webkit-backdrop-filter:saturate(1.6) blur(20px);
+      border:1px solid rgba(255,255,255,.6);box-shadow:0 40px 90px rgba(0,10,40,.55),0 2px 0 rgba(255,255,255,.5) inset}
+    .brand{margin-bottom:26px}
+    .logo-tile{width:88px;height:88px;border-radius:24px;display:grid;place-items:center;margin:0 auto 18px;position:relative;overflow:hidden;
+      background:radial-gradient(120px 80px at 70% 0%,rgba(79,179,255,.45),transparent 60%),linear-gradient(160deg,#001A4D,#0A2F6E);box-shadow:0 14px 34px rgba(0,26,77,.4),0 1px 0 rgba(255,255,255,.25) inset}
+    .logo-tile img{width:62px;height:62px;object-fit:contain}
+    .brand-title{font-family:'Inter Tight','Inter',sans-serif;font-size:26px;font-weight:800;letter-spacing:-.02em;color:#0B1B3A}
+    .brand-title b{font-weight:800;color:#1363D6;letter-spacing:.14em;font-size:.72em;margin-left:6px}
+    .brand-sub{font-size:14px;color:#6E6E73;margin-top:6px}
+    .btn-google{border-radius:14px;padding:13px 16px;border:1px solid #E5E5EA;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+    .btn-google:hover:not(:disabled){border-color:#1363D6;background:#F5F9FF;box-shadow:0 6px 18px rgba(19,99,214,.16);transform:translateY(-1px)}
+    .field input{border-radius:14px;border:1px solid #E5E5EA;background:#F5F5F7;padding:12px 14px}
+    .field input:focus{border-color:#1363D6;background:#fff;box-shadow:0 0 0 4px rgba(19,99,214,.14)}
+    .btn-primary{border-radius:14px;padding:14px;background:linear-gradient(180deg,#2F86F7 0%,#1363D6 100%);box-shadow:0 8px 20px rgba(19,99,214,.35),0 1px 0 rgba(255,255,255,.3) inset;transition:transform .15s,box-shadow .15s,opacity .15s}
+    .btn-primary:hover:not(:disabled){background:linear-gradient(180deg,#3C90FA 0%,#1A6DE6 100%);transform:translateY(-1px);box-shadow:0 12px 26px rgba(19,99,214,.42),0 1px 0 rgba(255,255,255,.3) inset}
+    .msg{border-radius:14px}
+    .toggle-link button{color:#1363D6;font-weight:600}
+    @media (prefers-color-scheme:dark){.card{background:rgba(28,28,30,.88);border-color:rgba(255,255,255,.12)}
+      .brand-title{color:#F5F5F7}.brand-title b{color:#4C8DF0}.brand-sub,.field label{color:#98989D}
+      .btn-google{background:#2C2C2E;border-color:#3A3A3C;color:#F5F5F7}.btn-google:hover:not(:disabled){background:#343436}
+      .field input{background:#1C1C1E;border-color:#3A3A3C;color:#F5F5F7}.field input:focus{background:#000}.divider::before,.divider::after{background:#3A3A3C}}
   </style>
 </head>
 <body>
 
 <div class="card">
   <div class="brand">
-    <div style="display:flex;justify-content:center;margin-bottom:20px">
-      <div style="background:#0C447C;border-radius:20px;padding:14px;box-shadow:0 8px 32px rgba(4,44,83,0.35);display:flex;align-items:center;justify-content:center;">
-        <img src="./assets/logo-nombre.png" alt="Foton" style="height:100px;width:100px;object-fit:contain;">
-      </div>
-    </div>
-    <div class="brand-title">GR Centro-Sur</div>
-    <div class="brand-sub">Plataforma de gestión de red</div>
+    <div class="logo-tile"><img src="./assets/logo-nombre.png" alt="Foton"></div>
+    <div class="brand-title">Foton<b>OS</b></div>
+    <div class="brand-sub">Un solo acceso para toda la plataforma</div>
   </div>
 
   <!-- Google OAuth -->
