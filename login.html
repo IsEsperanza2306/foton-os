@@ -359,6 +359,15 @@ function showMsg(text, type) {
   el.style.display = 'block';
 }
 
+// Si Google o el correo regresan con un error, se muestra el motivo real en vez de dejar el login en blanco
+(function () {
+  const p = new URLSearchParams(location.search), h = new URLSearchParams(location.hash.replace(/^#/, ''));
+  const desc = p.get('error_description') || h.get('error_description'), cod = p.get('error_code') || h.get('error_code') || p.get('error') || h.get('error');
+  if (!desc && !cod) return;
+  showMsg('No se pudo iniciar sesión: ' + (desc || cod).replace(/\+/g, ' ') + (cod && desc ? ' (' + cod + ')' : ''), 'error');
+  try { history.replaceState(null, '', location.pathname + (p.get('next') ? '?next=' + encodeURIComponent(p.get('next')) : '')); } catch (e) { /* sin historial */ }
+})();
+
 function setLoading(btnId, loading) {
   const btn = document.getElementById(btnId);
   btn.disabled = loading;
