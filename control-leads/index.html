@@ -84,7 +84,7 @@ function loginView() {
   $('#go').onclick = async () => {
     const email = $('#em').value.trim().toLowerCase(); if (!email) return;
     $('#go').disabled = true;
-    const { error } = await db.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+    const { error } = await db.auth.signInWithOtp({ email, options: { shouldCreateUser: true, emailRedirectTo: /^https?:/.test(location.href) ? location.origin + location.pathname : undefined } });
     $('#go').disabled = false;
     if (error) return say($('#lm'), error.message, true);
     app.innerHTML = `<div class="box login"><h3>Revisa tu correo</h3><p class="s">Escribe el código que enviamos a ${esc(email)}.</p>

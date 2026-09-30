@@ -335,7 +335,7 @@ async function loginGoogle() {
   const { error } = await db.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: window.location.origin + '/mapa',
+      redirectTo: new URL('mapa.html', window.location.href).href,
       queryParams: { prompt: 'select_account' }
     }
   });
@@ -390,7 +390,7 @@ async function loginMagic() {
 
   const { error } = await db.auth.signInWithOtp({
     email,
-    options: { emailRedirectTo: window.location.origin + '/mapa' }
+    options: { emailRedirectTo: new URL('mapa.html', window.location.href).href }
   });
 
   btn.disabled = false;
