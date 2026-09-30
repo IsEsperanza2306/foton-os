@@ -34,6 +34,7 @@
   const NOMBRE = { interno: 'Foton Interno', dealer: 'Foton Dealer', asesor: 'Foton Asesor' };
   const ROL = { regional: 'Regional', admin: 'Administrador', direccion: 'Dirección', director: 'Director', gerente: 'Gerente', asesor: 'Asesor' };
 
+  const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const url = p => new URL(p, BASE).href;
   const esMaster = email => MASTER.includes(String(email || '').toLowerCase());
   const puede = (perfil, area) => !!perfil && (esMaster(perfil.email) || (ACCESO[area] || []).includes(perfil.rol));
@@ -88,7 +89,7 @@
   async function salir() {
     const db = await cliente();
     try { await db.auth.signOut(); } catch (e) { /* ya salió */ }
-    try { ['foton_pin', 'foton_dealer', 'foton-inv-pin'].forEach(k => sessionStorage.removeItem(k)); localStorage.removeItem('foton_dist_pin'); } catch (e) { /* sin storage */ }
+    try { ['foton_pin', 'foton_dealer', 'foton-inv-pin', 'foton_via_email', 'foton_dist_sel'].forEach(k => sessionStorage.removeItem(k)); localStorage.removeItem('foton_dist_pin'); } catch (e) { /* sin storage */ }
     location.replace(url('login.html'));
   }
 
@@ -102,12 +103,47 @@
     <div hidden style="position:absolute;right:0;bottom:44px;min-width:210px;background:#fff;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.2);padding:8px">
       <div style="padding:8px 10px;color:#6E6E73;font-weight:500">${perfil.email}<br><b style="color:#1D1D1F">${esMaster(perfil.email) ? 'Master' : ROL[perfil.rol] || perfil.rol}</b>${perfil.distribuidor ? ' · ' + perfil.distribuidor : ''}</div>
       ${portales.map(a => `<a href="${url(HOME[a])}" style="display:block;padding:8px 10px;border-radius:10px;color:#1D1D1F;text-decoration:none">${NOMBRE[a]}</a>`).join('')}
+      ${(AREA === 'dealer' || AREA === 'asesor') && !perfil.distribuidor_id ? '<a href="#" data-cambiar style="display:block;padding:8px 10px;border-radius:10px;color:#1D1D1F;text-decoration:none">Cambiar distribuidor</a>' : ''}
       <a href="#" data-out style="display:block;padding:8px 10px;border-radius:10px;color:#C25E00;text-decoration:none">Cerrar sesión</a></div>`;
     const [b, m] = d.children;
     b.onclick = () => { m.hidden = !m.hidden; };
+    const cam = d.querySelector('[data-cambiar]'); if (cam) cam.onclick = e => { e.preventDefault(); PIN_KEYS.forEach(ss.del); location.reload(); };
     d.querySelector('[data-out]').onclick = async e => { e.preventDefault(); await salir(); };
     const poner = () => document.body.appendChild(d);
     document.body ? poner() : document.addEventListener('DOMContentLoaded', poner);
+  }
+
+  // Dealer y Asesor: con sesión de correo se entra al distribuidor sin teclear PIN.
+  // La base entrega el PIN de tu distribuidor (fn_pin_acceso); planta y master eligen cuál ver.
+  const PIN_KEYS = ['foton_pin', 'foton_dealer', 'foton_via_email', 'foton_dist_sel'];
+  const ss = { get: k => { try { return sessionStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { sessionStorage.setItem(k, v); } catch (e) { /* sin storage */ } }, del: k => { try { sessionStorage.removeItem(k); } catch (e) { /* sin storage */ } } };
+
+  function elegirDistribuidor(db) {
+    return new Promise(async ok => {
+      const { data } = await db.from('distribuidores').select('id,nombre').order('nombre');
+      document.documentElement.style.visibility = '';
+      const d = document.createElement('div');
+      d.style.cssText = 'position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:24px;background:#F5F5F7;font:15px/1.5 Inter,-apple-system,system-ui,sans-serif;color:#1D1D1F';
+      d.innerHTML = `<div style="max-width:440px;width:100%;background:#fff;border-radius:22px;padding:28px;box-shadow:0 6px 28px rgba(0,0,0,.08)"><div style="font:800 22px Archivo,Inter,sans-serif;letter-spacing:-.02em;margin-bottom:6px">¿Qué distribuidor quieres ver?</div><p style="margin:0 0 16px;color:#6E6E73">Entras como ${esc(window.FOTON_PERFIL.nombre)}. Elige el distribuidor para abrir su vista.</p><select style="width:100%;padding:11px 12px;border-radius:12px;border:1px solid #D2D2D7;font:inherit;margin-bottom:14px">${(data || []).map(x => `<option value="${esc(x.id)}">${esc(x.nombre)}</option>`).join('')}</select><button style="border:0;border-radius:12px;padding:11px 18px;background:#1363D6;color:#fff;font:600 14px inherit;cursor:pointer">Abrir</button></div>`;
+      document.body.appendChild(d);
+      d.querySelector('button').onclick = () => { const v = d.querySelector('select').value; d.remove(); ok(v || null); };
+    });
+  }
+
+  // true = la página ya puede seguir; false = se recarga o se mostró un aviso
+  async function puente(perfil) {
+    const db = await cliente();
+    let dist = perfil.distribuidor_id;
+    if (!dist) {
+      dist = ss.get('foton_dist_sel');
+      if (!dist) { dist = await elegirDistribuidor(db); if (!dist) return false; ss.set('foton_dist_sel', dist); }
+    }
+    if (ss.get('foton_via_email') === dist && ss.get('foton_pin')) return true;
+    const { data, error } = await db.rpc('fn_pin_acceso', { p_dist: dist });
+    if (error || !data) { pantalla('No se pudo abrir tu distribuidor', 'Tu cuenta no tiene un distribuidor con acceso asignado. Avisa a Foton México.', [{ t: 'Cerrar sesión', href: '#', salir: true }]); return false; }
+    ss.set('foton_pin', data); ss.set('foton_via_email', dist); ss.del('foton_dealer');
+    location.reload();
+    return false;
   }
 
   async function guardia(area) {
@@ -122,6 +158,7 @@
       if (!puede(perfil, area)) return pantalla('Esta sección no es para tu perfil', `${NOMBRE[area]} es para ${area === 'interno' ? 'el equipo de Foton México' : area === 'dealer' ? 'gerentes de distribuidor' : 'asesores'}. Tu perfil es ${ROL[perfil.rol] || perfil.rol}.`, [{ t: 'Ir a mi portal', href: url(HOME[portalDe(perfil)]) }, { t: 'Cerrar sesión', href: '#', salir: true }]);
       const rolesPag = HERRAMIENTAS[paginaActual()];
       if (area === 'interno' && rolesPag && !esMaster(perfil.email) && !rolesPag.includes(perfil.rol)) return pantalla('Esta herramienta no es para tu rol', `Tu perfil (${ROL[perfil.rol] || perfil.rol}) no tiene esta herramienta en Foton Interno.`, [{ t: 'Ir a Foton Interno', href: url(HOME.interno) }, { t: 'Cerrar sesión', href: '#', salir: true }]);
+      if ((area === 'dealer' || area === 'asesor') && !(await puente(perfil))) return;
       document.documentElement.style.visibility = '';
       chip(perfil);
       window.dispatchEvent(new CustomEvent('FotonAccesoListo', { detail: { perfil } }));
@@ -132,5 +169,6 @@
   }
 
   window.FotonAcceso = { HERRAMIENTAS, veHerramienta, ACCESO, HOME, NOMBRE, ROL, MASTER, url, esMaster, puede, portalDe, portalesDe, cliente, perfilActual, salir, chip };
-  if (AREA) guardia(AREA);
+  const pinHeredado = () => /[#&]pin=\d{6}/.test(location.hash) || (!!ss.get('foton_pin') && !ss.get('foton_via_email'));
+  if (AREA && !(SCRIPT.hasAttribute('data-pin-ok') && pinHeredado())) guardia(AREA);
 })();

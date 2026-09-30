@@ -389,10 +389,11 @@ const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsI
 
 async function supaFetch(path, opts={}) {
   const res = await fetch(SUPA_URL + path, {
-    headers: {'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation', ...opts.headers},
-    ...opts
+    ...opts,
+    headers: {'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation', ...opts.headers}
   });
-  return res.json();
+  const txt = await res.text();
+  return txt ? JSON.parse(txt) : null;
 }
 
 function genFolio() {
@@ -649,7 +650,7 @@ async function guardarResultado(pct,pass,tot){
     if(examRes&&examRes[0]&&examRes[0].id){
       const examId=examRes[0].id;
       const detalleData=detalle.map(d=>({examen_id:examId,...d}));
-      if(detalleData.length)await supaFetch('/rest/v1/examenes_detalle',{method:'POST',body:JSON.stringify(detalleData)});
+      if(detalleData.length)await supaFetch('/rest/v1/examenes_detalle',{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify(detalleData)});
     }
     showToast('✓ Resultados guardados',2000);
   }catch(e){showToast('⚠ Sin conexión — resultados locales',3000);console.error(e)}

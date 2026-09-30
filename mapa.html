@@ -381,7 +381,7 @@ function mkIcon(d) {
 async function load() {
   try {
     const [r1, r2, r3, r4] = await Promise.all([
-      db.from('distribuidores').select('*').order('nombre'),
+      db.from('distribuidores').select('id,nombre,plaza,grupo,contacto,segmento,status,regional_id,created_at,lat,lng,telefono,whatsapp,estado,ciudad,maps_url,region,regional_pv,regional_hdt').order('nombre'),
       db.from('bp_anual').select('distribuidor_id,unidades_bp').eq('anio', 2026),
       db.from('facturado_ytd').select('distribuidor_id,unidades_facturadas').eq('anio', 2026),
       db.from('visita_acuerdos').select('id,acuerdo,responsable,fecha_limite,visitas(distribuidor_id)').eq('completado', false)

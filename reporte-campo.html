@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<script src="_acceso.js" data-area="asesor" data-pin-ok></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Reporte de Campo · Foton MDT/LDT</title>
@@ -153,7 +154,7 @@ async function validarPin(){
   const err=document.getElementById('pin-error'); err.style.display='none';
   if(pin.length!==6){ err.textContent='El PIN debe tener 6 dígitos.'; err.style.display='block'; return; }
   try{
-    const data=await get('/distribuidores?select=id,nombre,plaza&pin=eq.'+pin);
+    const vp=await fetch(RPC_URL+'/fn_validar_pin',{method:'POST',headers:H,body:JSON.stringify({p_pin:pin})}).then(r=>r.json()); const data=vp&&vp.id?[vp]:[];
     if(!data || data.length===0){ err.textContent='PIN no reconocido. Verifica con tu gerente regional.'; err.style.display='block'; return; }
     pinActual=pin; distActual=data[0];
     try{ sessionStorage.setItem('foton_pin',pin); }catch(e){}

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<script src="_acceso.js" data-area="dealer"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#00194D">
@@ -503,7 +504,7 @@ async function entrar(pin,silencioso){
   const errEl=document.getElementById('pin-err'),btn=document.getElementById('pin-btn');
   btn.disabled=true;btn.textContent='Verificando…';
   try{
-    const arr=await q('/distribuidores?pin=eq.'+pin+'&select=id,nombre,region');
+    const vj=await fetch(SB+'/rpc/fn_validar_pin',{method:'POST',headers:Object.assign({'Content-Type':'application/json'},H),body:JSON.stringify({p_pin:pin})}).then(r=>r.json());const arr=vj&&vj.id?[vj]:[];
     if(!Array.isArray(arr)||!arr.length){
       if(!silencioso){errEl.textContent='PIN incorrecto. Inténtalo de nuevo.';void errEl.offsetWidth;errEl.classList.add('shake')}
       sessionStorage.removeItem('foton_dealer');sessionStorage.removeItem('foton_pin');return;

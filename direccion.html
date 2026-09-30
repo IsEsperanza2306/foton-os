@@ -985,7 +985,7 @@ async function descargarExcelVisita(visitaId, distribuidorId) {
     const [{ data: visita }, { data: acuerdos }, { data: dist }] = await Promise.all([
       db.from('visitas').select('*').eq('id', visitaId).single(),
       db.from('visita_acuerdos').select('*').eq('visita_id', visitaId).order('numero'),
-      db.from('distribuidores').select('*').eq('id', distribuidorId).single()
+      db.from('distribuidores').select('id,nombre,plaza,grupo,contacto,segmento,status,regional_id,created_at,lat,lng,telefono,whatsapp,estado,ciudad,maps_url,region,regional_pv,regional_hdt').eq('id', distribuidorId).single()
     ]);
 
     const resp = await fetch('./assets/templates/visita-distribuidor.xlsb');
