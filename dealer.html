@@ -658,7 +658,7 @@ async function cargarDatos(id){
 // INIT: si la sesión sigue abierta se restaura con el PIN guardado; si no, solo se ve el acceso
 async function init(){
   const pin=sessionStorage.getItem('foton_pin');
-  if(pin&&sessionStorage.getItem('foton_dealer')) await entrar(pin,true);
+  if(pin) await entrar(pin,true);
   else document.getElementById('pin-input').focus();
 }
 
@@ -859,5 +859,6 @@ function toast(msg){
 
 init();
 </script>
+<script src="_sistema.js" defer></script>
 </body>
 </html>

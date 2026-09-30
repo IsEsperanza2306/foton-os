@@ -130,6 +130,7 @@ async function validarPin(){
     const d=dist[0];
     const ve=await get('/vendedores_especialistas?distribuidor_id=eq.'+d.id+'&activo=eq.true&select=*');
     const pend=await get('/back_order?distribuidor_id=eq.'+d.id+'&resuelto=eq.false&select=id,fecha_solicitud,modelo');
+    try{ sessionStorage.setItem('foton_pin',pin); }catch(e){}
     renderPanel(d, ve[0]||null, pend);
   }catch(e){ err.textContent='Error de conexión. Intenta de nuevo.'; err.style.display='block'; }
 }
@@ -145,7 +146,7 @@ function renderPanel(dist, ve, pend){
         <div class="welcome"><div class="name">${dist.nombre}</div><div class="plaza">${dist.plaza||''}</div></div>
         <p class="sub" style="margin-top:12px">Todavía no hay un vendedor especialista designado para este distribuidor. Pídele a tu gerente regional o a tu distribuidor que te registre en el reporte de campo.</p>
       </div>
-      <a class="btnlink btn-primary" href="/foton-os/reporte-campo.html">Ir a Reporte de Campo →</a>
+      <a class="btnlink btn-primary" href="reporte-campo.html">Ir a Reporte de Campo →</a>
     `;
     return;
   }
@@ -205,12 +206,17 @@ function renderPanel(dist, ve, pend){
       ${pendOrdenado.length>5?`<p class="sub" style="margin:8px 0 0">+${pendOrdenado.length-5} más — repórtalos en Día 1.</p>`:''}
     </div>` : ''}
 
-    <a class="btnlink btn-primary" href="/foton-os/reporte-campo.html">Reportar Día 1 / Día 2 →</a>
+    <a class="btnlink btn-primary" href="reporte-campo.html">Reportar Día 1 / Día 2 →</a>
   `;
 }
 
 document.getElementById('pin').addEventListener('keypress',e=>{ if(e.key==='Enter') validarPin(); });
+// PIN compartido: si ya entraste en otra herramienta de Foton OS en esta pestaña, no se vuelve a pedir
+(function(){ let p=null; try{ p=sessionStorage.getItem('foton_pin'); }catch(e){}
+  if(p && /^\d{6}$/.test(p)){ document.getElementById('pin').value=p; validarPin(); } })();
+
 document.getElementById('logoimg').src = LOGO_DATAURI;
 </script>
+<script src="_sistema.js" defer></script>
 </body>
 </html>

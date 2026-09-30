@@ -266,6 +266,7 @@ async function validarPin(){
   const { data, error } = await sb.rpc('fn_validar_pin', { p_pin: pin });
   if(error || !data){ document.getElementById('pin-err').textContent='PIN no reconocido.'; document.getElementById('pin-err').style.display='block'; return; }
   PIN = pin; DIST = data;
+  try{ sessionStorage.setItem('foton_pin', pin); }catch(e){}
   document.getElementById('topSub').textContent = data.nombre + ' · ' + (data.plaza||'');
   await cargarOps();
   show('s-lista');
@@ -465,6 +466,11 @@ function goLista(){
 }
 
 document.getElementById('pin').addEventListener('keypress',e=>{ if(e.key==='Enter') validarPin(); });
+// PIN compartido: si ya entraste en otra herramienta de Foton OS en esta pestaña, no se vuelve a pedir
+(function(){ let p=null; try{ p=sessionStorage.getItem('foton_pin'); }catch(e){}
+  if(p && /^\d{6}$/.test(p)){ document.getElementById('pin').value=p; validarPin(); } })();
+
 </script>
+<script src="_sistema.js" defer></script>
 </body>
 </html>
