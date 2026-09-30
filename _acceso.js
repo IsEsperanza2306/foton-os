@@ -50,6 +50,21 @@
     })());
   }
 
+  // Las páginas que consultan la base con fetch y la llave pública reciben aquí el token de la sesión:
+  // así la base las reconoce como el usuario (y aplica su región o distribuidor) sin tocar cada página.
+  const fetch0 = window.fetch.bind(window);
+  window.fetch = async function (input, init) {
+    try {
+      const u = typeof input === 'string' ? input : (input && input.url) || '';
+      const h = init && init.headers;
+      if (/\.supabase\.co\/rest\/v1\//.test(u) && h && !(h instanceof Headers) && !Array.isArray(h) && h.apikey && h.Authorization === 'Bearer ' + h.apikey) {
+        const { data } = await (await cliente()).auth.getSession();
+        if (data.session) init = Object.assign({}, init, { headers: Object.assign({}, h, { Authorization: 'Bearer ' + data.session.access_token }) });
+      }
+    } catch (e) { /* si algo falla se usa la llave pública como antes */ }
+    return fetch0(input, init);
+  };
+
   async function perfilActual() {
     const db = await cliente();
     const { data } = await db.auth.getSession();
