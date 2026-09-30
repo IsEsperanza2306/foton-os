@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
+<script src="../_acceso.js" data-area="interno"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -57,7 +58,7 @@ code{font-family:var(--mono);font-size:12px}
 <script>
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const db = supabase.createClient(FOTON_CONFIG.SUPABASE_URL, FOTON_CONFIG.SUPABASE_ANON_KEY);
+const db = window.FOTON_DB || supabase.createClient(FOTON_CONFIG.SUPABASE_URL, FOTON_CONFIG.SUPABASE_ANON_KEY);
 const app = $('#app');
 let perfil = null, dists = [], leads = [], alertas = [], equipo = [], cfg = [], tablero = [], tab = 'tablero', filtro = { estatus: '', dist: '', q: '' };
 const EST = { nuevo: 'Sin asignar', asignado_dist: 'En bandeja del gerente', asignado_asesor: 'Con asesor', contactado: 'Contactado', cotizacion: 'Cotización', negociacion: 'Negociación', ganado: 'Ganado', perdido: 'Perdido', descartado: 'Descartado' };
@@ -65,37 +66,18 @@ const ALT = { sin_asignar_dist: 'Sin asignar a distribuidor', sin_asignar_asesor
 const say = (el, t, err) => { el.innerHTML = t ? `<div class="msg${err ? ' err' : ''}">${esc(t)}</div>` : ''; };
 const rpc = async (fn, args) => { const { data, error } = await db.rpc(fn, args); if (error) throw new Error(error.message); return data; };
 
+// El acceso (sesión, rol, portal) lo resuelve _acceso.js; aquí solo se arranca cuando el perfil ya es válido.
 async function init() {
-  const { data } = await db.auth.getSession();
-  if (!data.session) return loginView();
-  try { perfil = await rpc('fn_mi_perfil'); } catch (e) { perfil = null; }
-  if (!perfil) return sinAcceso('Tu correo ' + data.session.user.email + ' no está dado de alta en Foton OS.');
-  if (!perfil.planta) return sinAcceso('Esta sección es solo para planta. Tu acceso es de ' + perfil.rol + '.');
+  perfil = window.FOTON_PERFIL;
   $('#who').textContent = perfil.nombre;
-  await cargar(); render();
+  if (!perfil.planta && !(window.FotonAcceso && FotonAcceso.esMaster(perfil.email))) return sinAcceso('Tu perfil no tiene permisos de planta en la base de datos.');
+  try { await cargar(); render(); } catch (e) { sinAcceso('No se pudieron cargar los datos: ' + e.message); }
 }
 function sinAcceso(t) {
   app.innerHTML = `<div class="box login"><h3>Sin acceso</h3><p class="s">${esc(t)}</p><button class="btn g" id="out">Salir</button></div>`;
-  $('#out').onclick = async () => { await db.auth.signOut(); location.reload(); };
+  $('#out').onclick = () => FotonAcceso.salir();
 }
-function loginView() {
-  app.innerHTML = `<div class="box login"><h3>Entra con tu correo</h3><p class="s">Te enviamos un código de 6 dígitos. No necesitas contraseña.</p>
-  <div class="row"><input id="em" type="email" placeholder="correo@foton.com" autocomplete="email" style="flex:1"><button class="btn" id="go">Enviar código</button></div><div id="lm"></div></div>`;
-  $('#go').onclick = async () => {
-    const email = $('#em').value.trim().toLowerCase(); if (!email) return;
-    $('#go').disabled = true;
-    const { error } = await db.auth.signInWithOtp({ email, options: { shouldCreateUser: true, emailRedirectTo: /^https?:/.test(location.href) ? location.origin + location.pathname : undefined } });
-    $('#go').disabled = false;
-    if (error) return say($('#lm'), error.message, true);
-    app.innerHTML = `<div class="box login"><h3>Revisa tu correo</h3><p class="s">Escribe el código que enviamos a ${esc(email)}.</p>
-    <div class="row"><input id="cd" inputmode="numeric" maxlength="8" placeholder="123456" style="flex:1"><button class="btn" id="vf">Entrar</button></div><div id="lm"></div></div>`;
-    $('#vf').onclick = async () => {
-      const { error } = await db.auth.verifyOtp({ email, token: $('#cd').value.trim(), type: 'email' });
-      if (error) return say($('#lm'), 'Código incorrecto o vencido.', true);
-      init();
-    };
-  };
-}
+window.addEventListener('FotonAccesoListo', init);
 
 async function cargar() {
   const [d, l, a, c, t, e] = await Promise.all([
@@ -244,7 +226,7 @@ function vConfig(p) {
   p.querySelectorAll('[data-sw]').forEach(i => i.onchange = () => save(i.dataset.sw, i.checked ? 1 : 0));
   p.querySelectorAll('[data-num]').forEach(i => i.onchange = () => +i.value > 0 && save(i.dataset.num, +i.value));
 }
-init();
+if (window.FOTON_PERFIL) init();
 </script>
 </body>
 </html>

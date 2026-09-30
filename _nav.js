@@ -144,7 +144,7 @@
       if (error) throw error;
 
       if (!session && !IS_LOGIN) {
-        location.replace('./login.html');
+        location.replace('./login.html?next=' + encodeURIComponent(location.pathname.split('/').pop() + location.search));
         return;
       }
 
@@ -161,7 +161,7 @@
 
     } catch (e) {
       if (!IS_LOGIN) {
-        location.replace('./login.html');
+        location.replace('./login.html?next=' + encodeURIComponent(location.pathname.split('/').pop() + location.search));
         return;
       }
     }
@@ -180,7 +180,7 @@
   // Failsafe: if auth check takes >5s, redirect to login (never reveal unauth content)
   var _failsafe = setTimeout(function () {
     if (!window.FOTON_USER && !IS_LOGIN) {
-      location.replace('./login.html');
+      location.replace('./login.html?next=' + encodeURIComponent(location.pathname.split('/').pop() + location.search));
     }
   }, 5000);
 
