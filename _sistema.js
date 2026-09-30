@@ -335,7 +335,7 @@
       return;
     }
 
-    const tools = toolsOf(area.id);
+    const tools = toolsOf(area.id).filter(t => !window.FotonAcceso || FotonAcceso.veHerramienta(t));
     const groups = [];
     tools.forEach(t => {
       const g = t.area === area.id ? t.group : 'Material Foton';

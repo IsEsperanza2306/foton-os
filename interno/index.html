@@ -13,7 +13,8 @@
 </head>
 <body data-foton-hub>
 <div id="app"></div>
+<script src="../_acceso.js" data-area="interno"></script>
 <script src="../_sistema.js"></script>
-<script>FotonSistema.hub('interno');</script>
+<script>FotonSistema.hub('interno'); window.addEventListener('FotonAccesoListo', () => FotonSistema.hub('interno'));</script>
 </body>
 </html>
