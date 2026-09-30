@@ -220,6 +220,8 @@ async function asignarVendedor(){
 document.getElementById('pin').addEventListener('keypress',e=>{ if(e.key==='Enter') validarPin(); });
 // PIN compartido: si ya entraste en otra herramienta de Foton OS en esta pestaña, no se vuelve a pedir
 (function(){ let p=null; try{ p=sessionStorage.getItem('foton_pin'); }catch(e){}
+  // La app Foton Dealer abre esta herramienta con el PIN en el hash (#pin=123456); se quita de la barra de direcciones
+  const h=(location.hash.match(/[#&]pin=(\d{6})/)||[])[1]; if(h){ p=h; history.replaceState(null,'',location.pathname+location.search); }
   if(p && /^\d{6}$/.test(p)){ document.getElementById('pin').value=p; validarPin(); } })();
 
 document.getElementById('logoimg').src = LOGO_DATAURI;

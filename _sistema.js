@@ -56,13 +56,13 @@
     {
       id: 'distribuidores', label: 'Distribuidores', icon: 'store', tone: 'purple',
       who: 'Dueños y gerencia de cada distribuidor',
-      desc: 'Tu cobertura, cobranza, back order, inventario y pedidos, con el PIN de tu distribuidor.'
+      desc: 'Cobertura, cobranza, back order, inventario, pedidos y tu equipo comercial, con el PIN de tu distribuidor.'
     },
     {
       id: 'asesores', label: 'Asesores', icon: 'user', tone: 'orange',
       who: 'Vendedores especialistas MDT / LDT',
-      desc: 'Tu avance, reporte de campo, pipeline, cotizador y capacitación en un solo lugar.',
-      note: 'Entra una vez con el PIN de tu distribuidor y sirve para Mi Panel, Reporte de Campo y Mi Pipeline mientras no cierres la pestaña.'
+      desc: 'Tu app de campo con el comparativo contra la competencia, más tu avance, reporte, pipeline, guía y capacitación.',
+      note: 'Empieza en la app Foton Dealer. Desde ahí llegas a Mi día (avance, pipeline y reporte de campo) con el PIN de tu distribuidor, una sola vez.'
     },
     {
       id: 'interno', label: 'Interno Foton', icon: 'shield', tone: 'blue',
@@ -79,6 +79,8 @@
     { id: 'pedidos', area: 'distribuidores', group: 'Mi distribuidor', icon: 'cart', title: 'Pedidos de unidades',
       desc: 'Arma, imprime y envía tu pedido con la lista de precios vigente.', path: 'dealer.html?tab=pedidos', access: 'pin',
       alias: ['pedido.html', 'pedido/', 'pedido-modulo.html'] },
+    { id: 'equipo', area: 'distribuidores', group: 'Mi distribuidor', icon: 'user', title: 'Equipo comercial',
+      desc: 'Tu vendedor especialista, pipeline, pendientes, reporte de campo, avance del asesor y cotizador.', path: 'dealer.html?tab=equipo', access: 'pin' },
     { id: 'presentacion', area: 'distribuidores', also: ['asesores'], group: 'Material Foton', icon: 'building', title: 'Presentación Corporativa',
       desc: 'Foton, BAIC y la red en México: respaldo, planta, postventa y alianzas.', path: 'presentacion/', access: 'open' },
     { id: 'red', area: 'distribuidores', also: ['asesores'], group: 'Material Foton', icon: 'map', title: 'Red Nacional',
@@ -86,22 +88,22 @@
       alias: ['mapa-red-nacional/'] },
 
     // ── Asesores
-    { id: 'mi-panel', area: 'asesores', group: 'Mi día', icon: 'gauge', title: 'Mi Panel',
-      desc: 'Tu avance de la semana, pendientes y ruta de desarrollo.', path: 'panel-asesor.html', access: 'pin', hero: true,
+    { id: 'comparativo', area: 'asesores', group: 'Mi app', icon: 'search', title: 'Foton Dealer · Inteligencia Competitiva',
+      desc: 'La app del asesor: comparativo contra la competencia, gama, mapa de la red y cotizador. Instálala en el teléfono.', url: 'https://foton-dealer-os-git-master-isesperanza2306s-projects.vercel.app', access: 'ext', hero: true },
+    { id: 'mi-panel', area: 'asesores', group: 'También en la web', icon: 'gauge', title: 'Mi Panel',
+      desc: 'Tu avance de la semana, pendientes y ruta de desarrollo.', path: 'panel-asesor.html', access: 'pin',
       alias: ['panel-seguimiento/asesor/'] },
-    { id: 'reporte', area: 'asesores', group: 'Mi día', icon: 'clipboard', title: 'Reporte de Campo',
+    { id: 'reporte', area: 'asesores', group: 'También en la web', icon: 'clipboard', title: 'Reporte de Campo',
       desc: 'Registra pendientes del Día 1 y la visita del Día 2.', path: 'reporte-campo.html', access: 'pin',
       alias: ['panel-seguimiento/reporte/'] },
-    { id: 'pipeline', area: 'asesores', group: 'Mi día', icon: 'funnel', title: 'Mi Pipeline',
+    { id: 'pipeline', area: 'asesores', group: 'También en la web', icon: 'funnel', title: 'Mi Pipeline',
       desc: 'Prospectos y oportunidades con su siguiente paso.', path: 'pipeline-asesor.html', access: 'pin',
       alias: ['pipeline-asesor/'] },
-    { id: 'cotizador', area: 'asesores', group: 'Para vender', icon: 'calc', title: 'Cotizador',
+    { id: 'cotizador', area: 'asesores', group: 'También en la web', icon: 'calc', title: 'Cotizador',
       desc: 'Cotización formal MDT / LDT lista para imprimir o enviar en PDF.', path: 'cotizacion.html', access: 'open',
       alias: ['cotizacion/'] },
     { id: 'guia', area: 'asesores', group: 'Para vender', icon: 'book', title: 'Guía de Ventajas Competitivas',
       desc: 'Portafolio S3 a S12 y cómo posicionarlo frente a la competencia.', path: 'informativo.html', access: 'open' },
-    { id: 'comparativo', area: 'asesores', group: 'Para vender', icon: 'search', title: 'Inteligencia Competitiva',
-      desc: 'Comparativo contra la competencia modelo por modelo.', url: 'https://foton-dealer-os-git-master-isesperanza2306s-projects.vercel.app', access: 'ext' },
     { id: 'sales-machine', area: 'asesores', group: 'Capacitación', icon: 'target', title: 'Foton Sales Machine',
       desc: 'Curso interactivo: BANT, SPIN, prospección, cierre y roleplay.', path: 'foton-sales-machine-v12.html', access: 'open', offset: 82 },
     { id: 'examen', area: 'asesores', group: 'Capacitación', icon: 'check', title: 'Evaluación de Producto',
@@ -158,8 +160,11 @@
   function currentTool() {
     const p = currentPath();
     const tab = new URLSearchParams(location.search).get('tab');
-    if (p === 'dealer.html' && tab === 'pedidos') return TOOLS.find(t => t.id === 'pedidos');
-    return TOOLS.find(t => t.path && (t.path.split('?')[0] === p || (t.alias || []).includes(p)) && !(t.id === 'pedidos' && p === 'dealer.html'));
+    if (p === 'dealer.html' && tab) {
+      const t = TOOLS.find(x => x.path === 'dealer.html?tab=' + tab);
+      if (t) return t;
+    }
+    return TOOLS.find(t => t.path && !t.path.includes('?') && (t.path === p || (t.alias || []).includes(p)));
   }
 
   const STORE_KEY = 'foton_area';
