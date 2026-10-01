@@ -83,7 +83,7 @@
       desc: 'Tu vendedor especialista, pipeline, pendientes, reporte de campo, avance del asesor y cotizador.', path: 'dealer.html?tab=equipo', access: 'pin' },
     { id: 'presentacion', area: 'distribuidores', also: ['asesores'], group: 'Material Foton', icon: 'building', title: 'Presentación Corporativa',
       desc: 'Foton, BAIC y la red en México: respaldo, planta, postventa y alianzas.', path: 'presentacion/', access: 'open' },
-    { id: 'red', area: 'distribuidores', also: ['asesores'], group: 'Material Foton', icon: 'map', title: 'Mapa de la red',
+    { id: 'red', area: 'distribuidores', also: ['asesores', 'interno'], group: 'Material Foton', icon: 'map', title: 'Mapa de la red',
       desc: 'Distribuidores y talleres aliados con contacto y ruta en Google Maps.', path: 'mapa-red-nacional.html', access: 'open',
       alias: ['mapa-red-nacional/'] },
 
@@ -132,8 +132,6 @@
       desc: 'Bitácora de visitas con minuta, fotos y acuerdos.', path: 'field-app.html', access: 'login', offset: 72 },
     { id: 'bp', area: 'interno', group: 'Dirección y plan', icon: 'trend', title: 'BP Tracker',
       desc: 'Business plan contra facturado por distribuidor y modelo.', path: 'bp-tracker.html', access: 'login' },
-    { id: 'mapa', area: 'interno', group: 'Red y distribuidores', icon: 'map', title: 'Mapa de la red',
-      desc: 'Un solo mapa de la red con avance de plan, acuerdos abiertos y botón para registrar visita.', path: 'mapa.html', access: 'login' },
   ];
 
   const HUB_PATHS = { '': null, 'index.html': null, 'distribuidores/': 'distribuidores', 'asesores/': 'asesores', 'interno/': 'interno' };
