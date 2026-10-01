@@ -304,7 +304,7 @@
 
     const nav = `
       <header class="hdr"><div class="wrap">
-        <a class="logo" href="${hubHref(null)}"><span class="mk">${svg('grid')}</span><b>FOTON</b><small>OS</small></a>
+        <a class="logo" href="${hubHref(null)}"><img src="${new URL('assets/logo-foton-blanco.png', BASE).href}" alt="Foton"><small>OS</small></a>
         <nav class="seg" aria-label="Áreas">${AREAS.map(a => `<a href="${hubHref(a.id)}"${area && a.id === area.id ? ' aria-current="page"' : ''}>${esc(a.label)}</a>`).join('')}</nav>
       </div></header>`;
 

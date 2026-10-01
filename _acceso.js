@@ -35,7 +35,7 @@
   const ROL = { regional: 'Regional', admin: 'Administrador', direccion: 'Dirección', director: 'Director', gerente: 'Gerente', asesor: 'Asesor' };
 
   const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const MARCA = `<div style="display:flex;align-items:center;gap:10px;margin-bottom:18px"><span style="width:36px;height:36px;border-radius:50%;border:1.6px solid #0B1B3A;display:grid;place-items:center"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#0B1B3A" stroke-width="2"><path d="M4 4l8 8 8-8M4 12l8 8 8-8"/></svg></span><b style="font:800 18px Archivo,Inter,sans-serif;letter-spacing:.3em;color:#0B1B3A">FOTON</b><small style="font:700 11px Inter,sans-serif;letter-spacing:.2em;color:#1363D6">OS</small></div>`;
+  const MARCA = `<div style="display:inline-flex;align-items:center;gap:12px;margin-bottom:18px;padding:10px 16px;border-radius:16px;background:linear-gradient(160deg,#001A4D,#0A2F6E)"><img src="${new URL('assets/logo-foton-blanco.png', BASE).href}" alt="Foton" style="height:26px;width:auto;display:block"><small style="font:700 11px Inter,sans-serif;letter-spacing:.2em;color:#7CC2FF">OS</small></div>`;
   const FONDO = "background:radial-gradient(900px 480px at 78% -8%,rgba(79,179,255,.26),transparent 60%),radial-gradient(760px 420px at 6% 112%,rgba(19,99,214,.42),transparent 60%),url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='96' viewBox='0 0 72 96'%3E%3Cpath d='M0 0 L36 48 L72 0 M0 48 L36 96 L72 48' fill='none' stroke='%23ffffff' stroke-opacity='.08' stroke-width='1.2'/%3E%3C/svg%3E\"),linear-gradient(160deg,#001236 0%,#001A4D 45%,#0A2F6E 100%)";
   const url = p => new URL(p, BASE).href;
   const esMaster = email => MASTER.includes(String(email || '').toLowerCase());
@@ -169,6 +169,8 @@
       pantalla('No se pudo verificar tu acceso', 'Revisa tu conexión e inténtalo de nuevo.', [{ t: 'Reintentar', href: location.href }]);
     }
   }
+
+  cargar(url('_marca.js')).catch(() => {});
 
   window.FotonAcceso = { HERRAMIENTAS, veHerramienta, ACCESO, HOME, NOMBRE, ROL, MASTER, url, esMaster, puede, portalDe, portalesDe, cliente, perfilActual, salir, chip };
   const pinHeredado = () => /[#&]pin=\d{6}/.test(location.hash) || (!!ss.get('foton_pin') && !ss.get('foton_via_email'));
