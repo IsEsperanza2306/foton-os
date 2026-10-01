@@ -149,7 +149,7 @@
       }
 
       if (session && IS_LOGIN) {
-        location.replace('./mapa.html');
+        location.replace('./index.html');
         return;
       }
 
