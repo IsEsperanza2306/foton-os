@@ -1,7 +1,7 @@
-const CACHE = 'foton-os-v3';
+const CACHE = 'foton-os-v4';
 const STATIC = [
   '/mapa.html', '/login.html', '/bp-tracker.html',
-  '/field-app.html', '/direccion.html',
+  '/direccion.html',
   '/_config.js?v=3', '/_nav.js?v=3',
   '/foton-logo-trans.png', '/foton-icon-trans.png',
   '/icon-192.png', '/icon-512.png',
