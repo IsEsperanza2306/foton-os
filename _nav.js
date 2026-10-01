@@ -171,7 +171,7 @@
 
     if (IS_LOGIN) return;
 
-    injectNav();
+    // La navegación entre herramientas vive en el menú único de Foton OS (_sistema.js)
 
     // Signal pages that auth is confirmed and FOTON_USER is set
     window.dispatchEvent(new CustomEvent('FotonAuthReady', { detail: { user: window.FOTON_USER } }));

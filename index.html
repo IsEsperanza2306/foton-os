@@ -13,7 +13,9 @@
 </head>
 <body data-foton-hub>
 <div id="app"></div>
+<script src="./_config.js?v=3"></script>
+<script src="./_acceso.js"></script>
 <script src="./_sistema.js"></script>
-<script>FotonSistema.hub(null);</script>
+<script>FotonSistema.hub(null); window.addEventListener('FotonAccesoListo', () => FotonSistema.hub(null));</script>
 </body>
 </html>
