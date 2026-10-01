@@ -10,7 +10,9 @@
 
   // Quién entra a cada portal. Los correos MASTER entran a todo (para soporte y pruebas).
   const PLANTA = ['regional', 'admin', 'direccion', 'director'];
-  const ACCESO = { interno: PLANTA, dealer: ['gerente'], asesor: ['asesor', 'gerente'] };
+  // Rol 'inventario': solo entra a Control de inventario dentro de Interno.
+  const SOLO = { inventario: 'inventario/' };
+  const ACCESO = { interno: [...PLANTA, ...Object.keys(SOLO)], dealer: ['gerente'], asesor: ['asesor', 'gerente'] };
   const MASTER = ['israel.esperanza.h@gmail.com', 'israel.esperanza@ldrsolutions.com.mx', 'sharon.caraveo@ldrsolutions.com.mx'];
   // Dentro de Interno, cada herramienta tiene sus roles (clave = archivo). Master entra a todas.
   //   dir = direccion/director · adm = admin (Administración) · reg = regional (Gerente Regional)
@@ -18,20 +20,23 @@
   const DA = [...G.dir, ...G.adm], DR = [...G.dir, ...G.reg], TODOS = [...G.dir, ...G.adm, ...G.reg];
   const HERRAMIENTAS = {
     'panel.html': TODOS, 'panel-seguimiento.html': TODOS, 'pipeline-gr.html': TODOS,
-    'control-leads/': DA, 'inventario/': DA, 'foton_admin.html': DA,
+    'control-leads/': DA, 'inventario/': [...DA, 'inventario'], 'foton_admin.html': DA,
     'bp-tracker.html': TODOS, 'direccion.html': G.dir
   };
   const clave = p => String(p || '').split(/[?#]/)[0].replace(/index\.html$/, '');
   const veHerramienta = (t, perfil) => {
     perfil = perfil || window.FOTON_PERFIL;
-    if (!perfil || !t || t.area !== 'interno' || !t.path) return true;
+    if (!perfil || !t) return true;
+    if (esMaster(perfil.email)) return true;
+    if (SOLO[perfil.rol]) return clave(t.path) === SOLO[perfil.rol];
+    if (t.area !== 'interno' || !t.path) return true;
     const roles = HERRAMIENTAS[clave(t.path)];
-    return esMaster(perfil.email) || !roles || roles.includes(perfil.rol);
+    return !roles || roles.includes(perfil.rol);
   };
   const paginaActual = () => clave(location.pathname.replace(BASE.pathname, ''));
   const HOME = { interno: 'interno/', dealer: 'distribuidores/', asesor: 'asesores/' };
   const NOMBRE = { interno: 'Foton Interno', dealer: 'Foton Dealer', asesor: 'Foton Asesor' };
-  const ROL = { regional: 'Regional', admin: 'Administrador', direccion: 'Dirección', director: 'Director', gerente: 'Gerente', asesor: 'Asesor' };
+  const ROL = { inventario: 'Inventario', regional: 'Regional', admin: 'Administrador', direccion: 'Dirección', director: 'Director', gerente: 'Gerente', asesor: 'Asesor' };
 
   const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const MARCA = `<div style="display:inline-flex;align-items:center;gap:12px;margin-bottom:18px;padding:10px 16px;border-radius:16px;background:linear-gradient(160deg,#001A4D,#0A2F6E)"><img src="${new URL('assets/logo-foton-blanco.png', BASE).href}" alt="Foton" style="height:26px;width:auto;display:block"><small style="font:700 11px Inter,sans-serif;letter-spacing:.2em;color:#7CC2FF">OS</small></div>`;
@@ -39,7 +44,7 @@
   const url = p => new URL(p, BASE).href;
   const esMaster = email => MASTER.includes(String(email || '').toLowerCase());
   const puede = (perfil, area) => !!perfil && (esMaster(perfil.email) || (ACCESO[area] || []).includes(perfil.rol));
-  const portalDe = perfil => esMaster(perfil.email) || PLANTA.includes(perfil.rol) ? 'interno' : perfil.rol === 'gerente' ? 'dealer' : 'asesor';
+  const portalDe = perfil => esMaster(perfil.email) || ACCESO.interno.includes(perfil.rol) ? 'interno' : perfil.rol === 'gerente' ? 'dealer' : 'asesor';
   const portalesDe = perfil => Object.keys(ACCESO).filter(a => puede(perfil, a));
 
   const cargar = src => new Promise((ok, err) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => err(new Error(src)); document.head.appendChild(s); });
@@ -158,7 +163,8 @@
       window.FOTON_PERFIL = perfil;
       if (!puede(perfil, area)) return pantalla('Esta sección no es para tu perfil', `${NOMBRE[area]} es para ${area === 'interno' ? 'el equipo de Foton México' : area === 'dealer' ? 'gerentes de distribuidor' : 'asesores'}. Tu perfil es ${ROL[perfil.rol] || perfil.rol}.`, [{ t: 'Ir a mi portal', href: url(HOME[portalDe(perfil)]) }, { t: 'Cerrar sesión', href: '#', salir: true }]);
       const rolesPag = HERRAMIENTAS[paginaActual()];
-      if (area === 'interno' && rolesPag && !esMaster(perfil.email) && !rolesPag.includes(perfil.rol)) return pantalla('Esta herramienta no es para tu rol', `Tu perfil (${ROL[perfil.rol] || perfil.rol}) no tiene esta herramienta en Foton Interno.`, [{ t: 'Ir a Foton Interno', href: url(HOME.interno) }, { t: 'Cerrar sesión', href: '#', salir: true }]);
+      const fueraDeSolo = SOLO[perfil.rol] && !esMaster(perfil.email) && paginaActual() !== SOLO[perfil.rol];
+      if (area === 'interno' && (fueraDeSolo || (rolesPag && !esMaster(perfil.email) && !rolesPag.includes(perfil.rol)))) return pantalla('Esta herramienta no es para tu rol', `Tu perfil (${ROL[perfil.rol] || perfil.rol}) no tiene esta herramienta en Foton Interno.`, [{ t: 'Ir a Foton Interno', href: url(HOME.interno) }, { t: 'Cerrar sesión', href: '#', salir: true }]);
       if ((area === 'dealer' || area === 'asesor') && !(await puente(perfil))) return;
       document.documentElement.style.visibility = '';
       window.dispatchEvent(new CustomEvent('FotonAccesoListo', { detail: { perfil } }));
