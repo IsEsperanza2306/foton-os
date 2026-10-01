@@ -45,9 +45,9 @@
 
   // Tipos de acceso
   const ACCESS = {
-    pin:     { label: 'PIN del distribuidor', tone: 'purple' },
-    invpin:  { label: 'PIN de inventario', tone: 'purple' },
-    login:   { label: 'Sesión Foton', tone: 'blue' },
+    pin:     { label: 'Con tu cuenta', tone: 'purple' },
+    invpin:  { label: 'Con tu cuenta', tone: 'purple' },
+    login:   { label: 'Con tu cuenta', tone: 'blue' },
     open:    { label: 'Acceso libre', tone: 'gray' },
     ext:     { label: 'Sitio aparte', tone: 'gray' }
   };
@@ -83,7 +83,7 @@
       desc: 'Tu vendedor especialista, pipeline, pendientes, reporte de campo, avance del asesor y cotizador.', path: 'dealer.html?tab=equipo', access: 'pin' },
     { id: 'presentacion', area: 'distribuidores', also: ['asesores'], group: 'Material Foton', icon: 'building', title: 'Presentación Corporativa',
       desc: 'Foton, BAIC y la red en México: respaldo, planta, postventa y alianzas.', path: 'presentacion/', access: 'open' },
-    { id: 'red', area: 'distribuidores', also: ['asesores'], group: 'Material Foton', icon: 'map', title: 'Red Nacional',
+    { id: 'red', area: 'distribuidores', also: ['asesores'], group: 'Material Foton', icon: 'map', title: 'Mapa de la red',
       desc: 'Distribuidores y talleres aliados con contacto y ruta en Google Maps.', path: 'mapa-red-nacional.html', access: 'open',
       alias: ['mapa-red-nacional/'] },
 
@@ -118,26 +118,22 @@
       desc: 'Carga leads, asígnalos a distribuidores y vigila alertas de seguimiento.', path: 'control-leads/', access: 'login' },
     { id: 'inventario', area: 'interno', group: 'Operación diaria', icon: 'archive', title: 'Inventario',
       desc: 'Unidades por modelo y ubicación, llegadas y pendientes.', path: 'inventario/', access: 'invpin' },
-    { id: 'seguimiento', area: 'interno', group: 'Operación diaria', icon: 'user', title: 'Seguimiento de Asesores',
+    { id: 'seguimiento', area: 'interno', group: 'Red y distribuidores', icon: 'user', title: 'Seguimiento de Asesores',
       desc: 'Semáforo Día 1 / Día 2 y vendedor especialista por distribuidor.', path: 'panel-seguimiento.html', access: 'open',
       alias: ['panel-seguimiento/'] },
-    { id: 'pipeline-gr', area: 'interno', group: 'Operación diaria', icon: 'trend', title: 'Pipeline Regional',
+    { id: 'pipeline-gr', area: 'interno', group: 'Red y distribuidores', icon: 'trend', title: 'Pipeline Regional',
       desc: 'Todas las oportunidades de los asesores, por región.', path: 'pipeline-gr.html', access: 'open',
       alias: ['pipeline-gr/'] },
-    { id: 'resultados', area: 'interno', group: 'Operación diaria', icon: 'award', title: 'Resultados de Evaluación',
+    { id: 'resultados', area: 'interno', group: 'Red y distribuidores', icon: 'award', title: 'Resultados de Evaluación',
       desc: 'Ranking de la red, certificados y brechas por modelo.', path: 'foton_admin.html', access: 'open' },
-    { id: 'direccion', area: 'interno', group: 'App Foton (con sesión)', icon: 'compass', title: 'Dirección',
-      desc: 'Vista consolidada de visitas, acuerdos y facturación.', path: 'direccion.html', access: 'login', offset: 72 },
-    { id: 'visita', area: 'interno', group: 'App Foton (con sesión)', icon: 'pin', title: 'Registro de Visita',
+    { id: 'direccion', area: 'interno', group: 'Dirección y plan', icon: 'compass', title: 'Dirección',
+      desc: 'Vista consolidada de visitas, acuerdos y facturación.', path: 'direccion.html', access: 'login' },
+    { id: 'visita', area: 'interno', group: 'Red y distribuidores', icon: 'pin', title: 'Registro de Visita',
       desc: 'Bitácora de visitas con minuta, fotos y acuerdos.', path: 'field-app.html', access: 'login', offset: 72 },
-    { id: 'bp', area: 'interno', group: 'App Foton (con sesión)', icon: 'trend', title: 'BP Tracker',
-      desc: 'Business plan contra facturado por distribuidor y modelo.', path: 'bp-tracker.html', access: 'login', offset: 72 },
-    { id: 'mapa', area: 'interno', group: 'App Foton (con sesión)', icon: 'map', title: 'Mapa de Red',
-      desc: 'Mapa de la red con avance de plan y acuerdos abiertos.', path: 'mapa.html', access: 'login', offset: 72 },
-    { id: 'old-field', area: 'interno', group: 'Versiones anteriores', old: true, icon: 'archive', title: 'Field App (versión anterior)',
-      desc: 'Reemplazada por Registro de Visita.', path: 'foton-field-app.html', access: 'open' },
-    { id: 'old-bp', area: 'interno', group: 'Versiones anteriores', old: true, icon: 'archive', title: 'BP Tracker (versión anterior)',
-      desc: 'Reemplazada por BP Tracker con sesión.', path: 'foton_bp_tracker.html', access: 'open' }
+    { id: 'bp', area: 'interno', group: 'Dirección y plan', icon: 'trend', title: 'BP Tracker',
+      desc: 'Business plan contra facturado por distribuidor y modelo.', path: 'bp-tracker.html', access: 'login' },
+    { id: 'mapa', area: 'interno', group: 'Red y distribuidores', icon: 'map', title: 'Mapa de la red',
+      desc: 'Un solo mapa de la red con avance de plan, acuerdos abiertos y botón para registrar visita.', path: 'mapa.html', access: 'login' },
   ];
 
   const HUB_PATHS = { '': null, 'index.html': null, 'distribuidores/': 'distribuidores', 'asesores/': 'asesores', 'interno/': 'interno' };
@@ -177,8 +173,8 @@
 
   const LAUNCHER_CSS = `
   :host{all:initial;--fos-bg:rgba(250,250,252,.86);--fos-card:#fff;--fos-ink:#1D1D1F;--fos-sec:#6E6E73;--fos-sep:rgba(0,0,0,.08);--fos-fill:rgba(118,118,128,.12);--fos-accent:#1363D6;--fos-accentBg:rgba(10,100,216,.09);
-    font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;font-size:14px;line-height:1.35;letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
-  @media (prefers-color-scheme:dark){:host{--fos-bg:rgba(28,28,30,.86);--fos-card:#2C2C2E;--fos-ink:#F5F5F7;--fos-sec:#98989D;--fos-sep:rgba(255,255,255,.1);--fos-fill:rgba(118,118,128,.24);--fos-accent:#3B8EF5;--fos-accentBg:rgba(59,142,245,.16)}}
+    font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;font-size:14px;line-height:1.35;letter-spacing:-.01em;-webkit-font-smoothing:antialiased;--fos-inv:1}
+  @media (prefers-color-scheme:dark){:host{--fos-inv:0;--fos-bg:rgba(28,28,30,.86);--fos-card:#2C2C2E;--fos-ink:#F5F5F7;--fos-sec:#98989D;--fos-sep:rgba(255,255,255,.1);--fos-fill:rgba(118,118,128,.24);--fos-accent:#3B8EF5;--fos-accentBg:rgba(59,142,245,.16)}}
   *{box-sizing:border-box;margin:0}
   button{font:inherit;letter-spacing:inherit}
   #fos-btn{position:fixed;left:14px;bottom:calc(${14}px + var(--fos-off,0px) + env(safe-area-inset-bottom,0px));z-index:2147483000;
@@ -187,8 +183,16 @@
     box-shadow:0 6px 24px rgba(0,0,0,.14);font-size:13px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s}
   #fos-btn:hover{transform:translateY(-1px)}
   #fos-btn:active{transform:scale(.96)}
-  #fos-btn .fos-mk{width:28px;height:28px;border-radius:50%;background:linear-gradient(145deg,#001A4D,#1363D6);color:#fff;display:grid;place-items:center}
-  #fos-btn .fos-mk svg{width:15px;height:15px}
+  #fos-btn{background:linear-gradient(160deg,rgba(0,26,77,.95),rgba(10,47,110,.95));color:#fff;border-color:rgba(255,255,255,.14);max-width:min(78vw,340px)}
+  #fos-btn .fos-mk{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;flex:none}
+  #fos-btn .fos-mk img{width:24px;height:24px;object-fit:contain}
+  #fos-btn .fos-lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .fos-av{width:22px;height:22px;border-radius:50%;background:#1363D6;color:#fff;display:grid;place-items:center;font-size:11px;font-weight:700;flex:none}
+  .fos-av[hidden]{display:none}
+  #fos-sheet .fos-lg{height:22px;width:auto;filter:invert(var(--fos-inv,1))}
+  #fos-sheet .fos-hd small{font-size:11px;font-weight:700;letter-spacing:.2em;color:var(--fos-accent)}
+  #fos-sheet .fos-me{display:flex;align-items:center;gap:10px;margin:0 14px 10px;padding:10px 12px;border-radius:14px;background:var(--fos-fill)}
+  #fos-sheet .fos-me .fos-av{width:30px;height:30px;font-size:13px}
   #fos-btn:focus-visible,#fos-sheet a:focus-visible,#fos-sheet button:focus-visible{outline:3px solid rgba(19,99,214,.5);outline-offset:2px}
   @media (max-width:560px){#fos-btn{padding:0 6px}#fos-btn .fos-lbl{display:none}}
   @media print{:host{display:none!important}}
@@ -221,6 +225,11 @@
   #fos-sheet .fos-ft{border-top:1px solid var(--fos-sep);padding:8px}
   `;
 
+  // Qué portal le toca a cada área del catálogo (nombres de _acceso.js)
+  const AREA_ACCESO = { distribuidores: 'dealer', asesores: 'asesor', interno: 'interno' };
+  const puedeArea = (perfil, areaId) => !perfil || !window.FotonAcceso || FotonAcceso.puede(perfil, AREA_ACCESO[areaId]);
+  const miPortal = perfil => perfil && window.FotonAcceso ? { dealer: 'distribuidores', asesor: 'asesores', interno: 'interno' }[FotonAcceso.portalDe(perfil)] : null;
+
   function launcher() {
     if (window.top !== window.self || /[?&]embed=1\b/.test(location.search)) return;
     const here = currentTool();
@@ -237,13 +246,15 @@
     style.textContent = LAUNCHER_CSS;
     shadow.appendChild(style);
 
+    const simbolo = new URL('assets/logo-foton-simbolo.png', BASE).href;
+    const logo = new URL('assets/logo-foton-blanco.png', BASE).href;
     const btn = document.createElement('button');
     btn.id = 'fos-btn';
     btn.type = 'button';
     btn.setAttribute('aria-haspopup', 'dialog');
     btn.setAttribute('aria-expanded', 'false');
     btn.setAttribute('aria-label', 'Abrir menú de Foton OS');
-    btn.innerHTML = `<span class="fos-mk">${svg('grid')}</span><span class="fos-lbl">Foton OS</span>`;
+    btn.innerHTML = `<span class="fos-mk"><img src="${simbolo}" alt="Foton"></span><span class="fos-lbl">${esc(here ? here.title : 'Foton OS')}</span><span class="fos-av" hidden></span>`;
 
     const scrim = document.createElement('div');
     scrim.id = 'fos-scrim';
@@ -255,33 +266,57 @@
 
     [btn, sheet].forEach(el => el.style.setProperty('--fos-off', offset + 'px'));
 
+    const perfil = () => window.FOTON_PERFIL || null;
+    const areas = () => AREAS.filter(a => puedeArea(perfil(), a.id));
+
     function list(areaId) {
-      const tools = toolsOf(areaId).filter(t => !t.old);
-      let html = '', group = '';
+      const tools = toolsOf(areaId).filter(t => !t.old && (!perfil() || !window.FotonAcceso || FotonAcceso.veHerramienta(t, perfil())));
+      const groups = [];
       tools.forEach(t => {
         const g = t.area === areaId ? t.group : 'Material Foton';
-        if (g !== group) { group = g; html += `<div class="fos-g">${esc(g)}</div>`; }
-        const cur = here && here.id === t.id;
-        html += `<a class="fos-it" href="${href(t)}"${cur ? ' aria-current="page"' : ''}${t.url ? ' target="_blank" rel="noopener"' : ''}>
+        let e = groups.find(x => x.g === g);
+        if (!e) groups.push(e = { g, items: [] });
+        e.items.push(t);
+      });
+      let html = '';
+      groups.forEach(({ g, items }) => {
+        html += `<div class="fos-g">${esc(g)}</div>`;
+        items.forEach(t => {
+          const cur = here && here.id === t.id;
+          html += `<a class="fos-it" href="${href(t)}"${cur ? ' aria-current="page"' : ''}${t.url ? ' target="_blank" rel="noopener"' : ''}>
           <span class="fos-ic">${svg(t.icon)}</span>
-          <span><div class="fos-t">${esc(t.title)}</div><div class="fos-s">${esc(ACCESS[t.access].label)}</div></span>
+          <span><div class="fos-t">${esc(t.title)}</div><div class="fos-s">${esc(t.desc.split('. ')[0].replace(/\.$/, ''))}</div></span>
           ${t.url ? svg('ext', 'fos-ext') : ''}</a>`;
+        });
       });
       return html;
     }
 
+    function paint() {
+      const p = perfil();
+      const av = btn.querySelector('.fos-av');
+      if (p) { av.textContent = (p.nombre || p.email || '?').trim()[0].toUpperCase(); av.hidden = false; }
+    }
+
     function draw() {
+      const p = perfil(), as = areas();
+      if (!as.some(a => a.id === area)) area = (as[0] || AREAS[0]).id;
+      const quien = p ? `<div class="fos-me"><span class="fos-av">${esc((p.nombre || p.email || '?').trim()[0].toUpperCase())}</span><span><div class="fos-t">${esc(p.nombre || p.email)}</div><div class="fos-s">${esc(window.FotonAcceso ? (FotonAcceso.esMaster(p.email) ? 'Master' : FotonAcceso.ROL[p.rol] || p.rol) : p.rol)}${p.distribuidor ? ' · ' + esc(p.distribuidor) : ''}</div></span></div>` : '';
       sheet.innerHTML = `
-        <div class="fos-hd"><b>Foton OS</b><button class="fos-x" type="button" aria-label="Cerrar">${svg('close')}</button></div>
-        <div class="fos-seg" role="tablist">${AREAS.map(a => `<button type="button" role="tab" data-a="${a.id}" aria-selected="${a.id === area}">${esc(a.id === 'interno' ? 'Interno' : a.label)}</button>`).join('')}</div>
+        <div class="fos-hd"><img class="fos-lg" src="${logo}" alt="Foton"><small>OS</small><span style="flex:1"></span><button class="fos-x" type="button" aria-label="Cerrar">${svg('close')}</button></div>
+        ${quien}
+        ${as.length > 1 ? `<div class="fos-seg" role="tablist">${as.map(a => `<button type="button" role="tab" data-a="${a.id}" aria-selected="${a.id === area}">${esc(a.id === 'interno' ? 'Interno' : a.label)}</button>`).join('')}</div>` : ''}
         <div class="fos-list">${list(area)}</div>
         <div class="fos-ft">
-          <a class="fos-it" href="${hubHref(area)}"><span class="fos-ic">${svg(areaOf(area).icon)}</span><span><div class="fos-t">Todo ${esc(areaOf(area).label)}</div><div class="fos-s">Página del área</div></span></a>
-          <a class="fos-it" href="${hubHref(null)}"><span class="fos-ic">${svg('home')}</span><span><div class="fos-t">Inicio</div><div class="fos-s">Elegir área</div></span></a>
+          <a class="fos-it" href="${hubHref(area)}"><span class="fos-ic">${svg('home')}</span><span><div class="fos-t">Inicio de ${esc(areaOf(area).id === 'interno' ? 'Interno' : areaOf(area).label)}</div><div class="fos-s">Todas tus herramientas</div></span></a>
+          ${p && window.FotonAcceso && (area === 'distribuidores' || area === 'asesores') && !p.distribuidor_id ? `<a class="fos-it" href="#" data-cambiar><span class="fos-ic">${svg('store')}</span><span><div class="fos-t">Cambiar distribuidor</div><div class="fos-s">Ver otro distribuidor</div></span></a>` : ''}
+          ${p ? `<a class="fos-it" href="#" data-salir><span class="fos-ic">${svg('close')}</span><span><div class="fos-t">Cerrar sesión</div></span></a>` : `<a class="fos-it" href="${new URL('login.html', BASE).href}?next=${encodeURIComponent(currentPath())}"><span class="fos-ic">${svg('user')}</span><span><div class="fos-t">Entrar</div><div class="fos-s">Con tu correo o Google</div></span></a>`}
         </div>`;
       sheet.querySelector('.fos-x').onclick = close;
       sheet.querySelectorAll('.fos-seg button').forEach(b => b.onclick = () => { area = b.dataset.a; rememberArea(area); draw(); });
       sheet.querySelectorAll('a.fos-it').forEach(a => a.addEventListener('click', () => rememberArea(area)));
+      const out = sheet.querySelector('[data-salir]'); if (out) out.onclick = e => { e.preventDefault(); FotonAcceso.salir(); };
+      const cam = sheet.querySelector('[data-cambiar]'); if (cam) cam.onclick = e => { e.preventDefault(); ['foton_pin', 'foton_dealer', 'foton_via_email', 'foton_dist_sel'].forEach(k => { try { sessionStorage.removeItem(k); } catch (x) {} }); location.reload(); };
     }
 
     function open() { draw(); sheet.classList.add('on'); scrim.classList.add('on'); btn.setAttribute('aria-expanded', 'true'); const f = sheet.querySelector('[aria-current]') || sheet.querySelector('a'); f && f.focus({ preventScroll: true }); }
@@ -290,9 +325,18 @@
     btn.onclick = () => sheet.classList.contains('on') ? close() : open();
     scrim.onclick = close;
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && sheet.classList.contains('on')) { close(); btn.focus(); } });
+    window.addEventListener('FotonAccesoListo', paint);
 
     shadow.append(btn, scrim, sheet);
     document.body.appendChild(host);
+    paint();
+
+    // En páginas abiertas (sin guardia) también reconoce a quien ya entró
+    if (!window.FOTON_PERFIL) {
+      const quien = () => FotonAcceso.perfilActual().then(({ perfil }) => { if (perfil) { window.FOTON_PERFIL = perfil; paint(); } }).catch(() => {});
+      if (window.FotonAcceso) quien();
+      else { const sc = document.createElement('script'); sc.src = new URL('_acceso.js', BASE).href; sc.onload = () => window.FotonAcceso && quien(); document.head.appendChild(sc); }
+    }
   }
 
   /* ───────────────────────── Páginas de inicio ───────────────────────── */
@@ -305,17 +349,24 @@
     const nav = `
       <header class="hdr"><div class="wrap">
         <a class="logo" href="${hubHref(null)}"><img src="${new URL('assets/logo-foton-blanco.png', BASE).href}" alt="Foton"><small>OS</small></a>
-        <nav class="seg" aria-label="Áreas">${AREAS.map(a => `<a href="${hubHref(a.id)}"${area && a.id === area.id ? ' aria-current="page"' : ''}>${esc(a.label)}</a>`).join('')}</nav>
+        <nav class="seg" aria-label="Áreas">${AREAS.filter(a => puedeArea(window.FOTON_PERFIL, a.id)).map(a => `<a href="${hubHref(a.id)}"${area && a.id === area.id ? ' aria-current="page"' : ''}>${esc(a.label)}</a>`).join('')}</nav>
+        ${window.FOTON_PERFIL ? `<span class="who"><span>${esc((FOTON_PERFIL.nombre || FOTON_PERFIL.email || '').split(' ')[0])}</span><button type="button" onclick="FotonAcceso.salir()">Salir</button></span>` : ''}
       </div></header>`;
 
     if (!area) {
+      // Con sesión no hay nada que elegir: cada quien entra directo a su portal
+      if (window.FotonAcceso && !window.FOTON_PERFIL && !hub.yaRevisado) {
+        hub.yaRevisado = true;
+        FotonAcceso.perfilActual().then(({ perfil }) => { if (perfil) { window.FOTON_PERFIL = perfil; location.replace(hubHref(miPortal(perfil))); } }).catch(() => {});
+      }
       root.innerHTML = `
         <section class="hero">${nav}
           <div class="wrap hin">
             <div class="eyebrow">Foton México · Red de distribuidores</div>
             <h1>Foton OS</h1>
-            <p class="lede">Todas las herramientas de la red en un solo lugar. Elige tu espacio.</p>
-            <div class="doors">${AREAS.map(a => {
+            <p class="lede">Todas las herramientas de la red en un solo lugar. Entra con tu correo y te llevamos a tu espacio.</p>
+            ${window.FOTON_PERFIL ? '' : `<a class="cta" href="${new URL('login.html', BASE).href}">Entrar con mi cuenta</a>`}
+            <div class="doors">${AREAS.filter(a => puedeArea(window.FOTON_PERFIL, a.id)).map(a => {
               const n = TOOLS.filter(t => inArea(t, a.id) && !t.old).length;
               return `<a class="door" href="${hubHref(a.id)}" data-tone="${a.tone}">
                 <span class="dic">${svg(a.icon)}</span>

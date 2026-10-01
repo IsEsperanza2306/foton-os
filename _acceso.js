@@ -19,8 +19,7 @@
   const HERRAMIENTAS = {
     'panel.html': TODOS, 'panel-seguimiento.html': TODOS, 'pipeline-gr.html': TODOS,
     'control-leads/': DA, 'inventario/': DA, 'foton_admin.html': DA,
-    'bp-tracker.html': TODOS, 'direccion.html': G.dir, 'field-app.html': DR, 'mapa.html': DR,
-    'foton-field-app.html': DA, 'foton_bp_tracker.html': DA
+    'bp-tracker.html': TODOS, 'direccion.html': G.dir, 'field-app.html': DR, 'mapa.html': DR
   };
   const clave = p => String(p || '').split(/[?#]/)[0].replace(/index\.html$/, '');
   const veHerramienta = (t, perfil) => {
@@ -162,15 +161,12 @@
       if (area === 'interno' && rolesPag && !esMaster(perfil.email) && !rolesPag.includes(perfil.rol)) return pantalla('Esta herramienta no es para tu rol', `Tu perfil (${ROL[perfil.rol] || perfil.rol}) no tiene esta herramienta en Foton Interno.`, [{ t: 'Ir a Foton Interno', href: url(HOME.interno) }, { t: 'Cerrar sesión', href: '#', salir: true }]);
       if ((area === 'dealer' || area === 'asesor') && !(await puente(perfil))) return;
       document.documentElement.style.visibility = '';
-      chip(perfil);
       window.dispatchEvent(new CustomEvent('FotonAccesoListo', { detail: { perfil } }));
     } catch (e) {
       clearTimeout(falla);
       pantalla('No se pudo verificar tu acceso', 'Revisa tu conexión e inténtalo de nuevo.', [{ t: 'Reintentar', href: location.href }]);
     }
   }
-
-  cargar(url('_marca.js')).catch(() => {});
 
   window.FotonAcceso = { HERRAMIENTAS, veHerramienta, ACCESO, HOME, NOMBRE, ROL, MASTER, url, esMaster, puede, portalDe, portalesDe, cliente, perfilActual, salir, chip };
   const pinHeredado = () => /[#&]pin=\d{6}/.test(location.hash) || (!!ss.get('foton_pin') && !ss.get('foton_via_email'));
