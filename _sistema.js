@@ -101,7 +101,7 @@
       alias: ['pipeline-asesor/'] },
     { id: 'cotizador', area: 'asesores', group: 'También en la web', icon: 'calc', title: 'Cotizador',
       desc: 'Cotización formal MDT / LDT lista para imprimir o enviar en PDF.', path: 'cotizacion.html', access: 'open',
-      alias: ['cotizacion/'] },
+      alias: ['cotizacion/'], publico: true },
     { id: 'guia', area: 'asesores', group: 'Para vender', icon: 'book', title: 'Guía de Ventajas Competitivas',
       desc: 'Portafolio S3 a S12 y cómo posicionarlo frente a la competencia.', path: 'informativo.html', access: 'open' },
     { id: 'sales-machine', area: 'asesores', group: 'Capacitación', icon: 'target', title: 'Foton Sales Machine',
@@ -442,6 +442,7 @@
     const p = currentPath();
     if (p in HUB_PATHS) return;
     if (ALESCRITORIO) return;
+    const t = currentTool(); if (t && t.publico) return; // liga pública: sin botón de Foton OS
     launcher();
   }
 
@@ -492,7 +493,8 @@
 
   // Abierta suelta (link viejo, favorito): se abre dentro del escritorio de Foton OS.
   // ?solo=1 la deja suelta, p. ej. para imprimir o compartir pantalla completa.
-  const ALESCRITORIO = window.top === window.self && !!currentTool() && !/[?&](solo|embed)=1\b/.test(location.search);
+  // Las herramientas públicas (cotizador) se abren solas desde su liga, sin iniciar sesión.
+  const ALESCRITORIO = window.top === window.self && !!currentTool() && !currentTool().publico && !/[?&](solo|embed)=1\b/.test(location.search);
   if (ALESCRITORIO) {
     document.documentElement.style.visibility = 'hidden';
     location.replace(new URL('./', BASE).href + '#/abrir/' + encodeURIComponent(currentPath() + location.search + location.hash));
