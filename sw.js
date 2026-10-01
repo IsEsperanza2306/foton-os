@@ -1,4 +1,4 @@
-const CACHE = 'foton-os-v2';
+const CACHE = 'foton-os-v3';
 const STATIC = [
   '/mapa.html', '/login.html', '/bp-tracker.html',
   '/field-app.html', '/direccion.html',

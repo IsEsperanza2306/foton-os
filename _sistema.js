@@ -56,7 +56,7 @@
     {
       id: 'distribuidores', label: 'Distribuidores', icon: 'store', tone: 'purple',
       who: 'Dueños y gerencia de cada distribuidor',
-      desc: 'Cobertura, cobranza, back order, inventario, pedidos y tu equipo comercial, con el PIN de tu distribuidor.'
+      desc: 'Cobertura, cobranza, back order, inventario, pedidos y tu equipo comercial.'
     },
     {
       id: 'asesores', label: 'Asesores', icon: 'user', tone: 'orange',
@@ -425,13 +425,33 @@
     </a>`;
   }
 
-  window.FotonSistema = { AREAS, TOOLS, hub };
+  // Ruta relativa a la raíz → herramienta del catálogo (para el escritorio de Foton OS)
+  function toolDe(rel) {
+    const u = new URL(rel, BASE);
+    let p = decodeURIComponent(u.pathname);
+    const base = decodeURIComponent(BASE.pathname);
+    if (p.startsWith(base)) p = p.slice(base.length);
+    p = p.replace(/index\.html$/, '');
+    const tab = u.searchParams.get('tab');
+    if (p === 'dealer.html' && tab) { const t = TOOLS.find(x => x.path === 'dealer.html?tab=' + tab); if (t) return t; }
+    return TOOLS.find(t => t.path && !t.path.includes('?') && (t.path === p || (t.alias || []).includes(p)));
+  }
+
+  window.FotonSistema = { AREAS, TOOLS, ACCESS, hub, svg, href, toolsOf, inArea, areaOf, toolDe, esc, BASE };
 
   function boot() {
-    if (document.body.dataset.fotonHub !== undefined) return; // las páginas de inicio llaman hub() ellas mismas
+    if (document.body.dataset.fotonHub !== undefined || document.body.dataset.fotonShell !== undefined) return;
     const p = currentPath();
     if (p in HUB_PATHS) return;
+    if (ALESCRITORIO) return;
     launcher();
+  }
+  // Abierta suelta (link viejo, favorito): se abre dentro del escritorio de Foton OS.
+  // ?solo=1 la deja suelta, p. ej. para imprimir o compartir pantalla completa.
+  const ALESCRITORIO = window.top === window.self && !!currentTool() && !/[?&](solo|embed)=1\b/.test(location.search);
+  if (ALESCRITORIO) {
+    document.documentElement.style.visibility = 'hidden';
+    location.replace(new URL('./', BASE).href + '#/abrir/' + encodeURIComponent(currentPath() + location.search + location.hash));
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
