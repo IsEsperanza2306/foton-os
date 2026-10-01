@@ -11,7 +11,7 @@
   // Quién entra a cada portal. Los correos MASTER entran a todo (para soporte y pruebas).
   const PLANTA = ['regional', 'admin', 'direccion', 'director'];
   const ACCESO = { interno: PLANTA, dealer: ['gerente'], asesor: ['asesor', 'gerente'] };
-  const MASTER = ['israel.esperanza.h@gmail.com', 'israel.esperanza@ldrsolutions.com.mx'];
+  const MASTER = ['israel.esperanza.h@gmail.com', 'israel.esperanza@ldrsolutions.com.mx', 'sharon.caraveo@ldrsolutions.com.mx'];
   // Dentro de Interno, cada herramienta tiene sus roles (clave = archivo). Master entra a todas.
   //   dir = direccion/director · adm = admin (Administración) · reg = regional (Gerente Regional)
   const G = { dir: ['direccion', 'director'], adm: ['admin'], reg: ['regional'] };
