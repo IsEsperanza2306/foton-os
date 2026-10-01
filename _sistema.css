@@ -35,6 +35,7 @@ a{color:inherit}
 .hdr{border-bottom:1px solid rgba(255,255,255,.08)}
 .hdr .wrap{display:flex;align-items:center;gap:16px;min-height:64px;flex-wrap:wrap}
 .logo{display:flex;align-items:center;gap:12px;white-space:nowrap;color:#fff;text-decoration:none}
+.logo img{height:30px;width:auto;display:block}
 .logo .mk{width:34px;height:34px;border-radius:50%;border:1.6px solid rgba(255,255,255,.9);display:grid;place-items:center}
 .logo .mk svg{width:16px;height:16px}
 .logo b{font-family:var(--fd);font-weight:800;font-size:19px;letter-spacing:.32em}
