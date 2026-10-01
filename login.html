@@ -339,7 +339,7 @@ async function irAlPortal() {
   try {
     const { data } = await db.rpc('fn_mi_perfil');
     if (data) {
-      const master = ['israel.esperanza.h@gmail.com', 'israel.esperanza@ldrsolutions.com.mx'].includes((data.email || '').toLowerCase());
+      const master = ['israel.esperanza.h@gmail.com', 'israel.esperanza@ldrsolutions.com.mx', 'sharon.caraveo@ldrsolutions.com.mx'].includes((data.email || '').toLowerCase());
     } else {
       await db.auth.signOut(); YA = false;
       showMsg('Tu correo no está dado de alta en Foton OS. Pide a Foton México o a tu gerente que te den de alta.', 'error');
