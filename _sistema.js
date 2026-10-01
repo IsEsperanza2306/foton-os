@@ -128,8 +128,6 @@
       desc: 'Ranking de la red, certificados y brechas por modelo.', path: 'foton_admin.html', access: 'open' },
     { id: 'direccion', area: 'interno', group: 'Dirección y plan', icon: 'compass', title: 'Dirección',
       desc: 'Vista consolidada de visitas, acuerdos y facturación.', path: 'direccion.html', access: 'login' },
-    { id: 'visita', area: 'interno', group: 'Red y distribuidores', icon: 'pin', title: 'Registro de Visita',
-      desc: 'Bitácora de visitas con minuta, fotos y acuerdos.', path: 'field-app.html', access: 'login', offset: 72 },
     { id: 'bp', area: 'interno', group: 'Dirección y plan', icon: 'trend', title: 'BP Tracker',
       desc: 'Business plan contra facturado por distribuidor y modelo.', path: 'bp-tracker.html', access: 'login' },
   ];

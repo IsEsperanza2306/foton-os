@@ -19,7 +19,7 @@
   const HERRAMIENTAS = {
     'panel.html': TODOS, 'panel-seguimiento.html': TODOS, 'pipeline-gr.html': TODOS,
     'control-leads/': DA, 'inventario/': DA, 'foton_admin.html': DA,
-    'bp-tracker.html': TODOS, 'direccion.html': G.dir, 'field-app.html': DR
+    'bp-tracker.html': TODOS, 'direccion.html': G.dir
   };
   const clave = p => String(p || '').split(/[?#]/)[0].replace(/index\.html$/, '');
   const veHerramienta = (t, perfil) => {

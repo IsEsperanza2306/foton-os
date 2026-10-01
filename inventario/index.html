@@ -1154,7 +1154,18 @@ $('#lbtn').addEventListener('click', lockNow);
 $('#g-logo').src = (document.querySelector('.logo img') || {}).src || '';
 $('#g-form').addEventListener('submit', e => { e.preventDefault(); const v = $('#g-pin').value.trim(); if (v) unlock(v); });
 const savedPin = ss.get('foton-inv-pin');
-if (savedPin) { document.body.classList.add('locked'); unlock(savedPin, true); } else showGate();
+/* Con la cuenta de Foton OS (Dirección, Administración, master) el PIN llega de la base y no se teclea */
+async function pinDeCuenta() {
+  try { const db = await window.FotonAcceso.cliente(); const { data } = await db.rpc('fn_pin_inventario'); return data || null; } catch (e) { return null; }
+}
+async function entrarConCuenta() {
+  const pin = await pinDeCuenta();
+  if (!pin || !(await unlock(pin, true))) showGate();
+}
+document.body.classList.add('locked');
+if (savedPin) unlock(savedPin, true);
+else if (window.FOTON_PERFIL) entrarConCuenta();
+else window.addEventListener('FotonAccesoListo', entrarConCuenta, { once: true });
 </script>
 
 <script src="../_sistema.js" defer></script>
