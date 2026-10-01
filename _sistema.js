@@ -446,6 +446,52 @@
     if (ALESCRITORIO) return;
     launcher();
   }
+
+  /* ───────────────────────── Dentro del escritorio ─────────────────────────
+     Cuando una herramienta se abre dentro de Foton OS se le quita lo que ya da el escritorio
+     (logo, regreso a Foton OS, salir) y su encabezado toma el mismo azul con grid de diamante,
+     para que todas se vean como partes de una sola aplicación. */
+  const DIAMANTE = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='96' viewBox='0 0 72 96'%3E%3Cpath d='M0 0 L36 48 L72 0 M0 48 L36 96 L72 48' fill='none' stroke='%23ffffff' stroke-opacity='.08' stroke-width='1.2'/%3E%3C/svg%3E\")";
+  const PROPIAS = ['presentacion', 'sales-machine', 'cotizador']; // conservan su diseño de documento o presentación
+  const EMB_CSS = `
+  html.fos-emb{scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.25) transparent}
+  html.fos-emb:not(.fos-propia) body{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif!important;-webkit-font-smoothing:antialiased;letter-spacing:-.005em}
+  html.fos-emb:not(.fos-propia) :is(button,input,select,textarea){font-family:inherit!important}
+  html.fos-emb .fos-hd{background:radial-gradient(640px 260px at 92% -60%,rgba(79,179,255,.28),transparent 62%),${DIAMANTE} right top/72px 96px,linear-gradient(160deg,#001236 0%,#001A4D 48%,#0A2F6E 100%)!important;
+    color:#fff!important;border:0!important;box-shadow:0 1px 0 rgba(255,255,255,.06) inset!important;min-height:64px}
+  html.fos-emb .fos-hd :is(img.logo,.logo-img,.hd-logo,.hdr-logo,.tb-logo,.brand-mark,.hdiv,.hdr-div,.hd-div,img[alt="Foton"],img[alt="FOTON"],.logo>.mk,.logo>b,.logout-btn){display:none!important}
+  html.fos-emb .fos-hd :is(.htitle,.hdr-title,.dash-header-titles,.brand-text){margin-left:0!important;padding-left:0!important;border-left:0!important}
+  html.fos-emb .fos-hd .logo small{border-left:0!important;padding-left:0!important;font-size:15px!important;font-weight:700!important;color:#fff!important}
+  html.fos-emb[data-fos-tool="leads"] .hero .seg{display:none!important}
+  html.fos-emb[data-fos-tool="red"] .brand-mark{display:none!important}
+  html.fos-emb:is([data-fos-tool="dealer"],[data-fos-tool="pedidos"],[data-fos-tool="equipo"]) header.topbar{display:none!important}
+  html.fos-emb .fos-oculto{display:none!important}
+  `;
+  function embebido() {
+    const here = currentTool(), html = document.documentElement;
+    html.classList.add('fos-emb');
+    if (here) { html.dataset.fosTool = here.id; if (PROPIAS.includes(here.id)) html.classList.add('fos-propia'); }
+    const st = document.createElement('style'); st.id = 'fos-emb'; st.textContent = EMB_CSS; (document.head || html).appendChild(st);
+    const marcar = () => {
+      if (here && PROPIAS.includes(here.id)) return;
+      // el encabezado de la herramienta: el primer bloque oscuro de ancho completo arriba
+      document.querySelectorAll('header, .hdr, .topbar, .dash-header, .header').forEach(h => {
+        if (h.closest('.fos-hd') || h.parentElement.closest('header, .hdr, .topbar, .dash-header')) return;
+        const r = h.getBoundingClientRect();
+        if (r.width < innerWidth * 0.6 || r.height > 260 || r.top > 120 || getComputedStyle(h).display === 'none') return;
+        h.classList.add('fos-hd');
+      });
+      // regreso a Foton OS: ya lo da el escritorio
+      document.querySelectorAll('a[href="./index.html"], a[href="index.html"], a[href="../interno/"], a[href="./"]').forEach(a => {
+        if (/foton os|inicio|volver/i.test(a.textContent)) { const p = a.parentElement; (p && p.children.length === 1 && p !== document.body ? p : a).classList.add('fos-oculto'); }
+      });
+    };
+    const correr = () => { marcar(); setTimeout(marcar, 800); new MutationObserver(() => { clearTimeout(correr.t); correr.t = setTimeout(marcar, 120); }).observe(document.body, { childList: true, subtree: true }); };
+    document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', correr) : correr();
+  }
+  const EN_ESCRITORIO = window.top !== window.self && (() => { try { return window.top.document.body.hasAttribute('data-foton-shell'); } catch (e) { return false; } })();
+  if (EN_ESCRITORIO || /[?&]embed=1\b/.test(location.search)) embebido();
+
   // Abierta suelta (link viejo, favorito): se abre dentro del escritorio de Foton OS.
   // ?solo=1 la deja suelta, p. ej. para imprimir o compartir pantalla completa.
   const ALESCRITORIO = window.top === window.self && !!currentTool() && !/[?&](solo|embed)=1\b/.test(location.search);
