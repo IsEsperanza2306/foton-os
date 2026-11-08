@@ -499,6 +499,13 @@
     document.documentElement.style.visibility = 'hidden';
     location.replace(new URL('./', BASE).href + '#/abrir/' + encodeURIComponent(currentPath() + location.search + location.hash));
   }
+  // Estilo Cristal en los paneles (las piezas de documento o presentación conservan su diseño)
+  const SIN_CRISTAL = PROPIAS.concat(['guia', 'red']);
+  (function cristal() {
+    const t = currentTool();
+    if (!t || ALESCRITORIO || SIN_CRISTAL.includes(t.id) || document.getElementById('cr-js')) return;
+    const sc = document.createElement('script'); sc.id = 'cr-js'; sc.src = new URL('_cristal.js?v=1', BASE).href; (document.head || document.documentElement).appendChild(sc);
+  })();
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
 })();
