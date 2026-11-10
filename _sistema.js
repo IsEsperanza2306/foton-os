@@ -105,7 +105,7 @@
     { id: 'guia', area: 'asesores', group: 'Para vender', icon: 'book', title: 'Guía de Ventajas Competitivas',
       desc: 'Portafolio S3 a S12 y cómo posicionarlo frente a la competencia.', path: 'informativo.html', access: 'open' },
     { id: 'sales-machine', area: 'asesores', group: 'Capacitación', icon: 'target', title: 'Foton Sales Machine',
-      desc: 'Curso interactivo: BANT, SPIN, prospección, cierre y roleplay.', path: 'foton-sales-machine-v12.html', access: 'open', offset: 82 },
+      desc: 'Curso de alto rendimiento: embudo, BANT, SPIN, seguimiento, cierre y roleplay.', path: 'foton-sales-machine-v13.html', access: 'open', offset: 82 },
     { id: 'examen', area: 'asesores', group: 'Capacitación', icon: 'check', title: 'Evaluación de Producto',
       desc: 'Examen para certificarte en el portafolio Foton.', path: 'foton_examen.html', access: 'open' },
     { id: 'master-driver', area: 'asesores', group: 'Capacitación', icon: 'truck', title: 'Master Driver',
