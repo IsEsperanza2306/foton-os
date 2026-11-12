@@ -1,32 +1,33 @@
 {
-  "name": "Foton OS — GR Centro-Sur",
+  "name": "Foton OS",
   "short_name": "Foton OS",
   "description": "Plataforma de gestión de red Foton México",
-  "start_url": "/mapa",
-  "scope": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#0C447C",
-  "theme_color": "#0C447C",
+  "background_color": "#000E2B",
+  "theme_color": "#000E2B",
   "orientation": "portrait-primary",
   "lang": "es-MX",
   "icons": [
     {
-      "src": "/assets/icon-192.png",
+      "src": "./assets/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/assets/icon-512.png",
+      "src": "./assets/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/assets/icon-512.png",
+      "src": "./assets/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     }
-  ]
+  ],
+  "id": "./"
 }
